@@ -52,32 +52,36 @@ class SemiconductorModuleContext:
 
     def get_pin_names(self, instrument_type_id, capability):
         """
-        Returns all DUT and system pins available in the Semiconductor Module context that are connected to an
-        instrument of the type you specify in the instrument_type_id. This method returns only the pins specified on the
-        Options tab of the Semiconductor Multi Test step. Pass an empty string to instrument_type_id to return all
-        available pins.
+        Returns all DUT and system pins available in the Semiconductor Module context that are
+        connected to an instrument of the type you specify in the instrument_type_id. This method
+        returns only the pins specified on the Options tab of the Semiconductor Multi Test step.
+        Pass an empty string to instrument_type_id to return all available pins.
 
         Args:
-            instrument_type_id: Specifies the type of instrument for which you want to return DUT and system pins. All
-                instruments defined in the pin map specify an associated type ID. The
-                nitsm.codemoduleapi.InstrumentTypeIdConstants class contains instrument type IDs for instrument types
-                that TSM supports natively. For all other types of instruments, you must define a type ID for the
-                instrument in the pin map file. Typically, this type ID is an instrument driver name or other ID that is
-                common for instruments that users program in a similar way. Pass InstrumentTypeIdConstants.Any to
-                include pins from all instruments.
+            instrument_type_id: Specifies the type of instrument for which you want to return DUT
+                and system pins. All instruments defined in the pin map specify an associated type
+                ID. The nitsm.codemoduleapi.InstrumentTypeIdConstants class contains instrument type
+                IDs for instrument types that TSM supports natively. For all other types of
+                instruments, you must define a type ID for the instrument in the pin map file.
+                Typically, this type ID is an instrument driver name or other ID that is common for
+                instruments that users program in a similar way. Pass InstrumentTypeIdConstants.ANY
+                to include pins from all instruments.
 
-            capability: Limits the filtered pins to those connected to a channel that defines the capability you
-                specify. Use capability to differentiate between pins in the same instrument with different
-                capabilities, such as NI-HSDIO Dynamic DIO channels and PFI lines. If a pin is connected to channels in
-                which the capability is defined only for a subset of sites, the method throws an exception. Pass
-                Capability.ALL to return all pins that match instrument_type_id.
+            capability: Limits the filtered pins to those connected to a channel that defines the
+                capability you specify. Use capability to differentiate between pins in the same
+                instrument with different capabilities, such as NI-HSDIO Dynamic DIO channels and
+                PFI lines. If a pin is connected to channels in which the capability is defined only
+                for a subset of sites, the method raises an exception. Pass Capability.ALL to return
+                all pins that match instrument_type_id.
 
         Returns:
-            dut_pins: Returns an array of strings that contains the DUT pins in the Semiconductor Module context that
-                are connected to an instrument of the type you specify in the instrument_type_id.
+            dut_pins: Returns a tuple of strings that contains the DUT pins in the Semiconductor
+                Module context that are connected to an instrument of the type you specify in the
+                instrument_type_id.
 
-            system_pins: Returns an array of strings that contains the system pins in the Semiconductor Module context
-                that are connected to an instrument of the type you specify in the instrument_type_id.
+            system_pins: Returns a tuple of strings that contains the system pins in the
+                Semiconductor Module context that are connected to an instrument of the type you
+                specify in the instrument_type_id.
         """
 
         if isinstance(capability, Capability):
