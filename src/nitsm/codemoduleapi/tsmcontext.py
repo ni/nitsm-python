@@ -59,7 +59,7 @@ class SemiconductorModuleContext:
             instrument_alarm_library = ctypes.CDLL(instrument_alarm_library_path)
             driver_module_name = driver_prefix + '_' + '64' if sys.maxsize > 2**32 else '32' + '.dll'
             alarm_session = ctypes.c_void_p()
-            error_code = instrument_alarm_library.niInstrumentAlarm_registerDriverSession(
+            instrument_alarm_library.niInstrumentAlarm_registerDriverSession(
                 instrument_session, driver_prefix, driver_module_name, alarm_session
             )
         return alarm_names, alarm_session
@@ -217,6 +217,17 @@ class SemiconductorModuleContext:
         return self._context.SetNIDCPowerSession(instrument_name, channel_id, session_id)
 
     def set_nidcpower_session_with_resource_string(self, resource_string, session):
+        """
+        Associates an NI-DCPower session with all resources of an NI-DCPower resource_string. This
+        method supports only DC Power instruments defined with Channel Groups in the pin map.
+
+        Args:
+            resource_string: The resource string associated with the corresponding session. The
+                resource string is a comma-separated list of resources, where each resource is
+                defined as <instrument>/<channel>.
+            session: The NI-DCPower session for the corresponding resource_string.
+        """
+
         alarm_names, alarm_session = self.__register_alarms(session._vi, resource_string, 'niDCPower')
         session_id = id(session)
         SemiconductorModuleContext._sessions[session_id] = session
