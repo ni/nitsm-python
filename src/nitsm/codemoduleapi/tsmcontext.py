@@ -97,6 +97,104 @@ class SemiconductorModuleContext:
     def get_pins_in_pin_groups(self, pin_groups):
         return self.filter_pins_by_instrument_type(pin_groups, '', 'All')
 
+    @property
+    def site_numbers(self):
+        """
+        Returns the site numbers in the Semiconductor Module Context. The site numbers can be
+        different each time a step executes because some sites might not be active. The site numbers
+        are in numerical order.
+        """
+
+        return self._context.SiteNumbers
+
+    # Site and Global Data
+
+    def set_site_data(self, data_id, data):
+        """
+        Associates a data item with each site. You can associate data with all sites or with the
+        sub-set of sites in the Semiconductor Module Context. You can use this method to store
+        instrument sessions or other per-site data you initialize in a central location but access
+        within each site. The data item is accessible from a process model controller execution and
+        the site with which the data is associated.
+
+        Args:
+            data_id: A unique ID to distinguish the data.
+            data: A sequence of data with one element for each site in the system or one element for
+                each site in the Semiconductor Module Context. If the sequence is None or empty, the
+                method deletes any data with the specified data_id if it exists. If the sequence
+                contains data for each site in the Semiconductor Module Context, each item in the
+                sequence contains data for the site specified by the corresponding item in the
+                site_numbers property.
+        """
+
+        return self._context.SetSiteData(data_id, data)
+
+    def get_site_data(self, data_id):
+        """
+        Returns per-site data that a previous call to the set_site_data method stores. The returned
+        tuple contains the data the site_numbers property stores for each site in the same order as
+        the sites that the Get Site Numbers method returns. Raises an exception if a data item with
+        the specified data_id does not exist on every site in the Semiconductor Module Context. Use
+        the site_data_exists method to determine if the specified data_id exists.
+
+        Args:
+            data_id: The unique ID to distinguish the data. This parameter must match a value you
+                specify in a call to the set_site_data method.
+        """
+
+        return self._context.GetSiteData(data_id)
+
+    def site_data_exists(self, data_id):
+        """
+        Returns a Boolean value indicating whether site data exists for the data ID specified by the
+        data_id . Raises an exception if a data item with the specified data_id exists for some, but
+        not all, sites in the Semiconductor Module Context.
+
+        Args:
+            data_id: A unique ID to distinguish the data.
+        """
+
+        return self._context.SiteDataExists(data_id)
+
+    def set_global_data(self, data_id, data):
+        """
+        Associates a data item with a data_id. You can use this method to store an instrument
+        session or other data you initialize in a central location but access from multiple sites.
+        The data item is accessible from a process model controller execution and all of its test
+        socket executions.
+
+        Args:
+            data_id: A unique ID to distinguish the data.
+            data: A data item to store and later retrieve using the specified data_id . If the data
+                item is None, the method deletes the data with the specified data_id if it exists.
+        """
+
+        return self._context.SetGlobalData(data_id, data)
+
+    def get_global_data(self, data_id):
+        """
+        Returns a global data item that a previous call to the set_global_data method stores. Throws
+        an exception if no data item with the specified data_id exists. Use the global_data_exists
+        method to determine if the specified data_id exists.
+
+        Args:
+            data_id: The unique ID to distinguish the data. This parameter must match a value you
+                specify in a call to the set_global_data method.
+        """
+
+        return self._context.GetGlobalData(data_id)
+
+    def global_data_exists(self, data_id):
+        """
+        Returns a Boolean value indicating whether global data exists for the data ID specified by
+        the data_id.
+
+        Args:
+            data_id: A unique ID to distinguish the data.
+        """
+
+        return self._context.GlobalDataExists(data_id)
+
     # NI-Digital
 
     def get_all_nidigital_instrument_names(self):
