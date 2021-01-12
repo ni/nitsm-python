@@ -8,17 +8,15 @@ from tests.fixtures import standalone_tsm_context
 
 T = Tuple[SemiconductorModuleContext, Any]  # enable static type checking through type alias
 
-# Single site pin map information
 pin_map_path = os.path.join(os.path.dirname(__file__), "nidcpower.pinmap")
 pin_map_instruments = {"DCPower1": 1, "DCPower2": 2, "DCPower3": 1, "DCPower4": 2, "DCPower5": 1}
 pin_map_dut_pins = {
-    "DUTPin1": [("DCPower1", "0"), ("DCPower3", "0")],
-    "DUTPin2": [("DCPower2", "0"), ("DCPower4", "0")],
-    "DUTPin3": [("DCPower2", "1"), ("DCPower4", "1")],
+    "DUTPin1": {0: ("DCPower1", "0"), 1: ("DCPower3", "0")},
+    "DUTPin2": {0: ("DCPower2", "0"), 1: ("DCPower4", "0")},
+    "DUTPin3": {0: ("DCPower2", "1"), 1: ("DCPower4", "1")},
 }
 pin_map_system_pins = {"SystemPin1": ("DCPower5", "0")}
-pin_map_pin_groups = {"PinGroup1": pin_map_dut_pins}
-pin_map_num_sites = 2
+pin_map_pin_groups = {"PinGroup1": (pin_map_dut_pins, None, None)}
 
 
 @pytest.mark.parametrize("standalone_tsm_context", [pin_map_path], indirect=True)
