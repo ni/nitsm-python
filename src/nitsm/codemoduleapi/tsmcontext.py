@@ -11,7 +11,7 @@ import pythoncom
 import nitsm.codemoduleapi.pinmapinterfaces
 import nitsm.codemoduleapi.pinquerycontexts
 
-__all__ = ['Capability', 'InstrumentTypeIdConstants', 'SemiconductorModuleContext']
+__all__ = ["Capability", "InstrumentTypeIdConstants", "SemiconductorModuleContext"]
 
 
 class Capability(enum.Enum):
@@ -20,20 +20,20 @@ class Capability(enum.Enum):
 
 
 class InstrumentTypeIdConstants(enum.Enum):
-    ANY = ''
-    NI_DAQMX = 'niDAQmx'
-    NI_DCPOWER = 'niDCPower'
-    NI_DIGITAL_PATTERN = 'niDigitalPattern'
-    NI_DMM = 'niDMM'
-    NI_FGEN = 'niFGen'
-    NI_GENERIC_MULTIPLEXER = 'NIGenericMultiplexer'
-    NI_HSDIO = 'niHSDIO'
-    NI_MODEL_BASED_INSTRUMENT = 'niModelBasedInstrument'
-    NI_RELAY_DRIVER = 'niRelayDriver'
-    NI_RFPM = 'niRFPM'
-    NI_RFSA = 'niRFSA'
-    NI_RFSG = 'niRFSG'
-    NI_SCOPE = 'niScope'
+    ANY = ""
+    NI_DAQMX = "niDAQmx"
+    NI_DCPOWER = "niDCPower"
+    NI_DIGITAL_PATTERN = "niDigitalPattern"
+    NI_DMM = "niDMM"
+    NI_FGEN = "niFGen"
+    NI_GENERIC_MULTIPLEXER = "NIGenericMultiplexer"
+    NI_HSDIO = "niHSDIO"
+    NI_MODEL_BASED_INSTRUMENT = "niModelBasedInstrument"
+    NI_RELAY_DRIVER = "niRelayDriver"
+    NI_RFPM = "niRFPM"
+    NI_RFSA = "niRFSA"
+    NI_RFSG = "niRFSG"
+    NI_SCOPE = "niScope"
 
     def __str__(self):
         return self.value
@@ -48,16 +48,22 @@ class SemiconductorModuleContext:
             tsm_com_obj: TestStand Semiconductor Module Context object passed to Python from TestStand
         """
 
-        self._context = nitsm.codemoduleapi.pinmapinterfaces.ISemiconductorModuleContext(tsm_com_obj)
-        self._context._oleobj_ = tsm_com_obj._oleobj_.QueryInterface(self._context.CLSID, pythoncom.IID_IDispatch)
+        self._context = nitsm.codemoduleapi.pinmapinterfaces.ISemiconductorModuleContext(
+            tsm_com_obj
+        )
+        self._context._oleobj_ = tsm_com_obj._oleobj_.QueryInterface(
+            self._context.CLSID, pythoncom.IID_IDispatch
+        )
 
     def __register_alarms(self, instrument_session, instrument_name, driver_prefix):
         alarm_names = self._context.GetSupportedAlarmNames(instrument_name)
         alarm_session = 0
         if alarm_names:
-            instrument_alarm_library_path = ctypes.util.find_library('niInstrumentAlarm')
+            instrument_alarm_library_path = ctypes.util.find_library("niInstrumentAlarm")
             instrument_alarm_library = ctypes.CDLL(instrument_alarm_library_path)
-            driver_module_name = driver_prefix + '_' + '64' if sys.maxsize > 2**32 else '32' + '.dll'
+            driver_module_name = (
+                driver_prefix + "_" + "64" if sys.maxsize > 2 ** 32 else "32" + ".dll"
+            )
             alarm_session = ctypes.c_void_p()
             instrument_alarm_library.niInstrumentAlarm_registerDriverSession(
                 instrument_session, driver_prefix, driver_module_name, alarm_session
@@ -104,7 +110,9 @@ class SemiconductorModuleContext:
             capability = capability.value
         if isinstance(instrument_type_id, InstrumentTypeIdConstants):
             instrument_type_id = str(instrument_type_id)
-        return self._context.GetPinNames(instrument_type_id, capability)  # TODO: Unable to return system pin?
+        return self._context.GetPinNames(
+            instrument_type_id, capability
+        )  # TODO: Unable to return system pin?
 
     def filter_pins_by_instrument_type(self, pins, instrument_type_id, capability):
         """
@@ -152,7 +160,7 @@ class SemiconductorModuleContext:
             pin_groups: A sequence of pin groups. The sequence must contain only pin groups that are included in the Semiconductor Module Context.
         """
 
-        return self.filter_pins_by_instrument_type(pin_groups, '', 'All')
+        return self.filter_pins_by_instrument_type(pin_groups, "", "All")
 
     @property
     def site_numbers(self):
@@ -301,8 +309,11 @@ class SemiconductorModuleContext:
             site_list: Returns a string that is a comma-separated list of sites (e.g. "site0,site1") that correspond to the sites associated with the channels in the channel_list. This site_list is needed as an input to certain NI-Digital Pattern driver calls.
         """
 
-        pin_query_context = \
-            nitsm.codemoduleapi.pinquerycontexts.NIDigitalPatternSingleSessionPinQueryContext(self._context, pin)
+        pin_query_context = (
+            nitsm.codemoduleapi.pinquerycontexts.NIDigitalPatternSingleSessionPinQueryContext(
+                self._context, pin
+            )
+        )
         session_id, pin_set_string, site_list = self._context.GetNIDigitalPatternSession_2(pin)
         session = SemiconductorModuleContext._sessions[session_id]
         return pin_query_context, session, pin_set_string, site_list
@@ -324,8 +335,11 @@ class SemiconductorModuleContext:
             site_list: Returns a string that is a comma-separated list of sites (e.g. "site0,site1") that correspond to the sites associated with the channels in the channel_list. This site_list is needed as an input to certain NI-Digital Pattern driver calls.
         """
 
-        pin_query_context = \
-            nitsm.codemoduleapi.pinquerycontexts.NIDigitalPatternSingleSessionPinQueryContext(self._context, pins)
+        pin_query_context = (
+            nitsm.codemoduleapi.pinquerycontexts.NIDigitalPatternSingleSessionPinQueryContext(
+                self._context, pins
+            )
+        )
         session_id, pin_set_string, site_list = self._context.GetNIDigitalPatternSession(pins)
         session = SemiconductorModuleContext._sessions[session_id]
         return pin_query_context, session, pin_set_string, site_list
@@ -342,12 +356,16 @@ class SemiconductorModuleContext:
             sessions: Returns the NI-Digital Pattern instrument sessions for the instruments connected to pin for all sites in the Semiconductor Module Context.
             pin_set_strings: Returns the pin set strings for each instrument session required to access the pin for all sites in the Semiconductor Module Context. The pin sets are specified by site and pin e.g. "site0/A" as expected by the NI-Digital Pattern driver.
                 If the pin is shared and there are multiple connections of the same channel to the pin, the channel only appears once in each string and is identified by one of the site/pin combinations to which it is connected.
-            site_lists: Returns an array of comma-separated lists of sites (e.g. "site0,site1") that correspond to the sites associated with the channels in the channel_list. This site_list is needed as an input to certain NI-Digital Pattern driver calls.           
+            site_lists: Returns an array of comma-separated lists of sites (e.g. "site0,site1") that correspond to the sites associated with the channels in the channel_list. This site_list is needed as an input to certain NI-Digital Pattern driver calls.
         """
 
-        pin_query_context = nitsm.codemoduleapi.pinquerycontexts.NIDigitalPatternPinQueryContext(self._context, pin)
+        pin_query_context = nitsm.codemoduleapi.pinquerycontexts.NIDigitalPatternPinQueryContext(
+            self._context, pin
+        )
         session_ids, pin_set_strings, site_lists = self._context.GetNIDigitalPatternSessions_3(pin)
-        sessions = tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
+        sessions = tuple(
+            SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
+        )
         return pin_query_context, sessions, pin_set_strings, site_lists
 
     def pins_to_nidigital_sessions(self, pins):
@@ -362,12 +380,16 @@ class SemiconductorModuleContext:
             sessions: Returns the NI-Digital Pattern instrument sessions for the instruments connected to pins for all sites in the Semiconductor Module Context.
             pin_set_strings: Returns the pin set strings for each instrument session required to access the pins for all sites in the Semiconductor Module Context. The pin sets are specified by site and pin e.g. "site0/A" as expected by the NI-Digital Pattern driver.
                 If any of the pins are connected to the same instrument channel for multiple sites, the channel appears only once in the string and is identified by one of the site/pin combinations to which it is connected.
-            site_lists: Returns an array of comma-separated lists of sites (e.g. "site0,site1") that correspond to the sites associated with the channels in the channel_lists. This site_list is needed as an input to certain NI-Digital Pattern driver calls.            
+            site_lists: Returns an array of comma-separated lists of sites (e.g. "site0,site1") that correspond to the sites associated with the channels in the channel_lists. This site_list is needed as an input to certain NI-Digital Pattern driver calls.
         """
 
-        pin_query_context = nitsm.codemoduleapi.pinquerycontexts.NIDigitalPatternPinQueryContext(self._context, pins)
+        pin_query_context = nitsm.codemoduleapi.pinquerycontexts.NIDigitalPatternPinQueryContext(
+            self._context, pins
+        )
         session_ids, pin_set_strings, site_lists = self._context.GetNIDigitalPatternSessions_2(pins)
-        sessions = tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
+        sessions = tuple(
+            SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
+        )
         return pin_query_context, sessions, pin_set_strings, site_lists
 
     @property
@@ -448,7 +470,7 @@ class SemiconductorModuleContext:
         Returns:
             Returns a tuple of the NI-DCPower resource strings.
         """
-        
+
         return self._context.GetNIDCPowerResourceStrings()
 
     def set_nidcpower_session(self, instrument_name, channel_id, session):
@@ -478,7 +500,9 @@ class SemiconductorModuleContext:
             session: The NI-DCPower session for the corresponding resource_string.
         """
 
-        alarm_names, alarm_session = self.__register_alarms(session._vi, resource_string, 'niDCPower')
+        alarm_names, alarm_session = self.__register_alarms(
+            session._vi, resource_string, "niDCPower"
+        )
         session_id = id(session)
         SemiconductorModuleContext._sessions[session_id] = session
         self._context.SetNIDCPowerSession_2(resource_string, session_id, alarm_names, alarm_session)
@@ -488,7 +512,7 @@ class SemiconductorModuleContext:
         Returns all NI-DCPower instrument sessions in the Semiconductor Module context.
         You can use instrument sessions to close driver sessions.
         """
-        
+
         session_ids = self._context.GetNIDCPowerSessions()
         return tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
 
@@ -505,9 +529,12 @@ class SemiconductorModuleContext:
             session: Returns the NI-DCPower instrument session for the instrument and channel connected to pin.
             channel_string: Returns the channel string for the NI-DCPower session required to access the pin for all sites in the Semiconductor Module context. Each channel string is a comma-separated list of channels, where each channel is defined as <instrument>/<channel>.
         """
-        
-        pin_query_context = \
-            nitsm.codemoduleapi.pinquerycontexts.NIDCPowerSinglePinSingleSessionQueryContext(self._context, pin)
+
+        pin_query_context = (
+            nitsm.codemoduleapi.pinquerycontexts.NIDCPowerSinglePinSingleSessionQueryContext(
+                self._context, pin
+            )
+        )
         session_id, channel_string = self._context.GetNIDCPowerSession(pin)
         session = SemiconductorModuleContext._sessions[session_id]
         return pin_query_context, session, channel_string
@@ -524,9 +551,12 @@ class SemiconductorModuleContext:
             session: Returns the NI-DCPower instrument session for the instruments and channels connected to pins for all sites in the Semiconductor Module context.
             channel_string: Returns the channel string for the NI-DCPower session required to access the pins for all sites in the Semiconductor Module context. The channel string is a comma-separated list of resources, where each resource is defined as <instrument>/<channel>.
         """
-        
-        pin_query_context = \
-            nitsm.codemoduleapi.pinquerycontexts.NIDCPowerMultiplePinSingleSessionQueryContext(self._context, pins)
+
+        pin_query_context = (
+            nitsm.codemoduleapi.pinquerycontexts.NIDCPowerMultiplePinSingleSessionQueryContext(
+                self._context, pins
+            )
+        )
         session_id, channel_string = self._context.GetNIDCPowerSession_2(pins)
         session = SemiconductorModuleContext._sessions[session_id]
         return pin_query_context, session, channel_string
@@ -543,11 +573,16 @@ class SemiconductorModuleContext:
             sessions: Returns the NI-DCPower instrument sessions for the instruments and channel resources connected to pin for all sites in the Semiconductor Module context.
             channel_strings: Returns the channel strings for the NI-DCPower sessions required to access the pin for all sites in the Semiconductor Module context. Each channel string is a comma-separated list of channels, where each channel is defined as <instrument>/<channel>.
         """
-        
-        pin_query_context = \
-            nitsm.codemoduleapi.pinquerycontexts.NIDCPowerSinglePinMultipleSessionQueryContext(self._context, pin)
+
+        pin_query_context = (
+            nitsm.codemoduleapi.pinquerycontexts.NIDCPowerSinglePinMultipleSessionQueryContext(
+                self._context, pin
+            )
+        )
         session_ids, channel_strings = self._context.GetNIDCPowerSessions_2(pin)
-        sessions = tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
+        sessions = tuple(
+            SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
+        )
         return pin_query_context, sessions, channel_strings
 
     def pins_to_nidcpower_sessions(self, pins):
@@ -562,11 +597,16 @@ class SemiconductorModuleContext:
             sessions: Returns the NI-DCPower instrument sessions for the instruments and channels resources connected to pins for all sites in the Semiconductor Module context.
             channel_strings: Returns the channel string for each instrument session required to access the pins for all sites in the Semiconductor Module context. Each channel string is a comma-separated list of channels, where each channel is defined as <instrument>/<channel>.
         """
-        
-        pin_query_context = \
-            nitsm.codemoduleapi.pinquerycontexts.NIDCPowerMultiplePinMultipleSessionQueryContext(self._context, pins)
+
+        pin_query_context = (
+            nitsm.codemoduleapi.pinquerycontexts.NIDCPowerMultiplePinMultipleSessionQueryContext(
+                self._context, pins
+            )
+        )
         session_ids, channel_strings = self._context.GetNIDCPowerSessions_3(pins)
-        sessions = tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
+        sessions = tuple(
+            SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
+        )
         return pin_query_context, sessions, channel_strings
 
     # NI-DAQmx
@@ -601,7 +641,7 @@ class SemiconductorModuleContext:
     def get_all_nidaqmx_tasks(self, task_type):
         """
         Returns a tuple of all NI-DAQmx tasks in the Semiconductor Module Context whose task type matches task_type.
-        You can use tasks to perform NI-DAQmx operations. 
+        You can use tasks to perform NI-DAQmx operations.
 
         Args:
             task_type: Specifies the type of NI-DAQmx task to return. Use an empty string to obtain the names of all tasks regardless of task type.
@@ -625,8 +665,11 @@ class SemiconductorModuleContext:
                 If the pin is connected to the same instrument channel for multiple sites, the channel appears only once in the list.
         """
 
-        pin_query_context = \
-            nitsm.codemoduleapi.pinquerycontexts.NIDAQmxSinglePinSingleTaskQueryContext(self._context, pin)
+        pin_query_context = (
+            nitsm.codemoduleapi.pinquerycontexts.NIDAQmxSinglePinSingleTaskQueryContext(
+                self._context, pin
+            )
+        )
         task_id, channel_list = self._context.GetNIDAQmxTask(pin)
         task = SemiconductorModuleContext._sessions[task_id]
         return pin_query_context, task, channel_list
@@ -637,7 +680,7 @@ class SemiconductorModuleContext:
 
         Args:
             pins: The name of the pins or pin groups to translate to a task.
-        
+
         Returns:
             pin_query_context: An object that tracks the task associated with this pin query. Use this object to publish measurements and extract data from a set of measurements.
             task: Returns the NI-DAQmx task associated with the pin or pin group for all sites in the Semiconductor Module Context. If more than one task is required, the method raises an exception.
@@ -646,8 +689,11 @@ class SemiconductorModuleContext:
                 If any of the pins are connected to the same instrument channel for multiple sites, the channel appears only once in the list.
         """
 
-        pin_query_context = \
-            nitsm.codemoduleapi.pinquerycontexts.NIDAQmxMultiplePinSingleTaskQueryContext(self._context, pins)
+        pin_query_context = (
+            nitsm.codemoduleapi.pinquerycontexts.NIDAQmxMultiplePinSingleTaskQueryContext(
+                self._context, pins
+            )
+        )
         task_id, channel_list = self._context.GetNIDAQmxTask_2(pins)
         task = SemiconductorModuleContext._sessions[task_id]
         return pin_query_context, task, channel_list
@@ -667,8 +713,11 @@ class SemiconductorModuleContext:
                 If the pin is connected to the same instrument channel for multiple sites, the channel appears only once in the list.
         """
 
-        pin_query_context = \
-            nitsm.codemoduleapi.pinquerycontexts.NIDAQmxSinglePinMultipleTaskQueryContext(self._context, pin)
+        pin_query_context = (
+            nitsm.codemoduleapi.pinquerycontexts.NIDAQmxSinglePinMultipleTaskQueryContext(
+                self._context, pin
+            )
+        )
         task_ids, channel_lists = self._context.GetNIDAQmxTasks_2(pin)
         tasks = tuple(SemiconductorModuleContext._sessions[task_id] for task_id in task_ids)
         return pin_query_context, tasks, channel_lists
@@ -679,7 +728,7 @@ class SemiconductorModuleContext:
 
         Args:
             pins: The name of the pins or pin groups to translate to a set of tasks.
-        
+
         Returns:
             pin_query_context: An object that tracks the tasks associated with this pin query. Use this object to publish measurements and extract data from a set of measurements.
             tasks: Returns the NI-DAQmx tasks associated with the pin or pin group for all sites in the Semiconductor Module Context.
@@ -688,8 +737,11 @@ class SemiconductorModuleContext:
                 If any of the pins are connected to the same instrument channel for multiple sites, the channel appears only once in the list.
         """
 
-        pin_query_context = \
-            nitsm.codemoduleapi.pinquerycontexts.NIDAQmxMultiplePinMultipleTaskQueryContext(self._context, pins)
+        pin_query_context = (
+            nitsm.codemoduleapi.pinquerycontexts.NIDAQmxMultiplePinMultipleTaskQueryContext(
+                self._context, pins
+            )
+        )
         task_ids, channel_lists = self._context.GetNIDAQmxTasks_3(pins)
         tasks = tuple(SemiconductorModuleContext._sessions[task_id] for task_id in task_ids)
         return pin_query_context, tasks, channel_lists
@@ -736,8 +788,11 @@ class SemiconductorModuleContext:
             session: Returns the NI-DMM instrument session for the instrument connected to the pin for all sites in the Semiconductor Module context.
         """
 
-        pin_query_context = \
-            nitsm.codemoduleapi.pinquerycontexts.NIDmmSinglePinSingleSessionQueryContext(self._context, pin)
+        pin_query_context = (
+            nitsm.codemoduleapi.pinquerycontexts.NIDmmSinglePinSingleSessionQueryContext(
+                self._context, pin
+            )
+        )
         session_id = self._context.GetNIDmmSession(pin)
         session = SemiconductorModuleContext._sessions[session_id]
         return pin_query_context, session
@@ -754,10 +809,15 @@ class SemiconductorModuleContext:
             sessions: Returns the NI-DMM instrument sessions for the instruments connected to the pin for all sites in the Semiconductor Module context.
         """
 
-        pin_query_context = \
-            nitsm.codemoduleapi.pinquerycontexts.NIDmmSinglePinMultipleSessionQueryContext(self._context, pin)
+        pin_query_context = (
+            nitsm.codemoduleapi.pinquerycontexts.NIDmmSinglePinMultipleSessionQueryContext(
+                self._context, pin
+            )
+        )
         session_ids = self._context.GetNIDmmSessions_2(pin)
-        sessions = tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
+        sessions = tuple(
+            SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
+        )
         return pin_query_context, sessions
 
     def pins_to_nidmm_sessions(self, pins):
@@ -772,10 +832,15 @@ class SemiconductorModuleContext:
             sessions: Returns the NI-DMM instrument sessions for the instruments connected to pins for all sites in the Semiconductor Module context.
         """
 
-        pin_query_context = \
-            nitsm.codemoduleapi.pinquerycontexts.NIDmmMultiplePinMultipleSessionQueryContext(self._context, pins)
+        pin_query_context = (
+            nitsm.codemoduleapi.pinquerycontexts.NIDmmMultiplePinMultipleSessionQueryContext(
+                self._context, pins
+            )
+        )
         session_ids = self._context.GetNIDmmSessions_3(pins)
-        sessions = tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
+        sessions = tuple(
+            SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
+        )
         return pin_query_context, sessions
 
     # NI-FGEN
@@ -823,8 +888,11 @@ class SemiconductorModuleContext:
                 If the pin is shared and there are multiple connections of the same channel to the pin, the channel only appears once in the list.
         """
 
-        pin_query_context = \
-            nitsm.codemoduleapi.pinquerycontexts.NIFGenSinglePinSingleSessionQueryContext(self._context, pin)
+        pin_query_context = (
+            nitsm.codemoduleapi.pinquerycontexts.NIFGenSinglePinSingleSessionQueryContext(
+                self._context, pin
+            )
+        )
         session_id, channel_list = self._context.GetNIFGenSession(pin)
         session = SemiconductorModuleContext._sessions[session_id]
         return pin_query_context, session, channel_list
@@ -843,8 +911,11 @@ class SemiconductorModuleContext:
                 If any of the pins are connected to the same instrument channel for multiple sites, the channel appears only once in the list.
         """
 
-        pin_query_context = \
-            nitsm.codemoduleapi.pinquerycontexts.NIFGenMultiplePinSingleSessionQueryContext(self._context, pins)
+        pin_query_context = (
+            nitsm.codemoduleapi.pinquerycontexts.NIFGenMultiplePinSingleSessionQueryContext(
+                self._context, pins
+            )
+        )
         session_id, channel_list = self._context.GetNIFGenSession_2(pins)
         session = SemiconductorModuleContext._sessions[session_id]
         return pin_query_context, session, channel_list
@@ -863,10 +934,15 @@ class SemiconductorModuleContext:
                 If the pin is shared and there are multiple connections of the same channel to the pin, the channel only appears once in each list.
         """
 
-        pin_query_context = \
-            nitsm.codemoduleapi.pinquerycontexts.NIFGenSinglePinMultipleSessionQueryContext(self._context, pin)
+        pin_query_context = (
+            nitsm.codemoduleapi.pinquerycontexts.NIFGenSinglePinMultipleSessionQueryContext(
+                self._context, pin
+            )
+        )
         session_ids, channel_lists = self._context.GetNIFGenSessions_2(pin)
-        sessions = tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
+        sessions = tuple(
+            SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
+        )
         return pin_query_context, sessions, channel_lists
 
     def pins_to_nifgen_sessions(self, pins):
@@ -883,10 +959,15 @@ class SemiconductorModuleContext:
                 If any of the pins are connected to the same instrument channel for multiple sites, the channel appears only once in the list.
         """
 
-        pin_query_context = \
-            nitsm.codemoduleapi.pinquerycontexts.NIFGenMultiplePinMultipleSessionQueryContext(self._context, pins)
+        pin_query_context = (
+            nitsm.codemoduleapi.pinquerycontexts.NIFGenMultiplePinMultipleSessionQueryContext(
+                self._context, pins
+            )
+        )
         session_ids, channel_lists = self._context.GetNIFGenSessions_3(pins)
-        sessions = tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
+        sessions = tuple(
+            SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
+        )
         return pin_query_context, sessions, channel_lists
 
     # NI-SCOPE
@@ -937,8 +1018,11 @@ class SemiconductorModuleContext:
                 If the pin is shared and there are multiple connections of the same channel to the pin, the channel only appears once in the list.
         """
 
-        pin_query_context = \
-            nitsm.codemoduleapi.pinquerycontexts.NIScopeSinglePinSingleSessionQueryContext(self._context, pin)
+        pin_query_context = (
+            nitsm.codemoduleapi.pinquerycontexts.NIScopeSinglePinSingleSessionQueryContext(
+                self._context, pin
+            )
+        )
         session_id, channel_list = self._context.GetNIScopeSession(pin)
         session = SemiconductorModuleContext._sessions[session_id]
         return pin_query_context, session, channel_list
@@ -959,8 +1043,11 @@ class SemiconductorModuleContext:
                 If any of the pins are connected to the same instrument channel for multiple sites, the channel appears only once in the list.
         """
 
-        pin_query_context = \
-            nitsm.codemoduleapi.pinquerycontexts.NIScopeMultiplePinSingleSessionQueryContext(self._context, pins)
+        pin_query_context = (
+            nitsm.codemoduleapi.pinquerycontexts.NIScopeMultiplePinSingleSessionQueryContext(
+                self._context, pins
+            )
+        )
         session_id, channel_list = self._context.GetNIScopeSession_2(pins)
         session = SemiconductorModuleContext._sessions[session_id]
         return pin_query_context, session, channel_list
@@ -979,10 +1066,15 @@ class SemiconductorModuleContext:
                 If the pin is shared and there are multiple connections of the same channel to the pin, the channel only appears once in each list.
         """
 
-        pin_query_context = \
-            nitsm.codemoduleapi.pinquerycontexts.NIScopeSinglePinMultipleSessionQueryContext(self._context, pin)
+        pin_query_context = (
+            nitsm.codemoduleapi.pinquerycontexts.NIScopeSinglePinMultipleSessionQueryContext(
+                self._context, pin
+            )
+        )
         session_ids, channel_lists = self._context.GetNIScopeSessions_2(pin)
-        sessions = tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
+        sessions = tuple(
+            SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
+        )
         return pin_query_context, sessions, channel_lists
 
     def pins_to_niscope_sessions(self, pins):
@@ -999,10 +1091,15 @@ class SemiconductorModuleContext:
                 If any of the pins are connected to the same instrument channel for multiple sites, the channel appears only once in the list.
         """
 
-        pin_query_context = \
-            nitsm.codemoduleapi.pinquerycontexts.NIScopeMultiplePinMultipleSessionQueryContext(self._context, pins)
+        pin_query_context = (
+            nitsm.codemoduleapi.pinquerycontexts.NIScopeMultiplePinMultipleSessionQueryContext(
+                self._context, pins
+            )
+        )
         session_ids, channel_lists = self._context.GetNIScopeSessions_3(pins)
-        sessions = tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
+        sessions = tuple(
+            SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
+        )
         return pin_query_context, sessions, channel_lists
 
     # Relay Driver
@@ -1012,7 +1109,7 @@ class SemiconductorModuleContext:
         Returns a tuple of all relay driver module names in the Semiconductor Module context.
         You can use the relay driver module names to open NI-SWITCH driver sessions for the relay driver modules.
         """
-            
+
         return self._context.GetNIRelayDriverModuleNames()
 
     def set_relay_driver_niswitch_session(self, relay_driver_module_name, niswitch_session):
@@ -1023,7 +1120,7 @@ class SemiconductorModuleContext:
             relay_driver_module_name: The relay driver module name in the pin map file for the corresponding session.
             niswitch_session: The NI-SWITCH session for the corresponding relay driver module name.
         """
-        
+
         session_id = id(niswitch_session)
         SemiconductorModuleContext._sessions[session_id] = niswitch_session
         return self._context.SetNIRelayDriverSession(relay_driver_module_name, session_id)
@@ -1033,7 +1130,7 @@ class SemiconductorModuleContext:
         Returns a tuple of NI-SWITCH sessions for all relay driver modules in the Semiconductor Module context.
         You can use the NI-SWITCH sessions to close the relay driver module sessions.
         """
-        
+
         session_ids = self._context.GetNIRelayDriverSessions()
         return tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
 
@@ -1050,7 +1147,7 @@ class SemiconductorModuleContext:
             niswitch_session: Returns the NI-SWITCH session for the relay driver module connected to the relay for all sites in the Semiconductor Module context.
             niswitch_relay_names: Returns a comma-separated list of NI-SWITCH relay names for the relay driver module session connected to the relay for all sites in the Semiconductor Module context.
         """
-        
+
         session_id, niswitch_relay_names = self._context.GetNIRelayDriverSession(relay)
         niswitch_session = SemiconductorModuleContext._sessions[session_id]
         return niswitch_session, niswitch_relay_names
@@ -1068,7 +1165,7 @@ class SemiconductorModuleContext:
             niswitch_session: Returns the NI-SWITCH session for the relay driver module connected to the relays for all sites in the Semiconductor Module context.
             niswitch_relay_names: Returns a comma-separated list of NI-SWITCH relay names for the relay driver module session connected to the relays for all sites in the Semiconductor Module context.
         """
-        
+
         session_id, niswitch_relay_names = self._context.GetNIRelayDriverSession_2(relays)
         niswitch_session = SemiconductorModuleContext._sessions[session_id]
         return niswitch_session, niswitch_relay_names
@@ -1084,9 +1181,11 @@ class SemiconductorModuleContext:
             niswitch_sessions: Returns NI-SWITCH sessions for the relay driver modules connected to the relay for all sites in the Semiconductor Module context.
             niswitch_relay_names: Returns comma-separated lists of NI-SWITCH relay names for the relay driver module sessions connected to the relay for all sites in the Semiconductor Module context.
         """
-        
+
         session_ids, niswitch_relay_names = self._context.GetNIRelayDriverSessions_2(relay)
-        niswitch_sessions = tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
+        niswitch_sessions = tuple(
+            SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
+        )
         return niswitch_sessions, niswitch_relay_names
 
     def relays_to_relay_driver_niswitch_sessions(self, relays):
@@ -1100,13 +1199,17 @@ class SemiconductorModuleContext:
             niswitch_sessions: Returns NI-SWITCH sessions for the relay driver modules connected to the relays for all sites in the Semiconductor Module context.
             niswitch_relay_names: Returns comma-separated lists of NI-SWITCH relay names for the relay driver module sessions connected to the relays for all sites in the Semiconductor Module context.
         """
-        
+
         session_ids, niswitch_relay_names = self._context.GetNIRelayDriverSessions_3(relays)
-        niswitch_sessions = tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
+        niswitch_sessions = tuple(
+            SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
+        )
         return niswitch_sessions, niswitch_relay_names
 
     @staticmethod
-    def __apply_relay_action(session_ids_for_open, relay_names_to_open, session_ids_for_close, relay_names_to_close):
+    def __apply_relay_action(
+        session_ids_for_open, relay_names_to_open, session_ids_for_close, relay_names_to_close
+    ):
         for session_id_to_open, relay_name_to_open in session_ids_for_open, relay_names_to_open:
             session_to_open = SemiconductorModuleContext._sessions[session_id_to_open]
             session_to_open.relay_control(relay_name_to_open, 20)
@@ -1121,12 +1224,16 @@ class SemiconductorModuleContext:
         elif wait_seconds > 0.0:
             time.sleep(wait_seconds)
         else:
-            self._context.ReportInvalidTimeToWait('wait_seconds')
+            self._context.ReportInvalidTimeToWait("wait_seconds")
         return None
 
     def apply_relay_configuration(self, relay_configuration, wait_seconds=0.0):
-        session_ids_for_open, relay_names_to_open, session_ids_for_close, relay_names_to_close = \
-            self._context.GetRelayDriverSessionsFromRelayConfiguration(relay_configuration)
+        (
+            session_ids_for_open,
+            relay_names_to_open,
+            session_ids_for_close,
+            relay_names_to_close,
+        ) = self._context.GetRelayDriverSessionsFromRelayConfiguration(relay_configuration)
         self.__apply_relay_action(
             session_ids_for_open, relay_names_to_open, session_ids_for_close, relay_names_to_close
         )
@@ -1149,13 +1256,20 @@ class SemiconductorModuleContext:
 
     def control_relays_multiple_action(self, relays, relay_actions, wait_seconds=0.0):
         if len(relays) != len(relay_actions):
-            self._context.ReportIncompatibleArrayLengths('relays', 'relay_actions')
+            self._context.ReportIncompatibleArrayLengths("relays", "relay_actions")
         else:
             relay_actions = [relay_action.value for relay_action in relay_actions]
-            session_ids_for_open, relay_names_to_open, session_ids_for_close, relay_names_to_close = \
-                self._context.GetRelayDriverSessionsFromRelays(relays, relay_actions)
+            (
+                session_ids_for_open,
+                relay_names_to_open,
+                session_ids_for_close,
+                relay_names_to_close,
+            ) = self._context.GetRelayDriverSessionsFromRelays(relays, relay_actions)
             self.__apply_relay_action(
-                session_ids_for_open, relay_names_to_open, session_ids_for_close, relay_names_to_close
+                session_ids_for_open,
+                relay_names_to_open,
+                session_ids_for_close,
+                relay_names_to_close,
             )
             self.__relay_wait(wait_seconds)
         return None
@@ -1187,7 +1301,9 @@ class SemiconductorModuleContext:
 
         return self._context.GetAllInstrumentDefinitions(instrument_type_id)
 
-    def set_custom_session(self, instrument_type_id, instrument_name, channel_group_id, session_data):
+    def set_custom_session(
+        self, instrument_type_id, instrument_name, channel_group_id, session_data
+    ):
         """
         Associates a session with an instrument and channel group.
 
@@ -1205,7 +1321,9 @@ class SemiconductorModuleContext:
 
         session_id = id(session_data)
         SemiconductorModuleContext._sessions[session_id] = session_data
-        return self._context.SetSessionData(instrument_type_id, instrument_name, channel_group_id, session_id)
+        return self._context.SetSessionData(
+            instrument_type_id, instrument_name, channel_group_id, session_id
+        )
 
     def get_all_custom_sessions(self, instrument_type_id):
         """
@@ -1224,7 +1342,9 @@ class SemiconductorModuleContext:
         """
 
         session_ids, *channel_data = self._context.GetAllSessionData(instrument_type_id)
-        session_data = tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
+        session_data = tuple(
+            SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
+        )
         return (session_data, *channel_data)
 
     def pin_to_custom_session(self, instrument_type_id, pin):
@@ -1250,7 +1370,9 @@ class SemiconductorModuleContext:
                 If the pin is shared and there are multiple connections of the same channel to the pin, the channel only appears once in the list.
         """
 
-        pin_query_context = nitsm.codemoduleapi.pinquerycontexts.SinglePinSingleSessionQueryContext(self._context, pin)
+        pin_query_context = nitsm.codemoduleapi.pinquerycontexts.SinglePinSingleSessionQueryContext(
+            self._context, pin
+        )
         _, *session_and_channel_data = self.pins_to_custom_session(instrument_type_id, [pin])
         return (pin_query_context, *session_and_channel_data)
 
@@ -1277,8 +1399,11 @@ class SemiconductorModuleContext:
                 If any of the pins are connected to the same instrument channel for multiple sites, the channel appears only once in the list.
         """
 
-        pin_query_context = \
-            nitsm.codemoduleapi.pinquerycontexts.MultiplePinSingleSessionQueryContext(self._context, pins)
+        pin_query_context = (
+            nitsm.codemoduleapi.pinquerycontexts.MultiplePinSingleSessionQueryContext(
+                self._context, pins
+            )
+        )
         session_id, *channel_data = self._context.GetSessionData_2(instrument_type_id, pins)
         session_data = SemiconductorModuleContext._sessions[session_id]
         return (pin_query_context, session_data, *channel_data)
@@ -1306,8 +1431,11 @@ class SemiconductorModuleContext:
                 If the pin is shared and there are multiple connections of the same channel to the pin, the channel only appears once in each list.
         """
 
-        pin_query_context = \
-            nitsm.codemoduleapi.pinquerycontexts.SinglePinMultipleSessionQueryContext(self._context, pin)
+        pin_query_context = (
+            nitsm.codemoduleapi.pinquerycontexts.SinglePinMultipleSessionQueryContext(
+                self._context, pin
+            )
+        )
         _, *session_and_channel_data = self.pins_to_custom_sessions(instrument_type_id, [pin])
         return (pin_query_context, *session_and_channel_data)
 
@@ -1333,9 +1461,14 @@ class SemiconductorModuleContext:
             channel_lists: Returns the channel lists that correspond to pins associated with session_data and channel_group_ids. Each channel list is a comma-separated list of channels.
                 If any of the pins are connected to the same instrument channel for multiple sites, the channel appears only once in the list.
         """
-        
-        pin_query_context = \
-            nitsm.codemoduleapi.pinquerycontexts.MultiplePinMultipleSessionQueryContext(self._context, pins)
+
+        pin_query_context = (
+            nitsm.codemoduleapi.pinquerycontexts.MultiplePinMultipleSessionQueryContext(
+                self._context, pins
+            )
+        )
         session_ids, *channel_data = self._context.GetSessionData(instrument_type_id, pins)
-        session_data = tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
+        session_data = tuple(
+            SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
+        )
         return (pin_query_context, session_data, *channel_data)
