@@ -95,14 +95,12 @@ class SemiconductorModuleContext:
 
         Args:
             pins: A sequence of pins or pin groups to filter. The sequence must contain only pins or pin groups that are included in the Semiconductor Module Context.
-
             instrument_type_id: The type of instrument for which you want to return DUT and system pins.
                 All instruments defined in the pin map specify an associated type ID.
                 The nitsm.codemoduleapi.InstrumentTypeIdConstants class contains instrument type IDs for instrument types that TSM
                 supports natively. For all other types of instruments, you must define a type ID for the instrument in the pin map file. Typically, this type ID is an instrument driver
                 name or other ID that is common for instruments that users program in a similar way.
                 Pass InstrumentTypeIdConstants.ANY to include pins from all instruments.
-
             capability: Limits the filtered pins to those connected to a channel that defines the capability you specify.
                 Use capability to differentiate between pins in the same instrument with different capabilities, such as NI-HSDIO Dynamic DIO channels and PFI lines.
                 If a pin is connected to channels in which the capability is defined only for a subset of sites, the method throws an exception.
@@ -153,7 +151,6 @@ class SemiconductorModuleContext:
 
         Args:
             instrument_name: The instrument name in the pin map file for the corresponding session.
-
             session: The instrument session for the corresponding instrument_name.
         """
 
@@ -203,14 +200,11 @@ class SemiconductorModuleContext:
             pins: The name of the pins or pin groups to translate to session and pin_set_string.
 
         Returns:
+            pin_query_context: An object that tracks the session and channels associated with this pin query. Use this object to publish measurements, to publish pattern results and to extract data from a set of measurements.
             session: Returns the NI-Digital Pattern instrument session for the instrument(s) connected to pins for all sites in the Semiconductor Module Context.
-
             pin_set_string: Returns the pin set string for the instrument session required to access the pins for all sites in the Semiconductor Module Context. The pin set is specified by site and pin e.g. "site0/A" as expected by the NI-Digital Pattern driver.
                 If any of the pins are connected to the same instrument channel for multiple sites, the channel appears only once in the string and is identified by one of the site/pin combinations to which it is connected.
-
             site_list: Returns a string that is a comma-separated list of sites (e.g. "site0,site1") that correspond to the sites associated with the channels in the channel_list. This site_list is needed as an input to certain NI-Digital Pattern driver calls.
-
-            pin_query_context: An object that tracks the session and channels associated with this pin query. Use this object to publish measurements, to publish pattern results and to extract data from a set of measurements.
         """
 
         pin_query_context = \
@@ -227,14 +221,11 @@ class SemiconductorModuleContext:
             pin: The name of the pin or pin group to translate to sessions and pin_set_strings.
 
         Returns:
+            pin_query_context: An object that tracks the sessions and channels associated with this pin query. Use this object to publish measurements, to publish pattern results and to extract data from a set of measurements.
             sessions: Returns the NI-Digital Pattern instrument sessions for the instruments connected to pin for all sites in the Semiconductor Module Context.
-
             pin_set_strings: Returns the pin set strings for each instrument session required to access the pin for all sites in the Semiconductor Module Context. The pin sets are specified by site and pin e.g. "site0/A" as expected by the NI-Digital Pattern driver.
                 If the pin is shared and there are multiple connections of the same channel to the pin, the channel only appears once in each string and is identified by one of the site/pin combinations to which it is connected.
-
-            site_lists: Returns an array of comma-separated lists of sites (e.g. "site0,site1") that correspond to the sites associated with the channels in the channel_list. This site_list is needed as an input to certain NI-Digital Pattern driver calls.
-
-            pin_query_context: An object that tracks the sessions and channels associated with this pin query. Use this object to publish measurements, to publish pattern results and to extract data from a set of measurements.
+            site_lists: Returns an array of comma-separated lists of sites (e.g. "site0,site1") that correspond to the sites associated with the channels in the channel_list. This site_list is needed as an input to certain NI-Digital Pattern driver calls.           
         """
 
         pin_query_context = nitsm.codemoduleapi.pinquerycontexts.NIDigitalPatternPinQueryContext(self._context, pin)
@@ -250,14 +241,11 @@ class SemiconductorModuleContext:
             pins: The name of the pins or pin groups to translate to sessions and pin_set_strings.
 
         Returns:
+            pin_query_context: An object that tracks the sessions and channels associated with this pin query. Use this object to publish measurements, to publish pattern results and to extract data from a set of measurements.
             sessions: Returns the NI-Digital Pattern instrument sessions for the instruments connected to pins for all sites in the Semiconductor Module Context.
-
             pin_set_strings: Returns the pin set strings for each instrument session required to access the pins for all sites in the Semiconductor Module Context. The pin sets are specified by site and pin e.g. "site0/A" as expected by the NI-Digital Pattern driver.
                 If any of the pins are connected to the same instrument channel for multiple sites, the channel appears only once in the string and is identified by one of the site/pin combinations to which it is connected.
-
-            site_lists: Returns an array of comma-separated lists of sites (e.g. "site0,site1") that correspond to the sites associated with the channels in the channel_lists. This site_list is needed as an input to certain NI-Digital Pattern driver calls.
-
-            pin_query_context: An object that tracks the sessions and channels associated with this pin query. Use this object to publish measurements, to publish pattern results and to extract data from a set of measurements.
+            site_lists: Returns an array of comma-separated lists of sites (e.g. "site0,site1") that correspond to the sites associated with the channels in the channel_lists. This site_list is needed as an input to certain NI-Digital Pattern driver calls.            
         """
 
         pin_query_context = nitsm.codemoduleapi.pinquerycontexts.NIDigitalPatternPinQueryContext(self._context, pins)
@@ -658,10 +646,8 @@ class SemiconductorModuleContext:
 
         Returns:
             instrument_names: Returns the names of all instruments in the Semiconductor Module Context that are of type instrument_type_id.
-
             channel_group_ids: Returns the IDs of all channel groups in the Semiconductor Module Context that belong to an instrument of type instrument_type_id.
                 For channels that do not belong to a channel group in the pin map, the Semiconductor Module creates a channel group with the same ID as the channel.
-
             channel_lists: Returns the channel lists for each element of channel_group_ids. Each channel list is a comma-separated list of channels.
         """
 
@@ -677,12 +663,9 @@ class SemiconductorModuleContext:
                 The nitsm.codemoduleapi.InstrumentTypeIdConstants class contains instrument type IDs for instrument types that TSM
                 supports natively. For all other types of instruments, you must define a type ID for the instrument in the pin map file. Typically, this type ID is an instrument driver
                 name or other ID that is common for instruments that users program in a similar way.
-
             instrument_name: The instrument name in the pin map file for the corresponding session. The instrument must be of type instrument_type_id.
-
             channel_group_id: The channel group in the pin map file for the corresponding session.
                 For channels that do not belong to a channel group in the pin map, the Semiconductor Module creates a channel group with the same ID as the channel.
-
             session_data: The session for the corresponding instrumentName and channel_group_id.
         """
 
@@ -700,12 +683,9 @@ class SemiconductorModuleContext:
                 The nitsm.codemoduleapi.InstrumentTypeIdConstants class contains instrument type IDs for instrument types that TSM
                 supports natively. For all other types of instruments, you must define a type ID for the instrument in the pin map file. Typically, this type ID is an instrument driver
                 name or other ID that is common for instruments that users program in a similar way.
-
             session_data: Returns a tuple of session data set in the Semiconductor Module Context.
-
             channel_group_ids: Returns the IDs of the channel groups on which session_data was stored.
                  For channels that do not belong to a channel group in the pin map, the Semiconductor Module creates a channel group with the same ID as the channel.
-
             channel_lists: Returns the channel lists for each of the channel_group_ids. Each channel list is a comma-separated list of channels.
         """
 
@@ -723,21 +703,17 @@ class SemiconductorModuleContext:
                 The nitsm.codemoduleapi.InstrumentTypeIdConstants class contains instrument type IDs for instrument types that TSM
                 supports natively. For all other types of instruments, you must define a type ID for the instrument in the pin map file. Typically, this type ID is an instrument driver
                 name or other ID that is common for instruments that users program in a similar way.
-
             pin: The name of the pin or pin group to translate to session_data, channel_group_id, and channel_list.
                 The pin must be connected to an instrument of type instrument_type_id.
 
         Returns:
-            session_data: Returns the session data associated with pin.
-
-            channel_group_id: Returns the ID of the channel group that contains the channels connected to pin.
-                For channels that do not belong to a channel group in the pin map, the Semiconductor Module creates a channel group with the same ID as the channel.
-
-            channel_list: Returns the channel list that correspond to pin associated with session_data and channel_group_id. The channel list is a comma-separated list of channels.
-                If the pin is shared and there are multiple connections of the same channel to the pin, the channel only appears once in the list.
-
             pin_query_context: An object that tracks the sessions and channels associated with this pin query.
                 Use this object to publish measurements, extract data from a set of measurements, and create or rearrange waveforms.
+            session_data: Returns the session data associated with pin.
+            channel_group_id: Returns the ID of the channel group that contains the channels connected to pin.
+                For channels that do not belong to a channel group in the pin map, the Semiconductor Module creates a channel group with the same ID as the channel.
+            channel_list: Returns the channel list that correspond to pin associated with session_data and channel_group_id. The channel list is a comma-separated list of channels.
+                If the pin is shared and there are multiple connections of the same channel to the pin, the channel only appears once in the list.
         """
 
         pin_query_context = nitsm.codemoduleapi.pinquerycontexts.SinglePinSingleSessionQueryContext(self._context, pin)
@@ -754,21 +730,17 @@ class SemiconductorModuleContext:
                 The nitsm.codemoduleapi.InstrumentTypeIdConstants class contains instrument type IDs for instrument types that TSM
                 supports natively. For all other types of instruments, you must define a type ID for the instrument in the pin map file. Typically, this type ID is an instrument driver
                 name or other ID that is common for instruments that users program in a similar way.
-
             pins: The names of the pins or pin groups to translate to session_data, channel_group_id, and channel_list.
                 The pins must be connected to instruments of type instrument_type_id.
 
         Returns:
-            session_data: Returns the session data associated with pins.
-
-            channel_group_id: Returns the ID of the channel groups that contain the channels connected to pins.
-                For channels that do not belong to a channel group in the pin map, the Semiconductor Module creates a channel group with the same ID as the channel.
-
-            channel_list: Returns the channel list that corresponds to pins associated with session_data and channel_group_id. The channel list is a comma-separated list of channels.
-                If any of the pins are connected to the same instrument channel for multiple sites, the channel appears only once in the list.
-
             pin_query_context: An object that tracks the sessions and channels associated with this pin query.
                 Use this object to publish measurements, extract data from a set of measurements, and create or rearrange waveforms.
+            session_data: Returns the session data associated with pins.
+            channel_group_id: Returns the ID of the channel groups that contain the channels connected to pins.
+                For channels that do not belong to a channel group in the pin map, the Semiconductor Module creates a channel group with the same ID as the channel.
+            channel_list: Returns the channel list that corresponds to pins associated with session_data and channel_group_id. The channel list is a comma-separated list of channels.
+                If any of the pins are connected to the same instrument channel for multiple sites, the channel appears only once in the list.
         """
 
         pin_query_context = \
@@ -787,21 +759,17 @@ class SemiconductorModuleContext:
                 The nitsm.codemoduleapi.InstrumentTypeIdConstants class contains instrument type IDs for instrument types that TSM
                 supports natively. For all other types of instruments, you must define a type ID for the instrument in the pin map file. Typically, this type ID is an instrument driver
                 name or other ID that is common for instruments that users program in a similar way.
-
             pin: The name of the pin or pin group to translate to session_data, channel_group_ids, and channel_lists.
                 The pin must be connected to an instrument of type instrument_type_id.
 
         Returns:
-            session_data: Returns a tuple of session data associated with pin.
-
-            channel_group_ids: Returns the IDs of the channel groups that contain the channels connected to pin.
-                For channels that do not belong to a channel group in the pin map, the Semiconductor Module creates a channel group with the same ID as the channel.
-
-            channel_lists: Returns the channel lists that correspond to pin associated with session_data and channel_group_ids. Each channel list is a comma-separated list of channels.
-                If the pin is shared and there are multiple connections of the same channel to the pin, the channel only appears once in each list.
-
             pin_query_context: An object that tracks the sessions and channels associated with this pin query.
                 Use this object to publish measurements, extract data from a set of measurements, and create or rearrange waveforms.
+            session_data: Returns a tuple of session data associated with pin.
+            channel_group_ids: Returns the IDs of the channel groups that contain the channels connected to pin.
+                For channels that do not belong to a channel group in the pin map, the Semiconductor Module creates a channel group with the same ID as the channel.
+            channel_lists: Returns the channel lists that correspond to pin associated with session_data and channel_group_ids. Each channel list is a comma-separated list of channels.
+                If the pin is shared and there are multiple connections of the same channel to the pin, the channel only appears once in each list.
         """
 
         pin_query_context = \
@@ -819,21 +787,17 @@ class SemiconductorModuleContext:
                 The nitsm.codemoduleapi.InstrumentTypeIdConstants class contains instrument type IDs for instrument types that TSM
                 supports natively. For all other types of instruments, you must define a type ID for the instrument in the pin map file. Typically, this type ID is an instrument driver
                 name or other ID that is common for instruments that users program in a similar way.
-
             pins: The names of the pins or pin groups to translate to session_data, channel_group_ids, and channel_lists.
                 The pins must be connected to instruments of type instrument_type_id.
 
         Returns:
-            session_data: Returns a tuple of session data associated with pins.
-
-            channel_group_ids: Returns the IDs of the channel groups that contain the channels connected to pins.
-                For channels that do not belong to a channel group in the pin map, the Semiconductor Module creates a channel group with the same ID as the channel.
-
-            channel_lists: Returns the channel lists that correspond to pins associated with session_data and channel_group_ids. Each channel list is a comma-separated list of channels.
-                If any of the pins are connected to the same instrument channel for multiple sites, the channel appears only once in the list.
-
             pin_query_context: An object that tracks the sessions and channels associated with this pin query.
                 Use this object to publish measurements, extract data from a set of measurements, and create or rearrange waveforms.
+            session_data: Returns a tuple of session data associated with pins.
+            channel_group_ids: Returns the IDs of the channel groups that contain the channels connected to pins.
+                For channels that do not belong to a channel group in the pin map, the Semiconductor Module creates a channel group with the same ID as the channel.
+            channel_lists: Returns the channel lists that correspond to pins associated with session_data and channel_group_ids. Each channel list is a comma-separated list of channels.
+                If any of the pins are connected to the same instrument channel for multiple sites, the channel appears only once in the list.
         """
         
         pin_query_context = \
