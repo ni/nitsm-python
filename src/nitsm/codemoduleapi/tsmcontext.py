@@ -45,7 +45,7 @@ class SemiconductorModuleContext:
     def __init__(self, tsm_com_obj):
         """
         Args:
-            tsm_com_obj: TestStand Semiconductor Module Context object passed to Python from TestStand
+            tsm_com_obj: TestStand Semiconductor Module context object passed to Python from TestStand
         """
 
         self._context = nitsm.codemoduleapi.pinmapinterfaces.ISemiconductorModuleContext(
@@ -122,7 +122,7 @@ class SemiconductorModuleContext:
         The return value is a subset of pin names in pins that are connected to an instrument of the filtered instrument_type_id.
 
         Args:
-            pins: A sequence of pins or pin groups to filter. The sequence must contain only pins or pin groups that are included in the Semiconductor Module Context.
+            pins: A sequence of pins or pin groups to filter. The sequence must contain only pins or pin groups that are included in the Semiconductor Module context.
             instrument_type_id: The type of instrument for which you want to return DUT and system pins.
                 All instruments defined in the pin map specify an associated type ID.
                 The nitsm.codemoduleapi.InstrumentTypeIdConstants class contains instrument type IDs for instrument types that TSM
@@ -147,7 +147,7 @@ class SemiconductorModuleContext:
         Returns a tuple of pins contained in the pin group you specify in the pin_group.
 
         Args:
-            pin_group: A pin group. The pin group must be included in the Semiconductor Module Context.
+            pin_group: A pin group. The pin group must be included in the Semiconductor Module context.
         """
 
         return self.get_pins_in_pin_groups([pin_group])
@@ -157,7 +157,7 @@ class SemiconductorModuleContext:
         Returns a tuple of pins contained in the pin groups you specify in the pin_groups.
 
         Args:
-            pin_groups: A sequence of pin groups. The sequence must contain only pin groups that are included in the Semiconductor Module Context.
+            pin_groups: A sequence of pin groups. The sequence must contain only pin groups that are included in the Semiconductor Module context.
         """
 
         return self.filter_pins_by_instrument_type(pin_groups, "", "All")
@@ -165,7 +165,7 @@ class SemiconductorModuleContext:
     @property
     def site_numbers(self):
         """
-        Returns the site numbers in the Semiconductor Module Context. The site numbers can be
+        Returns the site numbers in the Semiconductor Module context. The site numbers can be
         different each time a step executes because some sites might not be active. The site numbers
         are in numerical order.
         """
@@ -177,7 +177,7 @@ class SemiconductorModuleContext:
     def set_site_data(self, data_id, data):
         """
         Associates a data item with each site. You can associate data with all sites or with the
-        sub-set of sites in the Semiconductor Module Context. You can use this method to store
+        sub-set of sites in the Semiconductor Module context. You can use this method to store
         instrument sessions or other per-site data you initialize in a central location but access
         within each site. The data item is accessible from a process model controller execution and
         the site with which the data is associated.
@@ -185,9 +185,9 @@ class SemiconductorModuleContext:
         Args:
             data_id: A unique ID to distinguish the data.
             data: A sequence of data with one element for each site in the system or one element for
-                each site in the Semiconductor Module Context. If the sequence is None or empty, the
+                each site in the Semiconductor Module context. If the sequence is None or empty, the
                 method deletes any data with the specified data_id if it exists. If the sequence
-                contains data for each site in the Semiconductor Module Context, each item in the
+                contains data for each site in the Semiconductor Module context, each item in the
                 sequence contains data for the site specified by the corresponding item in the
                 site_numbers property.
         """
@@ -199,7 +199,7 @@ class SemiconductorModuleContext:
         Returns per-site data that a previous call to the set_site_data method stores. The returned
         tuple contains the data the site_numbers property stores for each site in the same order as
         the sites that the Get Site Numbers method returns. Raises an exception if a data item with
-        the specified data_id does not exist on every site in the Semiconductor Module Context. Use
+        the specified data_id does not exist on every site in the Semiconductor Module context. Use
         the site_data_exists method to determine if the specified data_id exists.
 
         Args:
@@ -213,7 +213,7 @@ class SemiconductorModuleContext:
         """
         Returns a Boolean value indicating whether site data exists for the data ID specified by the
         data_id . Raises an exception if a data item with the specified data_id exists for some, but
-        not all, sites in the Semiconductor Module Context.
+        not all, sites in the Semiconductor Module context.
 
         Args:
             data_id: A unique ID to distinguish the data.
@@ -264,7 +264,7 @@ class SemiconductorModuleContext:
 
     def get_all_nidigital_instrument_names(self):
         """
-        Returns a tuple of instrument names and comma-separated lists of instrument names that belong to the same group for all NI-Digital Pattern instruments in the Semiconductor Module Context.
+        Returns a tuple of instrument names and comma-separated lists of instrument names that belong to the same group for all NI-Digital Pattern instruments in the Semiconductor Module context.
         You can use the instrument names and comma-separated lists of instrument names to open driver sessions.
         """
 
@@ -285,7 +285,7 @@ class SemiconductorModuleContext:
 
     def get_all_nidigital_sessions(self):
         """
-        Returns all NI-Digital Pattern instrument sessions in the Semiconductor Module Context.
+        Returns all NI-Digital Pattern instrument sessions in the Semiconductor Module context.
         You can use instrument sessions to close driver sessions.
         """
 
@@ -303,8 +303,8 @@ class SemiconductorModuleContext:
 
         Returns:
             pin_query_context: An object that tracks the session and channels associated with this pin query. Use this object to publish measurements, to publish pattern results and to extract data from a set of measurements.
-            session: Returns the NI-Digital Pattern instrument session for the instrument(s) connected to pin for all sites in the Semiconductor Module Context.
-            pin_set_string: Returns the pin set string for the instrument session required to access the pin for all sites in the Semiconductor Module Context. The pin set is specified by site and pin e.g. "site0/A" as expected by the NI-Digital Pattern driver.
+            session: Returns the NI-Digital Pattern instrument session for the instrument(s) connected to pin for all sites in the Semiconductor Module context.
+            pin_set_string: Returns the pin set string for the instrument session required to access the pin for all sites in the Semiconductor Module context. The pin set is specified by site and pin e.g. "site0/A" as expected by the NI-Digital Pattern driver.
                 If the pin is shared and there are multiple connections of the same channel to the pin, the channel only appears once in the string and is identified by one of the site/pin combinations to which it is connected.
             site_list: Returns a string that is a comma-separated list of sites (e.g. "site0,site1") that correspond to the sites associated with the channels in the channel_list. This site_list is needed as an input to certain NI-Digital Pattern driver calls.
         """
@@ -329,8 +329,8 @@ class SemiconductorModuleContext:
 
         Returns:
             pin_query_context: An object that tracks the session and channels associated with this pin query. Use this object to publish measurements, to publish pattern results and to extract data from a set of measurements.
-            session: Returns the NI-Digital Pattern instrument session for the instrument(s) connected to pins for all sites in the Semiconductor Module Context.
-            pin_set_string: Returns the pin set string for the instrument session required to access the pins for all sites in the Semiconductor Module Context. The pin set is specified by site and pin e.g. "site0/A" as expected by the NI-Digital Pattern driver.
+            session: Returns the NI-Digital Pattern instrument session for the instrument(s) connected to pins for all sites in the Semiconductor Module context.
+            pin_set_string: Returns the pin set string for the instrument session required to access the pins for all sites in the Semiconductor Module context. The pin set is specified by site and pin e.g. "site0/A" as expected by the NI-Digital Pattern driver.
                 If any of the pins are connected to the same instrument channel for multiple sites, the channel appears only once in the string and is identified by one of the site/pin combinations to which it is connected.
             site_list: Returns a string that is a comma-separated list of sites (e.g. "site0,site1") that correspond to the sites associated with the channels in the channel_list. This site_list is needed as an input to certain NI-Digital Pattern driver calls.
         """
@@ -353,8 +353,8 @@ class SemiconductorModuleContext:
 
         Returns:
             pin_query_context: An object that tracks the sessions and channels associated with this pin query. Use this object to publish measurements, to publish pattern results and to extract data from a set of measurements.
-            sessions: Returns the NI-Digital Pattern instrument sessions for the instruments connected to pin for all sites in the Semiconductor Module Context.
-            pin_set_strings: Returns the pin set strings for each instrument session required to access the pin for all sites in the Semiconductor Module Context. The pin sets are specified by site and pin e.g. "site0/A" as expected by the NI-Digital Pattern driver.
+            sessions: Returns the NI-Digital Pattern instrument sessions for the instruments connected to pin for all sites in the Semiconductor Module context.
+            pin_set_strings: Returns the pin set strings for each instrument session required to access the pin for all sites in the Semiconductor Module context. The pin sets are specified by site and pin e.g. "site0/A" as expected by the NI-Digital Pattern driver.
                 If the pin is shared and there are multiple connections of the same channel to the pin, the channel only appears once in each string and is identified by one of the site/pin combinations to which it is connected.
             site_lists: Returns an array of comma-separated lists of sites (e.g. "site0,site1") that correspond to the sites associated with the channels in the channel_list. This site_list is needed as an input to certain NI-Digital Pattern driver calls.
         """
@@ -377,8 +377,8 @@ class SemiconductorModuleContext:
 
         Returns:
             pin_query_context: An object that tracks the sessions and channels associated with this pin query. Use this object to publish measurements, to publish pattern results and to extract data from a set of measurements.
-            sessions: Returns the NI-Digital Pattern instrument sessions for the instruments connected to pins for all sites in the Semiconductor Module Context.
-            pin_set_strings: Returns the pin set strings for each instrument session required to access the pins for all sites in the Semiconductor Module Context. The pin sets are specified by site and pin e.g. "site0/A" as expected by the NI-Digital Pattern driver.
+            sessions: Returns the NI-Digital Pattern instrument sessions for the instruments connected to pins for all sites in the Semiconductor Module context.
+            pin_set_strings: Returns the pin set strings for each instrument session required to access the pins for all sites in the Semiconductor Module context. The pin sets are specified by site and pin e.g. "site0/A" as expected by the NI-Digital Pattern driver.
                 If any of the pins are connected to the same instrument channel for multiple sites, the channel appears only once in the string and is identified by one of the site/pin combinations to which it is connected.
             site_lists: Returns an array of comma-separated lists of sites (e.g. "site0,site1") that correspond to the sites associated with the channels in the channel_lists. This site_list is needed as an input to certain NI-Digital Pattern driver calls.
         """
@@ -395,7 +395,7 @@ class SemiconductorModuleContext:
     @property
     def pin_map_file_path(self):
         """
-        The absolute path to the pin map file for this Semiconductor Module Context.
+        The absolute path to the pin map file for this Semiconductor Module context.
         """
 
         return self._context.PinMapPath
@@ -403,7 +403,7 @@ class SemiconductorModuleContext:
     @property
     def nidigital_project_specifications_file_paths(self):
         """
-        The absolute paths to the Specifications files in the Digital Pattern Project associated with this Semiconductor Module Context.
+        The absolute paths to the Specifications files in the Digital Pattern Project associated with this Semiconductor Module context.
         """
 
         return self._context.GetDigitalPatternProjectSpecificationsFilePaths()
@@ -411,7 +411,7 @@ class SemiconductorModuleContext:
     @property
     def nidigital_project_levels_file_paths(self):
         """
-        The absolute paths to the Levels file in the Digital Pattern Project associated with this Semiconductor Module Context.
+        The absolute paths to the Levels file in the Digital Pattern Project associated with this Semiconductor Module context.
         """
 
         return self._context.GetDigitalPatternProjectLevelsFilePaths()
@@ -419,7 +419,7 @@ class SemiconductorModuleContext:
     @property
     def nidigital_project_timing_file_paths(self):
         """
-        The absolute paths to the Timing files in the Digital Pattern Project associated with this Semiconductor Module Context.
+        The absolute paths to the Timing files in the Digital Pattern Project associated with this Semiconductor Module context.
         """
 
         return self._context.GetDigitalPatternProjectTimingFilePaths()
@@ -427,7 +427,7 @@ class SemiconductorModuleContext:
     @property
     def nidigital_project_pattern_file_paths(self):
         """
-        The absolute paths to the Pattern files in the Digital Pattern Project associated with this Semiconductor Module Context.
+        The absolute paths to the Pattern files in the Digital Pattern Project associated with this Semiconductor Module context.
         """
 
         return self._context.GetDigitalPatternProjectPatternFilePaths()
@@ -435,7 +435,7 @@ class SemiconductorModuleContext:
     @property
     def nidigital_project_source_waveform_file_paths(self):
         """
-        The absolute paths to the Source Waveform files in the Digital Pattern Project associated with this Semiconductor Module Context.
+        The absolute paths to the Source Waveform files in the Digital Pattern Project associated with this Semiconductor Module context.
         """
 
         return self._context.GetDigitalPatternProjectSourceWaveformFilePaths()
@@ -443,7 +443,7 @@ class SemiconductorModuleContext:
     @property
     def nidigital_project_capture_waveform_file_paths(self):
         """
-        The absolute paths to the Capture Waveform files in the Digital Pattern Project associated with this Semiconductor Module Context.
+        The absolute paths to the Capture Waveform files in the Digital Pattern Project associated with this Semiconductor Module context.
         """
 
         return self._context.GetDigitalPatternProjectCaptureWaveformFilePaths()
@@ -613,13 +613,13 @@ class SemiconductorModuleContext:
 
     def get_all_nidaqmx_task_names(self, task_type):
         """
-        Returns a tuple of all NI-DAQmx task names and channel lists in the the Semiconductor Module Context. You can use the task names to create DAQmx tasks.
+        Returns a tuple of all NI-DAQmx task names and channel lists in the the Semiconductor Module context. You can use the task names to create DAQmx tasks.
 
         Args:
             task_type: Specifies the type of NI-DAQmx task to return. Use an empty string to obtain the names of all tasks regardless of task type.
 
         Returns:
-            channel_lists: Returns an array of the NI-DAQmx physical channel names for all channels in the Semiconductor Module Context.
+            channel_lists: Returns an array of the NI-DAQmx physical channel names for all channels in the Semiconductor Module context.
             Returns a tuple of the NI-DAQmx task names.
         """
 
@@ -640,7 +640,7 @@ class SemiconductorModuleContext:
 
     def get_all_nidaqmx_tasks(self, task_type):
         """
-        Returns a tuple of all NI-DAQmx tasks in the Semiconductor Module Context whose task type matches task_type.
+        Returns a tuple of all NI-DAQmx tasks in the Semiconductor Module context whose task type matches task_type.
         You can use tasks to perform NI-DAQmx operations.
 
         Args:
@@ -659,8 +659,8 @@ class SemiconductorModuleContext:
 
         Returns:
             pin_query_context: An object that tracks the task associated with this pin query. Use this object to publish measurements and extract data from a set of measurements.
-            task: Returns the NI-DAQmx task associated with the pin or pin group for all sites in the Semiconductor Module Context.
-            channel_list: Returns the comma-separated list of channels in the task associated with the pin or pin group for all sites in the Semiconductor Module Context. Use the channel list to set the channels to read from for an input task or
+            task: Returns the NI-DAQmx task associated with the pin or pin group for all sites in the Semiconductor Module context.
+            channel_list: Returns the comma-separated list of channels in the task associated with the pin or pin group for all sites in the Semiconductor Module context. Use the channel list to set the channels to read from for an input task or
                 as an input to one of the per task data methods associated with this pin query context for an output task.
                 If the pin is connected to the same instrument channel for multiple sites, the channel appears only once in the list.
         """
@@ -683,8 +683,8 @@ class SemiconductorModuleContext:
 
         Returns:
             pin_query_context: An object that tracks the task associated with this pin query. Use this object to publish measurements and extract data from a set of measurements.
-            task: Returns the NI-DAQmx task associated with the pin or pin group for all sites in the Semiconductor Module Context. If more than one task is required, the method raises an exception.
-            channel_list: Returns the comma-separated list of channels in the task associated with the pins or pin groups for all sites in the Semiconductor Module Context. Use the channel list to set the channels to read from for an input task or
+            task: Returns the NI-DAQmx task associated with the pin or pin group for all sites in the Semiconductor Module context. If more than one task is required, the method raises an exception.
+            channel_list: Returns the comma-separated list of channels in the task associated with the pins or pin groups for all sites in the Semiconductor Module context. Use the channel list to set the channels to read from for an input task or
                 as an input to one of the per task data methods associated with this pin query context for an output task.
                 If any of the pins are connected to the same instrument channel for multiple sites, the channel appears only once in the list.
         """
@@ -707,8 +707,8 @@ class SemiconductorModuleContext:
 
         Returns:
             pin_query_context: An object that tracks the tasks associated with this pin query. Use this object to publish measurements and extract data from a set of measurements.
-            tasks: Returns the NI-DAQmx tasks associated with the pin or pin group for all sites in the Semiconductor Module Context.
-            channel_lists: Returns the comma-separated lists of channels in the tasks associated with the pin or pin group for all sites in the Semiconductor Module Context. Use the channel lists to set the channels to read from for input tasks or
+            tasks: Returns the NI-DAQmx tasks associated with the pin or pin group for all sites in the Semiconductor Module context.
+            channel_lists: Returns the comma-separated lists of channels in the tasks associated with the pin or pin group for all sites in the Semiconductor Module context. Use the channel lists to set the channels to read from for input tasks or
                 as an input to one of the per task data methods associated with this pin query context for output tasks.
                 If the pin is connected to the same instrument channel for multiple sites, the channel appears only once in the list.
         """
@@ -731,8 +731,8 @@ class SemiconductorModuleContext:
 
         Returns:
             pin_query_context: An object that tracks the tasks associated with this pin query. Use this object to publish measurements and extract data from a set of measurements.
-            tasks: Returns the NI-DAQmx tasks associated with the pin or pin group for all sites in the Semiconductor Module Context.
-            channel_lists: Returns the comma-separated lists of channels in the tasks associated with the pins or pin groups for all sites in the Semiconductor Module Context. Use the channel lists to set the channels to read from for input tasks or
+            tasks: Returns the NI-DAQmx tasks associated with the pin or pin group for all sites in the Semiconductor Module context.
+            channel_lists: Returns the comma-separated lists of channels in the tasks associated with the pins or pin groups for all sites in the Semiconductor Module context. Use the channel lists to set the channels to read from for input tasks or
                 as an input to one of the per task data methods associated with this pin query context for output tasks.
                 If any of the pins are connected to the same instrument channel for multiple sites, the channel appears only once in the list.
         """
@@ -1281,7 +1281,7 @@ class SemiconductorModuleContext:
 
     def get_custom_instrument_names(self, instrument_type_id):
         """
-        Returns the channel_group_ids and associated instrument_names and channel_lists of all instruments of type instrument_type_id defined in the Semiconductor Module Context.
+        Returns the channel_group_ids and associated instrument_names and channel_lists of all instruments of type instrument_type_id defined in the Semiconductor Module context.
         You can use instrument_names, channel_group_ids, and channel_lists to open driver sessions.
         The instrument_names, channel_group_ids, and channel_lists return values always return the same number of elements. Instrument names repeat in instrument_names if the instrument has multiple channel groups.
 
@@ -1293,8 +1293,8 @@ class SemiconductorModuleContext:
                 name or other ID that is common for instruments that users program in a similar way.
 
         Returns:
-            instrument_names: Returns the names of all instruments in the Semiconductor Module Context that are of type instrument_type_id.
-            channel_group_ids: Returns the IDs of all channel groups in the Semiconductor Module Context that belong to an instrument of type instrument_type_id.
+            instrument_names: Returns the names of all instruments in the Semiconductor Module context that are of type instrument_type_id.
+            channel_group_ids: Returns the IDs of all channel groups in the Semiconductor Module context that belong to an instrument of type instrument_type_id.
                 For channels that do not belong to a channel group in the pin map, the Semiconductor Module creates a channel group with the same ID as the channel.
             channel_lists: Returns the channel lists for each element of channel_group_ids. Each channel list is a comma-separated list of channels.
         """
@@ -1327,7 +1327,7 @@ class SemiconductorModuleContext:
 
     def get_all_custom_sessions(self, instrument_type_id):
         """
-        Returns all set sessions in the Semiconductor Module Context that belong to instruments of type instrument_type_id.
+        Returns all set sessions in the Semiconductor Module context that belong to instruments of type instrument_type_id.
 
         Args:
             instrument_type_id: The type of instrument for which you want to get sessions.
@@ -1335,7 +1335,7 @@ class SemiconductorModuleContext:
                 The nitsm.codemoduleapi.InstrumentTypeIdConstants class contains instrument type IDs for instrument types that TSM
                 supports natively. For all other types of instruments, you must define a type ID for the instrument in the pin map file. Typically, this type ID is an instrument driver
                 name or other ID that is common for instruments that users program in a similar way.
-            session_data: Returns a tuple of session data set in the Semiconductor Module Context.
+            session_data: Returns a tuple of session data set in the Semiconductor Module context.
             channel_group_ids: Returns the IDs of the channel groups on which session_data was stored.
                  For channels that do not belong to a channel group in the pin map, the Semiconductor Module creates a channel group with the same ID as the channel.
             channel_lists: Returns the channel lists for each of the channel_group_ids. Each channel list is a comma-separated list of channels.
@@ -1349,7 +1349,7 @@ class SemiconductorModuleContext:
 
     def pin_to_custom_session(self, instrument_type_id, pin):
         """
-        Returns the session in the Semiconductor Module Context associated with pin.
+        Returns the session in the Semiconductor Module context associated with pin.
 
         Args:
             instrument_type_id: The type of instrument for which you want to get a session.
@@ -1378,7 +1378,7 @@ class SemiconductorModuleContext:
 
     def pins_to_custom_session(self, instrument_type_id, pins):
         """
-        Returns all sessions in the Semiconductor Module Context associated with pins.
+        Returns all sessions in the Semiconductor Module context associated with pins.
 
         Args:
             instrument_type_id: The type of instrument for which you want to get a session.
@@ -1410,7 +1410,7 @@ class SemiconductorModuleContext:
 
     def pin_to_custom_sessions(self, instrument_type_id, pin):
         """
-        Returns all sessions in the Semiconductor Module Context associated with pin.
+        Returns all sessions in the Semiconductor Module context associated with pin.
 
         Args:
             instrument_type_id: The type of instrument for which you want to get sessions.
@@ -1441,7 +1441,7 @@ class SemiconductorModuleContext:
 
     def pins_to_custom_sessions(self, instrument_type_id, pins):
         """
-        Returns all sessions in the Semiconductor Module Context associated with pins.
+        Returns all sessions in the Semiconductor Module context associated with pins.
 
         Args:
             instrument_type_id: The type of instrument for which you want to get sessions.
