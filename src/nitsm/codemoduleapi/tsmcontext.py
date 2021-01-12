@@ -119,7 +119,7 @@ class SemiconductorModuleContext:
         Filters pins by instrument_type_id.
         Pass a list of all pins or pin groups to return the pins connected to instruments of the type you specify in the instrument_type_id.
         If no pins are connected to instruments of the type you specify in instrument_type_id, this method returns an empty tuple.
-        The return value is a subset of pin names in pins that are connected to an instrument of the filtered instrument_type_id.
+        The return value is a tuple subset of pin names in pins that are connected to an instrument of the filtered instrument_type_id.
 
         Args:
             pins: A sequence of pins or pin groups to filter. The sequence must contain only pins or pin groups that are included in the Semiconductor Module context.
@@ -131,11 +131,11 @@ class SemiconductorModuleContext:
                 Pass InstrumentTypeIdConstants.ANY to include pins from all instruments.
             capability: Limits the filtered pins to those connected to a channel that defines the capability you specify.
                 Use capability to differentiate between pins in the same instrument with different capabilities, such as NI-HSDIO Dynamic DIO channels and PFI lines.
-                If a pin is connected to channels in which the capability is defined only for a subset of sites, the method throws an exception.
+                If a pin is connected to channels in which the capability is defined only for a subset of sites, the method raises an exception.
                 Pass Capability.ALL to return all elements in pins that match instrument_type_id.
 
         Returns:
-            Returns a subset of pin names in the pins that are connected to an instrument of the filtered instrument_type_id.
+            Returns a tuple subset of pin names in the pins that are connected to an instrument of the filtered instrument_type_id.
         """
 
         if isinstance(instrument_type_id, InstrumentTypeIdConstants):
@@ -356,7 +356,7 @@ class SemiconductorModuleContext:
             sessions: Returns the NI-Digital Pattern instrument sessions for the instruments connected to pin for all sites in the Semiconductor Module context.
             pin_set_strings: Returns the pin set strings for each instrument session required to access the pin for all sites in the Semiconductor Module context. The pin sets are specified by site and pin e.g. "site0/A" as expected by the NI-Digital Pattern driver.
                 If the pin is shared and there are multiple connections of the same channel to the pin, the channel only appears once in each string and is identified by one of the site/pin combinations to which it is connected.
-            site_lists: Returns an array of comma-separated lists of sites (e.g. "site0,site1") that correspond to the sites associated with the channels in the channel_list. This site_list is needed as an input to certain NI-Digital Pattern driver calls.
+            site_lists: Returns a tuple of comma-separated lists of sites (e.g. "site0,site1") that correspond to the sites associated with the channels in the channel_list. This site_list is needed as an input to certain NI-Digital Pattern driver calls.
         """
 
         pin_query_context = nitsm.codemoduleapi.pinquerycontexts.NIDigitalPatternPinQueryContext(
@@ -380,7 +380,7 @@ class SemiconductorModuleContext:
             sessions: Returns the NI-Digital Pattern instrument sessions for the instruments connected to pins for all sites in the Semiconductor Module context.
             pin_set_strings: Returns the pin set strings for each instrument session required to access the pins for all sites in the Semiconductor Module context. The pin sets are specified by site and pin e.g. "site0/A" as expected by the NI-Digital Pattern driver.
                 If any of the pins are connected to the same instrument channel for multiple sites, the channel appears only once in the string and is identified by one of the site/pin combinations to which it is connected.
-            site_lists: Returns an array of comma-separated lists of sites (e.g. "site0,site1") that correspond to the sites associated with the channels in the channel_lists. This site_list is needed as an input to certain NI-Digital Pattern driver calls.
+            site_lists: Returns a tuple of comma-separated lists of sites (e.g. "site0,site1") that correspond to the sites associated with the channels in the channel_lists. This site_list is needed as an input to certain NI-Digital Pattern driver calls.
         """
 
         pin_query_context = nitsm.codemoduleapi.pinquerycontexts.NIDigitalPatternPinQueryContext(
@@ -491,7 +491,7 @@ class SemiconductorModuleContext:
     def set_nidcpower_session_with_resource_string(self, resource_string, session):
         """
         Associates an NI-DCPower session with all resources of an NI-DCPower resource_string. This
-        method supports only DC Power instruments defined with Channel Groups in the pin map.
+        method supports only DC Power instruments defined with ChannelGroups in the pin map.
 
         Args:
             resource_string: The resource string associated with the corresponding session. The
@@ -613,14 +613,14 @@ class SemiconductorModuleContext:
 
     def get_all_nidaqmx_task_names(self, task_type):
         """
-        Returns a tuple of all NI-DAQmx task names and channel lists in the the Semiconductor Module context. You can use the task names to create DAQmx tasks.
+        Returns a tuple of all NI-DAQmx task names and channel lists in the Semiconductor Module context. You can use the task names to create DAQmx tasks.
 
         Args:
             task_type: Specifies the type of NI-DAQmx task to return. Use an empty string to obtain the names of all tasks regardless of task type.
 
         Returns:
-            channel_lists: Returns an array of the NI-DAQmx physical channel names for all channels in the Semiconductor Module context.
-            Returns a tuple of the NI-DAQmx task names.
+            task_names: Returns a tuple of the NI-DAQmx task names.
+            channel_lists: Returns a tuple of the NI-DAQmx physical channel names for all channels in the Semiconductor Module context.
         """
 
         return self._context.GetNIDAQmxTaskNames(task_type)
@@ -1316,7 +1316,7 @@ class SemiconductorModuleContext:
             instrument_name: The instrument name in the pin map file for the corresponding session. The instrument must be of type instrument_type_id.
             channel_group_id: The channel group in the pin map file for the corresponding session.
                 For channels that do not belong to a channel group in the pin map, the Semiconductor Module creates a channel group with the same ID as the channel.
-            session_data: The session for the corresponding instrumentName and channel_group_id.
+            session_data: The session for the corresponding instrument_name and channel_group_id.
         """
 
         session_id = id(session_data)
