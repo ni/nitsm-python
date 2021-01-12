@@ -2,6 +2,9 @@
 NI TestStand Semiconductor Module Context Python Wrapper
 """
 
+import ctypes
+import ctypes.util
+import sys
 import time
 import enum
 import pythoncom
@@ -47,6 +50,19 @@ class SemiconductorModuleContext:
 
         self._context = nitsm.codemoduleapi.pinmapinterfaces.ISemiconductorModuleContext(tsm_com_obj)
         self._context._oleobj_ = tsm_com_obj._oleobj_.QueryInterface(self._context.CLSID, pythoncom.IID_IDispatch)
+
+    def __register_alarms(self, instrument_session, instrument_name, driver_prefix):
+        alarm_names = self._context.GetSupportedAlarmNames(instrument_name)
+        alarm_session = 0
+        if alarm_names:
+            instrument_alarm_library_path = ctypes.util.find_library('niInstrumentAlarm')
+            instrument_alarm_library = ctypes.CDLL(instrument_alarm_library_path)
+            driver_module_name = driver_prefix + '_' + '64' if sys.maxsize > 2**32 else '32' + '.dll'
+            alarm_session = ctypes.c_void_p()
+            instrument_alarm_library.niInstrumentAlarm_registerDriverSession(
+                instrument_session, driver_prefix, driver_module_name, alarm_session
+            )
+        return alarm_names, alarm_session
 
     # General and Advanced
 
@@ -203,6 +219,23 @@ class SemiconductorModuleContext:
         session_id = id(session)
         SemiconductorModuleContext._sessions[session_id] = session
         return self._context.SetNIDCPowerSession(instrument_name, channel_id, session_id)
+
+    def set_nidcpower_session_with_resource_string(self, resource_string, session):
+        """
+        Associates an NI-DCPower session with all resources of an NI-DCPower resource_string. This
+        method supports only DC Power instruments defined with Channel Groups in the pin map.
+
+        Args:
+            resource_string: The resource string associated with the corresponding session. The
+                resource string is a comma-separated list of resources, where each resource is
+                defined as <instrument>/<channel>.
+            session: The NI-DCPower session for the corresponding resource_string.
+        """
+
+        alarm_names, alarm_session = self.__register_alarms(session._vi, resource_string, 'niDCPower')
+        session_id = id(session)
+        SemiconductorModuleContext._sessions[session_id] = session
+        self._context.SetNIDCPowerSession_2(resource_string, session_id, alarm_names, alarm_session)
 
     def get_all_nidcpower_sessions(self):
         session_ids = self._context.GetNIDCPowerSessions()
