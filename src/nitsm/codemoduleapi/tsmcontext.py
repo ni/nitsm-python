@@ -508,10 +508,19 @@ class SemiconductorModuleContext:
 
     def get_all_nidcpower_instrument_names(self):
         """
-        TODO: Summary
-        Returns: tuple(instrument_names, channel_ids)
-            instrument_names: tuple
-            channel_strings: tuple
+        Returns the channel IDs and instrument names associated with each NI-DCPower instrument
+        channel in the Semiconductor Module context. You can use instrument names and channel IDs to
+        open driver sessions. The Get NI-DCPower Instrument Names method returns an instrument name
+        and channel ID for each channel available in each NI-DCPower instrument. The returned
+        instrument_names and channel_strings values always return the same number of elements.
+        Instrument names repeat if the instrument has multiple channels.
+
+        Returns:
+            instrument_names: Returns a tuple of the NI-DCPower instrument names associated with the
+                channel IDs returned in channel_strings. Instrument names repeat if the instrument
+                has multiple channels.
+            channel_strings: Returns a tuple of the NI-DCPower channel IDs in the Semiconductor
+                Module context.
         """
 
         return self._context.GetNIDCPowerInstrumentNames()
@@ -531,20 +540,20 @@ class SemiconductorModuleContext:
 
         return self._context.GetNIDCPowerResourceStrings()
 
-    def set_nidcpower_session(self, instrument_name, channel_id, session):
+    def set_nidcpower_session(self, instrument_name, channel_string, session):
         """
-        TODO: Summary
+        Associates an instrument session with an NI-DCPower instrument_name and channel_string.
+
         Args:
-            instrument_name:
-            channel_id:
-            session:
-
-        Returns:
-
+            instrument_name: The instrument name in the pin map file for the corresponding session.
+            channel_string: The instrument channel for the corresponding session.
+            session: The instrument session for the corresponding instrument_name and
+                channel_string.
         """
+
         session_id = id(session)
         SemiconductorModuleContext._sessions[session_id] = session
-        return self._context.SetNIDCPowerSession(instrument_name, channel_id, session_id)
+        return self._context.SetNIDCPowerSession(instrument_name, channel_string, session_id)
 
     def set_nidcpower_session_with_resource_string(self, resource_string, session):
         """
@@ -1279,6 +1288,19 @@ class SemiconductorModuleContext:
 
         return self._context.GetNIRelayDriverModuleNames()
 
+    def get_relay_names(self):
+        """
+        Returns all site and system relays available in the Semiconductor Module context.
+
+        Returns:
+            site_relays: Returns a tuple of strings that contains the site relays in the
+                Semiconductor Module context. 
+            system_relays: Returns a tuple of strings that contains the system relays in the
+                Semiconductor Module context.
+        """
+        
+        return self._context.GetRelayNames()
+
     def set_relay_driver_niswitch_session(self, relay_driver_module_name, niswitch_session):
         """
         Associates an NI-SWITCH session with a relay driver module.
@@ -1417,6 +1439,15 @@ class SemiconductorModuleContext:
         return None
 
     def apply_relay_configuration(self, relay_configuration, wait_seconds=0.0):
+        """
+        Performs the relay actions on the relays in the relay configuration.
+
+        Args:
+            relay_configuration: The name of the relay configuration to apply.
+            wait_seconds: The time to wait, in seconds, for the relays to settle after performing
+                all relay actions.
+        """
+
         (
             session_ids_for_open,
             relay_names_to_open,
@@ -1430,6 +1461,16 @@ class SemiconductorModuleContext:
         return None
 
     def control_relay_single_action(self, relay, relay_action, wait_seconds=0.0):
+        """
+        Performs the relay action on the relays.
+
+        Args:
+            relay: The name of the relay or relay group that identifies the relays.
+            relay_action: The action to perform on all identified relays.
+            wait_seconds: The time to wait, in seconds, for the relays to settle after performing
+                the relay action.
+        """
+
         niswitch_sessions_and_relay_names = self.relay_to_relay_driver_niswitch_sessions(relay)
         for niswitch_session, niswitch_relay_name in niswitch_sessions_and_relay_names:
             niswitch_session.relay_control(niswitch_relay_name, relay_action.value)
@@ -1437,6 +1478,16 @@ class SemiconductorModuleContext:
         return None
 
     def control_relays_single_action(self, relays, relay_action, wait_seconds=0.0):
+        """
+        Performs the relay action on the relays.
+
+        Args:
+            relays: The names of the relays or relay groups that identify the relays.
+            relay_action: The action to perform on all identified relays.
+            wait_seconds: The time to wait, in seconds, for the relays to settle after performing
+                the relay action.
+        """
+
         niswitch_sessions_and_relay_names = self.relays_to_relay_driver_niswitch_sessions(relays)
         for niswitch_session, niswitch_relay_name in niswitch_sessions_and_relay_names:
             niswitch_session.relay_control(niswitch_relay_name, relay_action.value)
@@ -1444,6 +1495,17 @@ class SemiconductorModuleContext:
         return None
 
     def control_relays_multiple_action(self, relays, relay_actions, wait_seconds=0.0):
+        """
+        Performs the relay actions on the relays.
+
+        Args:
+            relays: The names of the relays or relay groups that identify the relays.
+            relay_actions: The actions to perform on the relays identified by the corresponding
+                relay or relay group.
+            wait_seconds: The time to wait, in seconds, for the relays to settle after performing
+                all relay actions.
+        """
+
         if len(relays) != len(relay_actions):
             self._context.ReportIncompatibleArrayLengths("relays", "relay_actions")
         else:
@@ -1462,9 +1524,6 @@ class SemiconductorModuleContext:
             )
             self.__relay_wait(wait_seconds)
         return None
-
-    def get_relay_names(self):
-        return self._context.GetRelayNames()
 
     # Custom Instruments
 
