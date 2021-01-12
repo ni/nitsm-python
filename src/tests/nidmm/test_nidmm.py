@@ -1,12 +1,11 @@
-from typing import Tuple, Any
 import os.path
 import nidmm
 import pytest
 from nitsm.codemoduleapi import SemiconductorModuleContext
-from nitsm.codemoduleapi.pinquerycontexts import *
-from tests.fixtures import standalone_tsm_context
+from nitsm.codemoduleapi.pinquerycontexts import NIDmmSinglePinSingleSessionQueryContext
+from nitsm.codemoduleapi.pinquerycontexts import NIDmmSinglePinMultipleSessionQueryContext
+from nitsm.codemoduleapi.pinquerycontexts import NIDmmMultiplePinMultipleSessionQueryContext
 
-T = Tuple[SemiconductorModuleContext, Any]  # enable static type checking through type alias
 
 pin_map_path = os.path.join(os.path.dirname(__file__), "nidmm.pinmap")
 pin_map_instruments = ["DMM1", "DMM2", "DMM3"]
@@ -15,62 +14,58 @@ pin_map_system_pins = {"SystemPin1": "DMM3"}
 pin_map_pin_groups = {"PinGroup1": (pin_map_dut_pins, pin_map_system_pins, None)}
 
 
-@pytest.mark.parametrize('standalone_tsm_context', [pin_map_path], indirect=True)
-def test_get_all_nidmm_instrument_names(standalone_tsm_context: T):
-    tsm, _ = standalone_tsm_context
-    instrument_names = tsm.get_all_nidmm_instrument_names()
+@pytest.mark.pin_map(pin_map_path)
+def test_get_all_nidmm_instrument_names(standalone_tsm_context: SemiconductorModuleContext):
+    instrument_names = standalone_tsm_context.get_all_nidmm_instrument_names()
     assert len(instrument_names) == len(pin_map_instruments)
     assert set(instrument_names) == set(pin_map_instruments)
 
 
-@pytest.mark.parametrize('standalone_tsm_context', [pin_map_path], indirect=True)
-def test_set_nidmm_session(standalone_tsm_context: T):
-    tsm, _ = standalone_tsm_context
-    instrument_names = tsm.get_all_nidmm_instrument_names()
+@pytest.mark.pin_map(pin_map_path)
+def test_set_nidmm_session(standalone_tsm_context: SemiconductorModuleContext):
+    instrument_names = standalone_tsm_context.get_all_nidmm_instrument_names()
     for instrument_name in instrument_names:
-        session = nidmm.Session(instrument_name, options={'Simulate': True})
-        tsm.set_nidmm_session(instrument_name, session)
+        session = nidmm.Session(instrument_name, options={"Simulate": True})
+        standalone_tsm_context.set_nidmm_session(instrument_name, session)
         assert SemiconductorModuleContext._sessions[id(session)] is session
         session.close()
 
 
-@pytest.fixture
-def add_instrument_sessions(standalone_tsm_context):
-    tsm, _ = standalone_tsm_context
-    instrument_names = tsm.get_all_nidmm_instrument_names()
-    sessions = [nidmm.Session(instrument_name, options={'Simulate': True})
-                for instrument_name in instrument_names]
-    for instrument_name, session in zip(instrument_names, sessions):
-        tsm.set_nidmm_session(instrument_name, session)
-    yield sessions
-    for session in sessions:
-        session.close()
+@pytest.mark.pin_map(pin_map_path)
+def test_get_all_nidmm_sessions(
+    standalone_tsm_context: SemiconductorModuleContext, simulated_nidmm_sessions
+):
+    queried_sessions = standalone_tsm_context.get_all_nidmm_sessions()
+    assert len(queried_sessions) == len(simulated_nidmm_sessions)
+    assert set(queried_sessions) == set(simulated_nidmm_sessions)
 
 
-@pytest.mark.parametrize('standalone_tsm_context', [pin_map_path], indirect=True)
-def test_get_all_nidmm_sessions(standalone_tsm_context: T, add_instrument_sessions):
-    tsm, _ = standalone_tsm_context
-    queried_sessions = tsm.get_all_nidmm_sessions()
-    assert len(queried_sessions) == len(add_instrument_sessions)
-    assert set(queried_sessions) == set(add_instrument_sessions)
-
-
-@pytest.mark.parametrize('standalone_tsm_context', [pin_map_path], indirect=True)
-def test_pin_to_nidmm_session(standalone_tsm_context: T, add_instrument_sessions):
-    tsm, _ = standalone_tsm_context
+@pytest.mark.pin_map(pin_map_path)
+def test_pin_to_nidmm_session(
+    standalone_tsm_context: SemiconductorModuleContext, simulated_nidmm_sessions
+):
     for pin in pin_map_system_pins.keys():
-        pin_query_context, session = tsm.pin_to_nidmm_session(pin)
+        pin_query_context, queried_session = standalone_tsm_context.pin_to_nidmm_session(pin)
         assert isinstance(pin_query_context, NIDmmSinglePinSingleSessionQueryContext)
-        assert isinstance(session, nidmm.Session)
-        assert session in add_instrument_sessions
+        assert isinstance(queried_session, nidmm.Session)
+        assert queried_session in simulated_nidmm_sessions
 
 
-@pytest.mark.parametrize('standalone_tsm_context', [pin_map_path], indirect=True)
-def test_pin_nidmm_sessions(standalone_tsm_context: T, add_instrument_sessions):
-    tsm, _ = standalone_tsm_context
+@pytest.mark.pin_map(pin_map_path)
+def test_pin_to_nidmm_sessions(
+    standalone_tsm_context: SemiconductorModuleContext, simulated_nidmm_sessions
+):
     for pin_group in pin_map_pin_groups:
-        pin_query_context, sessions = tsm.pin_to_nidcpower_sessions(pin_group)
+        pin_query_context, queried_sessions = \
+            standalone_tsm_context.pin_to_nidcpower_sessions(pin_group)
         assert isinstance(pin_query_context, NIDmmSinglePinMultipleSessionQueryContext)
-        assert all(isinstance(session, nidmm.Session) for session in sessions)
-        assert all(session in add_instrument_sessions for session in sessions)
+        for queried_session in queried_sessions:
+            assert isinstance(queried_session, nidmm.Session)
+            assert queried_session in simulated_nidmm_sessions
 
+
+@pytest.mark.pin_map(pin_map_path)
+def test_pin_to_nidmm_sessions(
+        standalone_tsm_context: SemiconductorModuleContext, simulated_nidmm_sessions
+):
+    pass
