@@ -179,10 +179,15 @@ class SemiconductorModuleContext:
 
     def get_all_nidcpower_resource_strings(self):
         """
-        TODO: Summary
-        Returns:
+        Returns the resource strings associated with each channel group in the Semiconductor Module context. A resource string is a comma-separated list of NI-DCPower resources,
+        where each resource is defined by the <instrument>/<channel> associated with the NI-DCPower channel group. You can use the resource strings to open driver sessions.
+        The same session controls all resources within the same resource string.
+        This method supports only DC Power instruments defined with ChannelGroups in the pin map.
 
+        Returns:
+            Returns a tuple of the NI-DCPower resource strings.
         """
+        
         return self._context.GetNIDCPowerResourceStrings()
 
     def set_nidcpower_session(self, instrument_name, channel_id, session):
@@ -201,10 +206,28 @@ class SemiconductorModuleContext:
         return self._context.SetNIDCPowerSession(instrument_name, channel_id, session_id)
 
     def get_all_nidcpower_sessions(self):
+        """
+        Returns all NI-DCPower instrument sessions in the Semiconductor Module context.
+        You can use instrument sessions to close driver sessions.
+        """
+        
         session_ids = self._context.GetNIDCPowerSessions()
         return tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
 
     def pin_to_nidcpower_session(self, pin):
+        """
+        Returns the NI-DCPower session and channel_string required to access the pin on all sites in the Semiconductor Module context.
+        If more than one session is required to access the pin, the method raises an exception.
+
+        Args:
+            pin: The name of the pin to translate to a session and channel_string. If multiple sessions are required, the method raises an exception.
+
+        Returns:
+            pin_query_context: An object that tracks the session and channels associated with a pin query. Use this object to publish measurements and extract data from a set of measurements.
+            session: Returns the NI-DCPower instrument session for the instrument and channel connected to pin.
+            channel_string: Returns the channel string for the NI-DCPower session required to access the pin for all sites in the Semiconductor Module context. Each channel string is a comma-separated list of channels, where each channel is defined as <instrument>/<channel>.
+        """
+        
         pin_query_context = \
             nitsm.codemoduleapi.pinquerycontexts.NIDCPowerSinglePinSingleSessionQueryContext(self._context, pin)
         session_id, channel_string = self._context.GetNIDCPowerSession(pin)
@@ -212,6 +235,18 @@ class SemiconductorModuleContext:
         return pin_query_context, session, channel_string
 
     def pins_to_nidcpower_session(self, pins):
+        """
+        Returns the NI-DCPower session and channel_string required to access the pins. If multiple sessions are required, the method raises an exception.
+
+        Args:
+            pins: The names of the pins or pin groups to translate to session and channel_string.
+
+        Returns:
+            pin_query_context: An object that tracks the session and channels associated with this pin query. Use this object to publish measurements and extract data from a set of measurements.
+            session: Returns the NI-DCPower instrument session for the instruments and channels connected to pins for all sites in the Semiconductor Module context.
+            channel_string: Returns the channel string for the NI-DCPower session required to access the pins for all sites in the Semiconductor Module context. The channel string is a comma-separated list of resources, where each resource is defined as <instrument>/<channel>.
+        """
+        
         pin_query_context = \
             nitsm.codemoduleapi.pinquerycontexts.NIDCPowerMultiplePinSingleSessionQueryContext(self._context, pins)
         session_id, channel_string = self._context.GetNIDCPowerSession_2(pins)
@@ -219,6 +254,18 @@ class SemiconductorModuleContext:
         return pin_query_context, session, channel_string
 
     def pin_to_nidcpower_sessions(self, pin):
+        """
+        Returns the NI-DCPower sessions and channel_strings required to access the pin.
+
+        Args:
+            pin: The name of the pin or pin group to translate to sessions and channel_strings.
+
+        Returns:
+            pin_query_context: An object that tracks the sessions and channels associated with the pin query. Use this object to publish measurements and extract data from a set of measurements.
+            sessions: Returns the NI-DCPower instrument sessions for the instruments and channel resources connected to pin for all sites in the Semiconductor Module context.
+            channel_strings: Returns the channel strings for the NI-DCPower sessions required to access the pin for all sites in the Semiconductor Module context. Each channel string is a comma-separated list of channels, where each channel is defined as <instrument>/<channel>.
+        """
+        
         pin_query_context = \
             nitsm.codemoduleapi.pinquerycontexts.NIDCPowerSinglePinMultipleSessionQueryContext(self._context, pin)
         session_ids, channel_strings = self._context.GetNIDCPowerSessions_2(pin)
@@ -226,6 +273,18 @@ class SemiconductorModuleContext:
         return pin_query_context, sessions, channel_strings
 
     def pins_to_nidcpower_sessions(self, pins):
+        """
+        Returns the NI-DCPower sessions and channel_strings required to access the pins.
+
+        Args:
+            pins: The names of the pins or pin groups to translate to sessions and channel_strings.
+
+        Returns:
+            pin_query_context: An object that tracks the sessions and channels associated with this pin query. Use this object to publish measurements and extract data from a set of measurements.
+            sessions: Returns the NI-DCPower instrument sessions for the instruments and channels resources connected to pins for all sites in the Semiconductor Module context.
+            channel_strings: Returns the channel string for each instrument session required to access the pins for all sites in the Semiconductor Module context. Each channel string is a comma-separated list of channels, where each channel is defined as <instrument>/<channel>.
+        """
+        
         pin_query_context = \
             nitsm.codemoduleapi.pinquerycontexts.NIDCPowerMultiplePinMultipleSessionQueryContext(self._context, pins)
         session_ids, channel_strings = self._context.GetNIDCPowerSessions_3(pins)
