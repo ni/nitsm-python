@@ -588,33 +588,99 @@ class SemiconductorModuleContext:
     # Relay Driver
 
     def get_relay_driver_module_names(self):
+        """
+        Returns a tuple of all relay driver module names in the Semiconductor Module context.
+        You can use the relay driver module names to open NI-SWITCH driver sessions for the relay driver modules.
+        """
+            
         return self._context.GetNIRelayDriverModuleNames()
 
     def set_relay_driver_niswitch_session(self, relay_driver_module_name, niswitch_session):
+        """
+        Associates an NI-SWITCH session with a relay driver module.
+
+        Args:
+            relay_driver_module_name: The relay driver module name in the pin map file for the corresponding session.
+            niswitch_session: The NI-SWITCH session for the corresponding relay driver module name.
+        """
+        
         session_id = id(niswitch_session)
         SemiconductorModuleContext._sessions[session_id] = niswitch_session
         return self._context.SetNIRelayDriverSession(relay_driver_module_name, session_id)
 
     def get_all_relay_driver_niswitch_sessions(self):
+        """
+        Returns a tuple of NI-SWITCH sessions for all relay driver modules in the Semiconductor Module context.
+        You can use the NI-SWITCH sessions to close the relay driver module sessions.
+        """
+        
         session_ids = self._context.GetNIRelayDriverSessions()
         return tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
 
     def relay_to_relay_driver_niswitch_session(self, relay):
+        """
+        Returns the NI-SWITCH session and relay names required to access the relays connected to a relay driver module.
+        If more than one session is required to access the relay, the method raises an exception.
+
+        Args:
+            relay: The name of the relay or relay group to translate to an NI-SWITCH session and NI-SWITCH relay names.
+            If more than one session is required, the method raises an exception.
+
+        Returns:
+            niswitch_session: Returns the NI-SWITCH session for the relay driver module connected to the relay for all sites in the Semiconductor Module context.
+            niswitch_relay_names: Returns a comma-separated list of NI-SWITCH relay names for the relay driver module session connected to the relay for all sites in the Semiconductor Module context.
+        """
+        
         session_id, niswitch_relay_names = self._context.GetNIRelayDriverSession(relay)
         niswitch_session = SemiconductorModuleContext._sessions[session_id]
         return niswitch_session, niswitch_relay_names
 
     def relays_to_relay_driver_niswitch_session(self, relays):
+        """
+        Returns the NI-SWITCH session and relay names required to access the relays connected to a relay driver module.
+        If more than one session is required to access the relays, the method raises an exception.
+
+        Args:
+            relays: The name of the relays or relay groups to translate to an NI-SWITCH session and NI-SWITCH relay names.
+            If more than one session is required, the method raises an exception.
+
+        Returns:
+            niswitch_session: Returns the NI-SWITCH session for the relay driver module connected to the relays for all sites in the Semiconductor Module context.
+            niswitch_relay_names: Returns a comma-separated list of NI-SWITCH relay names for the relay driver module session connected to the relays for all sites in the Semiconductor Module context.
+        """
+        
         session_id, niswitch_relay_names = self._context.GetNIRelayDriverSession_2(relays)
         niswitch_session = SemiconductorModuleContext._sessions[session_id]
         return niswitch_session, niswitch_relay_names
 
     def relay_to_relay_driver_niswitch_sessions(self, relay):
+        """
+        Returns the NI-SWITCH sessions and relay names required to access the relay connected to a relay driver module.
+
+        Args:
+            relay: The name of the relay or relay group to translate to NI-SWITCH sessions and NI-SWITCH relay names.
+
+        Returns:
+            niswitch_sessions: Returns NI-SWITCH sessions for the relay driver modules connected to the relay for all sites in the Semiconductor Module context.
+            niswitch_relay_names: Returns comma-separated lists of NI-SWITCH relay names for the relay driver module sessions connected to the relay for all sites in the Semiconductor Module context.
+        """
+        
         session_ids, niswitch_relay_names = self._context.GetNIRelayDriverSessions_2(relay)
         niswitch_sessions = tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
         return niswitch_sessions, niswitch_relay_names
 
     def relays_to_relay_driver_niswitch_sessions(self, relays):
+        """
+        Returns the NI-SWITCH sessions and relay names required to access the relays connected to a relay driver module.
+
+        Args:
+            relays: The names of the relays or relay groups to translate to NI-SWITCH sessions and NI-SWITCH relay names.
+
+        Returns:
+            niswitch_sessions: Returns NI-SWITCH sessions for the relay driver modules connected to the relays for all sites in the Semiconductor Module context.
+            niswitch_relay_names: Returns comma-separated lists of NI-SWITCH relay names for the relay driver module sessions connected to the relays for all sites in the Semiconductor Module context.
+        """
+        
         session_ids, niswitch_relay_names = self._context.GetNIRelayDriverSessions_3(relays)
         niswitch_sessions = tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
         return niswitch_sessions, niswitch_relay_names
