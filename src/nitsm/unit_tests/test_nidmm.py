@@ -20,7 +20,7 @@ def simulated_nidmm_sessions(standalone_tsm_context):
         session.close()
 
 
-@pytest.mark.pin_map('nidmm.pinmap')
+@pytest.mark.pin_map("nidmm.pinmap")
 class TestNIDMM:
     pin_map_instruments = ["DMM1", "DMM2", "DMM3"]
     pin_map_dut_pins = ["DUTPin1"]
