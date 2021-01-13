@@ -68,4 +68,9 @@ def test_pin_to_nidmm_sessions(
 def test_pin_to_nidmm_sessions(
         standalone_tsm_context: SemiconductorModuleContext, simulated_nidmm_sessions
 ):
-    pass
+    all_pins = list(pin_map_dut_pins.keys()) + list(pin_map_system_pins.keys())
+    pin_query_context, queried_sessions = standalone_tsm_context.pins_to_nidmm_sessions(all_pins)
+    assert isinstance(pin_query_context, NIDmmMultiplePinMultipleSessionQueryContext)
+    for queried_session in queried_sessions:
+        assert isinstance(queried_session, nidmm.Session)
+        assert queried_session in simulated_nidmm_sessions

@@ -4,7 +4,7 @@ import nidcpower
 import pytest
 from nitsm.codemoduleapi import SemiconductorModuleContext
 from nitsm.codemoduleapi.pinquerycontexts import *
-from tests.fixtures import standalone_tsm_context
+from unit_tests.fixtures import standalone_tsm_context
 
 T = Tuple[SemiconductorModuleContext, Any]  # enable static type checking through type alias
 
