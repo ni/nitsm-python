@@ -2,17 +2,8 @@ import os.path
 import pytest
 import win32com.client
 import win32com.client.selecttlb
+import pythoncom
 import nitsm.codemoduleapi
-
-
-def _find_standalone_tsm_context_tlb():
-    tlbs = win32com.client.selecttlb.FindTlbsWithDescription(
-        "NI TestStand Semiconductor Module Standalone Semiconductor Module Context"
-    )
-    return tlbs[0]
-
-
-standalone_tsm_context_tlb = _find_standalone_tsm_context_tlb()
 
 
 @pytest.fixture
@@ -33,9 +24,28 @@ def standalone_tsm_context(_published_data_reader_factory):
     return nitsm.codemoduleapi.SemiconductorModuleContext(_published_data_reader_factory[0])
 
 
+class PublishedDataReader:
+    _tlb = win32com.client.selecttlb.FindTlbsWithDescription(
+        "NI TestStand Semiconductor Module Standalone Semiconductor Module Context"
+    )[0]
+
+    def __init__(self, published_data_reader_com_obj):
+        self._published_data_reader = win32com.client.CastTo(
+            published_data_reader_com_obj, "IPublishedDataReader", self._tlb
+        )
+
+    def get_and_clear_published_data(self):
+        published_data = self._published_data_reader.GetAndClearPublishedData()
+        for published_data_point in published_data:
+            published_data_point = win32com.client.CastTo(
+                published_data_point, "IPublishedData", self._tlb
+            )
+            published_data_point._oleobj_ = published_data_point._oleobj_.QueryInterface(
+                published_data_point.CLSID, pythoncom.IID_IDispatch
+            )
+            yield published_data_point
+
+
 @pytest.fixture
 def published_data_reader(_published_data_reader_factory):
-    published_data_reader = win32com.client.CastTo(
-        _published_data_reader_factory[1], "IPublishedDataReader", standalone_tsm_context_tlb
-    )
-    return published_data_reader
+    return PublishedDataReader(_published_data_reader_factory[1])
