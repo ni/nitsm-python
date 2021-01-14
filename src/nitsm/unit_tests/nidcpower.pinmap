@@ -3,19 +3,32 @@
 	<Instruments>
 		<NIDCPowerInstrument name="DCPower1" numberOfChannels="1" />
 		<NIDCPowerInstrument name="DCPower2" numberOfChannels="2" />
+		<NIDCPowerInstrument name="DCPower3" numberOfChannels="1" />
+		<NIDCPowerInstrument name="DCPower4" numberOfChannels="2" />
+		<NIDCPowerInstrument name="DCPower5" numberOfChannels="1" />
 	</Instruments>
 	<Pins>
 		<DUTPin name="DUTPin1" />
 		<DUTPin name="DUTPin2" />
 		<DUTPin name="DUTPin3" />
+		<SystemPin name="SystemPin1" />
 	</Pins>
-	<PinGroups></PinGroups>
+	<PinGroups>
+		<PinGroup name="PinGroup1">
+			<PinReference pin="SystemPin1" />
+		</PinGroup>
+	</PinGroups>
 	<Sites>
 		<Site siteNumber="0" />
+		<Site siteNumber="1" />
 	</Sites>
 	<Connections>
 		<Connection pin="DUTPin1" siteNumber="0" instrument="DCPower1" channel="0" />
+		<Connection pin="DUTPin1" siteNumber="1" instrument="DCPower3" channel="0" />
 		<Connection pin="DUTPin2" siteNumber="0" instrument="DCPower2" channel="0" />
+		<Connection pin="DUTPin2" siteNumber="1" instrument="DCPower4" channel="0" />
 		<Connection pin="DUTPin3" siteNumber="0" instrument="DCPower2" channel="1" />
+		<Connection pin="DUTPin3" siteNumber="1" instrument="DCPower4" channel="1" />
+		<SystemConnection pin="SystemPin1" instrument="DCPower5" channel="0" />
 	</Connections>
 </PinMap>

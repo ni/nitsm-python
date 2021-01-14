@@ -18,3 +18,8 @@ exclude = '''
   | nitsm/codemoduleapi/pinmapinterfaces.py
 )
 '''
+
+[tool.pytest.ini_options]
+markers = [
+    "pin_map"
+]
