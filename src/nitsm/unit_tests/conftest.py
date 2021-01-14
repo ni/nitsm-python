@@ -1,3 +1,4 @@
+import os.path
 import pytest
 import win32com.client
 import win32com.client.selecttlb
@@ -6,7 +7,11 @@ import nitsm.codemoduleapi
 
 @pytest.fixture
 def _published_data_reader_factory(request):
-    pin_map_path = request.node.get_closest_marker('pin_map').args[0]
+    # get absolute path of the pin map file which is assumed to be relative to the test module
+    pin_map_path = request.node.get_closest_marker("pin_map").args[0]
+    module_directory = os.path.dirname(request.module.__file__)
+    pin_map_path = os.path.join(module_directory, pin_map_path)
+
     published_data_reader_factory = win32com.client.Dispatch(
         "NationalInstruments.TestStand.SemiconductorModule.Restricted.PublishedDataReaderFactory"
     )

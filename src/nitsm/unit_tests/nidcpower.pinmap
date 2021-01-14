@@ -15,9 +15,7 @@
 	</Pins>
 	<PinGroups>
 		<PinGroup name="PinGroup1">
-			<PinReference pin="DUTPin1" />
-			<PinReference pin="DUTPin2" />
-			<PinReference pin="DUTPin3" />
+			<PinReference pin="SystemPin1" />
 		</PinGroup>
 	</PinGroups>
 	<Sites>
