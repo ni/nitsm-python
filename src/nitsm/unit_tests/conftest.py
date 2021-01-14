@@ -6,6 +6,11 @@ import pythoncom
 import nitsm.codemoduleapi
 
 
+_standalone_tsm_context_tlb = win32com.client.selecttlb.FindTlbsWithDescription(
+    "NI TestStand Semiconductor Module Standalone Semiconductor Module Context"
+)[0]
+
+
 @pytest.fixture
 def _published_data_reader_factory(request):
     # get absolute path of the pin map file which is assumed to be relative to the test module
@@ -26,10 +31,12 @@ def standalone_tsm_context(_published_data_reader_factory):
 
 class PublishedData:
     def __init__(self, published_data_com_obj):
-        published_data_com_obj._oleobj_ = published_data_com_obj._oleobj_.QueryInterface(
-            published_data_com_obj.CLSID, pythoncom.IID_IDispatch
+        self._published_data = win32com.client.CastTo(
+            published_data_com_obj, "IPublishedData", _standalone_tsm_context_tlb
         )
-        self._published_data = published_data_com_obj
+        self._published_data._oleobj_ = self._published_data._oleobj_.QueryInterface(
+            self._published_data.CLSID, pythoncom.IID_IDispatch
+        )
 
     @property
     def boolean_value(self):
@@ -61,21 +68,15 @@ class PublishedData:
 
 
 class PublishedDataReader:
-    _tlb = win32com.client.selecttlb.FindTlbsWithDescription(
-        "NI TestStand Semiconductor Module Standalone Semiconductor Module Context"
-    )[0]
-
     def __init__(self, published_data_reader_com_obj):
         self._published_data_reader = win32com.client.CastTo(
-            published_data_reader_com_obj, "IPublishedDataReader", self._tlb
+            published_data_reader_com_obj, "IPublishedDataReader", _standalone_tsm_context_tlb
         )
 
     def get_and_clear_published_data(self):
         published_data = self._published_data_reader.GetAndClearPublishedData()
         for published_data_point in published_data:
-            published_data_point = win32com.client.CastTo(
-                published_data_point, "IPublishedData", self._tlb
-            )
+
             yield PublishedData(published_data_point)
 
 
