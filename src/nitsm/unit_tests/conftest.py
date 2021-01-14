@@ -24,6 +24,42 @@ def standalone_tsm_context(_published_data_reader_factory):
     return nitsm.codemoduleapi.SemiconductorModuleContext(_published_data_reader_factory[0])
 
 
+class PublishedData:
+    def __init__(self, published_data_com_obj):
+        published_data_com_obj._oleobj_ = published_data_com_obj._oleobj_.QueryInterface(
+            published_data_com_obj.CLSID, pythoncom.IID_IDispatch
+        )
+        self._published_data = published_data_com_obj
+
+    @property
+    def boolean_value(self):
+        return self._published_data.BooleanValue
+
+    @property
+    def double_value(self):
+        return self._published_data.DoubleValue
+
+    @property
+    def pin(self):
+        return self._published_data.Pin
+
+    @property
+    def published_data_id(self):
+        return self._published_data.PublishedDataId
+
+    @property
+    def site_number(self):
+        return self._published_data.SiteNumber
+
+    @property
+    def string_value(self):
+        return self._published_data.StringValue
+
+    @property
+    def type(self):
+        return self._published_data.Type
+
+
 class PublishedDataReader:
     _tlb = win32com.client.selecttlb.FindTlbsWithDescription(
         "NI TestStand Semiconductor Module Standalone Semiconductor Module Context"
@@ -40,10 +76,7 @@ class PublishedDataReader:
             published_data_point = win32com.client.CastTo(
                 published_data_point, "IPublishedData", self._tlb
             )
-            published_data_point._oleobj_ = published_data_point._oleobj_.QueryInterface(
-                published_data_point.CLSID, pythoncom.IID_IDispatch
-            )
-            yield published_data_point
+            yield PublishedData(published_data_point)
 
 
 @pytest.fixture
