@@ -7,7 +7,7 @@ from nitsm.codemoduleapi import SemiconductorModuleContext
 def simulated_niswitch_sessions(standalone_tsm_context):
     instrument_names = standalone_tsm_context.get_relay_driver_module_names()
     sessions = [
-        niswitch.Session(instrument_name, topology="2567/Independent", simulate = True)
+        niswitch.Session(instrument_name, topology="2567/Independent", simulate=True)
         for instrument_name in instrument_names
     ]
     for instrument_name, session in zip(instrument_names, sessions):
@@ -33,23 +33,24 @@ class TestNIRelayDriver:
         for instrument_name in instrument_names:
             assert isinstance(instrument_name, str)
             assert instrument_name in self.pin_map_instruments
-    
+
     def test_get_relay_names(self, standalone_tsm_context: SemiconductorModuleContext):
         site_relays, system_relays = standalone_tsm_context.get_relay_names()
         assert isinstance(site_relays, tuple)
         assert isinstance(system_relays, tuple)
-        for site_relay, system_relay in zip (site_relays, system_relays):
+        for site_relay, system_relay in zip(site_relays, system_relays):
             assert site_relay in self.pin_map_site_relays
             assert system_relay in self.pin_map_system_relays
 
-    
-    def test_set_relay_driver_niswitch_session(self, standalone_tsm_context: SemiconductorModuleContext):
+    def test_set_relay_driver_niswitch_session(
+        self, standalone_tsm_context: SemiconductorModuleContext
+    ):
         instrument_names = standalone_tsm_context.get_relay_driver_module_names()
         for instrument_name in instrument_names:
-            with niswitch.Session(instrument_name, simulate = True) as session:
+            with niswitch.Session(instrument_name, simulate=True) as session:
                 standalone_tsm_context.set_relay_driver_niswitch_session(instrument_name, session)
                 assert SemiconductorModuleContext._sessions[id(session)] is session
-    
+
     def test_get_all_relay_driver_niswitch_sessions(
         self, standalone_tsm_context: SemiconductorModuleContext, simulated_niswitch_sessions
     ):
@@ -58,7 +59,7 @@ class TestNIRelayDriver:
         for queried_niswitch_session in queried_niswitch_sessions:
             assert isinstance(queried_niswitch_session, niswitch.Session)
             assert queried_niswitch_session in simulated_niswitch_sessions
-    
+
     def test_relay_to_relay_driver_niswitch_session(
         self, standalone_tsm_context: SemiconductorModuleContext, simulated_niswitch_sessions
     ):
@@ -85,8 +86,7 @@ class TestNIRelayDriver:
             for queried_niswitch_session in queried_niswitch_sessions:
                 assert isinstance(queried_niswitch_session, niswitch.Session)
                 assert queried_niswitch_session in simulated_niswitch_sessions
-                
-    
+
     def test_relays_to_relay_driver_niswitch_session(
         self, standalone_tsm_context: SemiconductorModuleContext, simulated_niswitch_sessions
     ):
@@ -112,5 +112,3 @@ class TestNIRelayDriver:
         for queried_niswitch_session in queried_niswitch_sessions:
             assert isinstance(queried_niswitch_session, niswitch.Session)
             assert queried_niswitch_session in simulated_niswitch_sessions
-
-    
