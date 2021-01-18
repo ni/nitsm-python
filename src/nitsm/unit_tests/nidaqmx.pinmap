@@ -2,19 +2,18 @@
 <PinMap schemaVersion="1.1" xmlns="http://www.ni.com/TestStand/SemiconductorModule/PinMap.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<Instruments>
 		<NIDAQmxTask name="DAQmx1" taskType="ai" channelList="0,1,2,3" />
-		<NIDAQmxTask name="DAQmx2" taskType="ao" channelList="0,1" />
-		<NIDAQmxTask name="DAQmx3" taskType="ao" channelList="0,1" />
+		<NIDAQmxTask name="DAQmx2" taskType="ai" channelList="0,1,2,3" />
 	</Instruments>
 	<Pins>
 		<DUTPin name="DUTPin1" />
 		<DUTPin name="DUTPin2" />
 		<SystemPin name="SystemPin1" />
-		<SystemPin name="SystemPin2" />
 	</Pins>
 	<PinGroups>
 		<PinGroup name="PinGroup1">
-			<PinReference pin="SystemPin1" />
 			<PinReference pin="DUTPin1" />
+			<PinReference pin="DUTPin2" />
+			<PinReference pin="SystemPin1" />
 		</PinGroup>
 	</PinGroups>
 	<Sites>
@@ -24,9 +23,8 @@
 	<Connections>
 		<Connection pin="DUTPin1" siteNumber="0" instrument="DAQmx1" channel="0" />
 		<Connection pin="DUTPin1" siteNumber="1" instrument="DAQmx1" channel="1" />
-		<Connection pin="DUTPin2" siteNumber="0" instrument="DAQmx2" channel="0" />
-		<Connection pin="DUTPin2" siteNumber="1" instrument="DAQmx2" channel="1" />
-		<SystemConnection pin="SystemPin1" instrument="DAQmx1" channel="2" />
-		<SystemConnection pin="SystemPin2" instrument="DAQmx3" channel="0" />
+		<Connection pin="DUTPin2" siteNumber="0" instrument="DAQmx1" channel="2" />
+		<Connection pin="DUTPin2" siteNumber="1" instrument="DAQmx1" channel="3" />
+		<SystemConnection pin="SystemPin1" instrument="DAQmx2" channel="0" />
 	</Connections>
 </PinMap>
