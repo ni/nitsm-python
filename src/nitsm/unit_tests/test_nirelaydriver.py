@@ -1,5 +1,6 @@
 import niswitch
 import pytest
+from niswitch.enums import RelayAction
 from nitsm.codemoduleapi import SemiconductorModuleContext
 
 
@@ -112,3 +113,31 @@ class TestNIRelayDriver:
         for queried_niswitch_session in queried_niswitch_sessions:
             assert isinstance(queried_niswitch_session, niswitch.Session)
             assert queried_niswitch_session in simulated_niswitch_sessions
+
+    def test_apply_relay_configuration(
+        self, standalone_tsm_context: SemiconductorModuleContext, simulated_niswitch_sessions
+    ):
+        standalone_tsm_context.apply_relay_configuration("RelayConfiguration1", 0.0)
+        pass
+
+    def test_control_relay_single_action(
+        self, standalone_tsm_context: SemiconductorModuleContext, simulated_niswitch_sessions
+    ):
+        standalone_tsm_context.control_relay_single_action("RelayGroup1", RelayAction.OPEN)
+        pass
+
+    def test_control_relays_single_action(
+        self, standalone_tsm_context: SemiconductorModuleContext, simulated_niswitch_sessions
+    ):
+        all_pins = self.pin_map_site_relays + self.pin_map_system_relays
+        standalone_tsm_context.control_relays_single_action(all_pins, RelayAction.OPEN)
+        pass
+
+    def test_control_relays_multiple_action(
+        self, standalone_tsm_context: SemiconductorModuleContext, simulated_niswitch_sessions
+    ):
+        all_pins = self.pin_map_site_relays + self.pin_map_system_relays
+        standalone_tsm_context.control_relays_multiple_action(
+            all_pins, (RelayAction.CLOSE, RelayAction.CLOSE, RelayAction.OPEN)
+        )
+        pass
