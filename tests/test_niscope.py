@@ -27,7 +27,6 @@ class TestNIScope:
     pin_map_instruments = ["Scope1,Scope2,Scope3"]
     pin_map_dut_pins = ["DUTPin1"]
     pin_map_system_pins = ["SystemPin1"]
-    pin_map_pin_groups = ["PinGroup1"]
 
     def test_get_all_niscope_instrument_names(
         self, standalone_tsm_context: SemiconductorModuleContext
@@ -50,6 +49,7 @@ class TestNIScope:
         self, standalone_tsm_context: SemiconductorModuleContext, simulated_niscope_sessions
     ):
         queried_sessions = standalone_tsm_context.get_all_niscope_sessions()
+        assert isinstance(queried_sessions, tuple)
         assert len(queried_sessions) == len(simulated_niscope_sessions)
         for queried_session in queried_sessions:
             assert isinstance(queried_session, niscope.Session)
@@ -58,36 +58,34 @@ class TestNIScope:
     def test_pin_to_niscope_session(
         self, standalone_tsm_context: SemiconductorModuleContext, simulated_niscope_sessions
     ):
-        for system_pin in self.pin_map_system_pins:
-            (
-                pin_query_context,
-                queried_session,
-                queried_channel_list,
-            ) = standalone_tsm_context.pin_to_niscope_session(system_pin)
-            assert isinstance(pin_query_context, NIScopeSinglePinSingleSessionQueryContext)
-            assert isinstance(queried_session, niscope.Session)
-            assert isinstance(queried_channel_list, str)
-            assert queried_session in simulated_niscope_sessions
+        (
+            pin_query_context,
+            queried_session,
+            queried_channel_list,
+        ) = standalone_tsm_context.pin_to_niscope_session("SystemPin1")
+        assert isinstance(pin_query_context, NIScopeSinglePinSingleSessionQueryContext)
+        assert isinstance(queried_session, niscope.Session)
+        assert isinstance(queried_channel_list, str)
+        assert queried_session in simulated_niscope_sessions
 
     def test_pin_to_niscope_sessions(
         self, standalone_tsm_context: SemiconductorModuleContext, simulated_niscope_sessions
     ):
-        for pin_group in self.pin_map_pin_groups:
-            (
-                pin_query_context,
-                queried_sessions,
-                queried_channel_lists,
-            ) = standalone_tsm_context.pin_to_niscope_sessions(pin_group)
-            assert isinstance(pin_query_context, NIScopeSinglePinMultipleSessionQueryContext)
-            assert isinstance(queried_sessions, tuple)
-            assert isinstance(queried_channel_lists, tuple)
-            assert len(queried_sessions) == len(queried_channel_lists)
-            for queried_session, queried_channel_list in zip(
-                    queried_sessions, queried_channel_lists
-            ):
-                assert isinstance(queried_session, niscope.Session)
-                assert isinstance(queried_channel_list, str)
-                assert queried_session in simulated_niscope_sessions
+        (
+            pin_query_context,
+            queried_sessions,
+            queried_channel_lists,
+        ) = standalone_tsm_context.pin_to_niscope_sessions("PinGroup1")
+        assert isinstance(pin_query_context, NIScopeSinglePinMultipleSessionQueryContext)
+        assert isinstance(queried_sessions, tuple)
+        assert isinstance(queried_channel_lists, tuple)
+        assert len(queried_sessions) == len(queried_channel_lists)
+        for queried_session, queried_channel_list in zip(
+                queried_sessions, queried_channel_lists
+        ):
+            assert isinstance(queried_session, niscope.Session)
+            assert isinstance(queried_channel_list, str)
+            assert queried_session in simulated_niscope_sessions
 
     def test_pins_to_niscope_session(
         self, standalone_tsm_context: SemiconductorModuleContext, simulated_niscope_sessions
