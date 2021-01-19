@@ -11,6 +11,7 @@ import pythoncom
 import nitsm.codemoduleapi.pinmapinterfaces
 import nitsm.codemoduleapi.pinquerycontexts
 
+
 __all__ = ["Capability", "InstrumentTypeIdConstants", "SemiconductorModuleContext"]
 
 
@@ -1294,11 +1295,11 @@ class SemiconductorModuleContext:
 
         Returns:
             site_relays: Returns a tuple of strings that contains the site relays in the
-                Semiconductor Module context. 
+                Semiconductor Module context.
             system_relays: Returns a tuple of strings that contains the system relays in the
                 Semiconductor Module context.
         """
-        
+
         return self._context.GetRelayNames()
 
     def set_relay_driver_niswitch_session(self, relay_driver_module_name, niswitch_session):
@@ -1421,12 +1422,18 @@ class SemiconductorModuleContext:
     def __apply_relay_action(
         session_ids_for_open, relay_names_to_open, session_ids_for_close, relay_names_to_close
     ):
-        for session_id_to_open, relay_name_to_open in session_ids_for_open, relay_names_to_open:
+        from niswitch.enums import RelayAction
+
+        for session_id_to_open, relay_name_to_open in zip(
+            session_ids_for_open, relay_names_to_open
+        ):
             session_to_open = SemiconductorModuleContext._sessions[session_id_to_open]
-            session_to_open.relay_control(relay_name_to_open, 20)
-        for session_id_to_close, relay_name_to_close in session_ids_for_close, relay_names_to_close:
+            session_to_open.relay_control(relay_name_to_open, RelayAction.OPEN)
+        for session_id_to_close, relay_name_to_close in zip(
+            session_ids_for_close, relay_names_to_close
+        ):
             session_to_close = SemiconductorModuleContext._sessions[session_id_to_close]
-            session_to_close.relay_control(relay_name_to_close, 21)
+            session_to_close.relay_control(relay_name_to_close, RelayAction.CLOSE)
         return None
 
     def __relay_wait(self, wait_seconds):
@@ -1471,9 +1478,9 @@ class SemiconductorModuleContext:
                 the relay action.
         """
 
-        niswitch_sessions_and_relay_names = self.relay_to_relay_driver_niswitch_sessions(relay)
-        for niswitch_session, niswitch_relay_name in niswitch_sessions_and_relay_names:
-            niswitch_session.relay_control(niswitch_relay_name, relay_action.value)
+        niswitch_sessions, relay_names = self.relay_to_relay_driver_niswitch_sessions(relay)
+        for niswitch_session, niswitch_relay_name in zip(niswitch_sessions, relay_names):
+            niswitch_session.relay_control(niswitch_relay_name, relay_action)
         self.__relay_wait(wait_seconds)
         return None
 
@@ -1488,9 +1495,9 @@ class SemiconductorModuleContext:
                 the relay action.
         """
 
-        niswitch_sessions_and_relay_names = self.relays_to_relay_driver_niswitch_sessions(relays)
-        for niswitch_session, niswitch_relay_name in niswitch_sessions_and_relay_names:
-            niswitch_session.relay_control(niswitch_relay_name, relay_action.value)
+        niswitch_sessions, relay_names = self.relays_to_relay_driver_niswitch_sessions(relays)
+        for niswitch_session, niswitch_relay_name in zip(niswitch_sessions, relay_names):
+            niswitch_session.relay_control(niswitch_relay_name, relay_action)
         self.__relay_wait(wait_seconds)
         return None
 
@@ -1507,6 +1514,7 @@ class SemiconductorModuleContext:
         """
 
         if len(relays) != len(relay_actions):
+            print(len(relays))
             self._context.ReportIncompatibleArrayLengths("relays", "relay_actions")
         else:
             relay_actions = [relay_action.value for relay_action in relay_actions]
