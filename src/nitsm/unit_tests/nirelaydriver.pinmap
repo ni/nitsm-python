@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<PinMap schemaVersion="1.4" xmlns="http://www.ni.com/TestStand/SemiconductorModule/PinMap.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PinMap schemaVersion="1.5" xmlns="http://www.ni.com/TestStand/SemiconductorModule/PinMap.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<Instruments>
 		<NIRelayDriverModule name="RelayDriver1" numberOfControlLines="64" />
 		<NIRelayDriverModule name="RelayDriver2" numberOfControlLines="64" />
@@ -7,15 +7,22 @@
 	<Pins></Pins>
 	<PinGroups></PinGroups>
 	<Relays>
-		<SiteRelay name="K0" openStateDisplayLabel="open" closedStateDisplayLabel="close" />
-		<SiteRelay name="K1" openStateDisplayLabel="open" closedStateDisplayLabel="close" />
-		<SystemRelay name="SystemRelay1" openStateDisplayLabel="open" closedStateDisplayLabel="close" />
+		<SiteRelay name="K0" openStateDisplayLabel="Open" closedStateDisplayLabel="Closed" />
+		<SiteRelay name="K1" openStateDisplayLabel="Open" closedStateDisplayLabel="Closed" />
+		<SystemRelay name="SystemRelay1" openStateDisplayLabel="Open" closedStateDisplayLabel="Closed" />
 	</Relays>
 	<RelayGroups>
 		<RelayGroup name="RelayGroup1">
 			<RelayReference relay="SystemRelay1" />
 		</RelayGroup>
 	</RelayGroups>
+	<RelayConfigurations>
+		<RelayConfiguration name="RelayConfiguration1">
+			<RelayPosition relay="K0" position="Closed" />
+			<RelayPosition relay="K1" position="Closed" />
+			<RelayPosition relay="SystemRelay1" position="Open" />
+		</RelayConfiguration>
+	</RelayConfigurations>
 	<Sites>
 		<Site siteNumber="0" />
 		<Site siteNumber="1" />
