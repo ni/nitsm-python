@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<PinMap schemaVersion="1.1" xmlns="http://www.ni.com/TestStand/SemiconductorModule/PinMap.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Instruments>
+		<Instrument name="Custom1" instrumentTypeId="pytest">
+			<Channel id="ch0" />
+		</Instrument>
+		<Instrument name="Custom2" instrumentTypeId="pytest">
+			<Channel id="ch0" />
+		</Instrument>
+	</Instruments>
+	<Pins>
+		<DUTPin name="DUTPin1" />
+		<DUTPin name="DUTPin2" />
+	</Pins>
+	<PinGroups></PinGroups>
+	<Sites>
+		<Site siteNumber="0" />
+	</Sites>
+	<Connections>
+		<Connection pin="DUTPin1" siteNumber="0" instrument="Custom1" channel="ch0" />
+		<Connection pin="DUTPin2" siteNumber="0" instrument="Custom2" channel="ch0" />
+	</Connections>
+</PinMap>
