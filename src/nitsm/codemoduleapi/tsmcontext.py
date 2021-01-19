@@ -10,7 +10,7 @@ import enum
 import pythoncom
 import nitsm.codemoduleapi.pinmapinterfaces
 import nitsm.codemoduleapi.pinquerycontexts
-from niswitch.enums import RelayAction
+
 
 __all__ = ["Capability", "InstrumentTypeIdConstants", "SemiconductorModuleContext"]
 
@@ -1422,6 +1422,8 @@ class SemiconductorModuleContext:
     def __apply_relay_action(
         session_ids_for_open, relay_names_to_open, session_ids_for_close, relay_names_to_close
     ):
+        from niswitch.enums import RelayAction
+
         for session_id_to_open, relay_name_to_open in zip(
             session_ids_for_open, relay_names_to_open
         ):
