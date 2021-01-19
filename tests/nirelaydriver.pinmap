@@ -7,19 +7,21 @@
 	<Pins></Pins>
 	<PinGroups></PinGroups>
 	<Relays>
-		<SiteRelay name="K0" openStateDisplayLabel="Open" closedStateDisplayLabel="Closed" />
-		<SiteRelay name="K1" openStateDisplayLabel="Open" closedStateDisplayLabel="Closed" />
+		<SiteRelay name="SiteRelay1" openStateDisplayLabel="Open" closedStateDisplayLabel="Closed" />
+		<SiteRelay name="SiteRelay2" openStateDisplayLabel="Open" closedStateDisplayLabel="Closed" />
 		<SystemRelay name="SystemRelay1" openStateDisplayLabel="Open" closedStateDisplayLabel="Closed" />
 	</Relays>
 	<RelayGroups>
 		<RelayGroup name="RelayGroup1">
+			<RelayReference relay="SiteRelay1" />
+			<RelayReference relay="SiteRelay2" />
 			<RelayReference relay="SystemRelay1" />
 		</RelayGroup>
 	</RelayGroups>
 	<RelayConfigurations>
 		<RelayConfiguration name="RelayConfiguration1">
-			<RelayPosition relay="K0" position="Closed" />
-			<RelayPosition relay="K1" position="Closed" />
+			<RelayPosition relay="SiteRelay1" position="Closed" />
+			<RelayPosition relay="SiteRelay2" position="Closed" />
 			<RelayPosition relay="SystemRelay1" position="Open" />
 		</RelayConfiguration>
 	</RelayConfigurations>
@@ -28,10 +30,10 @@
 		<Site siteNumber="1" />
 	</Sites>
 	<Connections>
-		<RelayConnection relay="K0" siteNumber="0" relayDriverModule="RelayDriver1" controlLine="K0" />
-		<RelayConnection relay="K0" siteNumber="1" relayDriverModule="RelayDriver1" controlLine="K1" />
-		<RelayConnection relay="K1" siteNumber="0" relayDriverModule="RelayDriver1" controlLine="K2" />
-		<RelayConnection relay="K1" siteNumber="1" relayDriverModule="RelayDriver1" controlLine="K3" />
+		<RelayConnection relay="SiteRelay1" siteNumber="0" relayDriverModule="RelayDriver1" controlLine="K0" />
+		<RelayConnection relay="SiteRelay1" siteNumber="1" relayDriverModule="RelayDriver1" controlLine="K1" />
+		<RelayConnection relay="SiteRelay2" siteNumber="0" relayDriverModule="RelayDriver1" controlLine="K2" />
+		<RelayConnection relay="SiteRelay2" siteNumber="1" relayDriverModule="RelayDriver1" controlLine="K3" />
 		<SystemRelayConnection relay="SystemRelay1" relayDriverModule="RelayDriver2" controlLine="K0" />
 	</Connections>
 </PinMap>
