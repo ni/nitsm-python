@@ -89,8 +89,11 @@ class TestNIDCPower:
             assert isinstance(queried_sessions, tuple)
             assert isinstance(queried_channel_strings, tuple)
             assert len(queried_sessions) == len(queried_channel_strings)
-            for queried_session in queried_sessions:
+            for queried_session, queried_channel_string in zip(
+                queried_sessions, queried_channel_strings
+            ):
                 assert isinstance(queried_session, nidcpower.Session)
+                assert isinstance(queried_channel_string, str)
                 assert queried_session in simulated_nidcpower_sessions
 
     def test_pins_to_nidcpower_sessions(self, standalone_tsm_context, simulated_nidcpower_sessions):
@@ -104,8 +107,11 @@ class TestNIDCPower:
         assert isinstance(queried_sessions, tuple)
         assert isinstance(queried_channel_strings, tuple)
         assert len(queried_sessions) == len(queried_channel_strings)
-        for queried_session in queried_sessions:
+        for queried_session, queried_channel_string in zip(
+            queried_sessions, queried_channel_strings
+        ):
             assert isinstance(queried_session, nidcpower.Session)
+            assert isinstance(queried_channel_string, str)
             assert queried_session in simulated_nidcpower_sessions
 
 
