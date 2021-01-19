@@ -1,5 +1,5 @@
-import pytest
 import niswitch
+import pytest
 from niswitch.enums import RelayAction, RelayPosition
 from nitsm.codemoduleapi import SemiconductorModuleContext
 
