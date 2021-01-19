@@ -39,8 +39,11 @@ class TestNIRelayDriver:
         site_relays, system_relays = standalone_tsm_context.get_relay_names()
         assert isinstance(site_relays, tuple)
         assert isinstance(system_relays, tuple)
-        for site_relay, system_relay in zip(site_relays, system_relays):
+        for site_relay in site_relays:
+            assert isinstance(site_relay, str)
             assert site_relay in self.pin_map_site_relays
+        for system_relay in system_relays:
+            assert isinstance(system_relay, str)
             assert system_relay in self.pin_map_system_relays
 
     def test_set_relay_driver_niswitch_session(
