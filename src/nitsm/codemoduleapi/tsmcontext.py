@@ -1514,7 +1514,6 @@ class SemiconductorModuleContext:
         """
 
         if len(relays) != len(relay_actions):
-            print(len(relays))
             self._context.ReportIncompatibleArrayLengths("relays", "relay_actions")
         else:
             relay_actions = [relay_action.value for relay_action in relay_actions]
