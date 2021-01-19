@@ -50,7 +50,7 @@ class TestNIRelayDriver:
     ):
         instrument_names = standalone_tsm_context.get_relay_driver_module_names()
         for instrument_name in instrument_names:
-            with niswitch.Session(instrument_name, simulate=True) as session:
+            with niswitch.Session("", topology="2567/Independent", simulate=True) as session:
                 standalone_tsm_context.set_relay_driver_niswitch_session(instrument_name, session)
                 assert SemiconductorModuleContext._sessions[id(session)] is session
 
