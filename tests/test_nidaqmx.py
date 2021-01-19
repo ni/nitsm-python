@@ -23,7 +23,6 @@ class TestNIDAQmx:
     pin_map_instruments = ["DAQmx1", "DAQmx2"]
     pin_map_dut_pins = ["DUTPin1", "DUTPin2"]
     pin_map_system_pins = ["SystemPin1"]
-    pin_map_pin_groups = ["PinGroup1"]
 
     def test_get_all_nidaqmx_task_names(self, standalone_tsm_context: SemiconductorModuleContext):
         task_names, channel_lists = standalone_tsm_context.get_all_nidaqmx_task_names("")
@@ -44,36 +43,37 @@ class TestNIDAQmx:
 
     def test_get_all_nidaqmx_tasks(self, standalone_tsm_context, simulated_nidaqmx_tasks):
         queried_tasks = standalone_tsm_context.get_all_nidaqmx_tasks("")
+        assert isinstance(queried_tasks, tuple)
+        assert len(queried_tasks) == len(simulated_nidaqmx_tasks)
         for queried_task in queried_tasks:
             assert isinstance(queried_task, nidaqmx.Task)
             assert queried_task in simulated_nidaqmx_tasks
-        assert len(queried_tasks) == len(simulated_nidaqmx_tasks)
 
     def test_pin_to_nidaqmx_task(self, standalone_tsm_context, simulated_nidaqmx_tasks):
-        for system_pin in self.pin_map_system_pins:
-            (
-                pin_query_context,
-                queried_task,
-                queried_channel_list,
-            ) = standalone_tsm_context.pin_to_nidaqmx_task(system_pin)
-            assert isinstance(pin_query_context, NIDAQmxSinglePinSingleTaskQueryContext)
+        (
+            pin_query_context,
+            queried_task,
+            queried_channel_list,
+        ) = standalone_tsm_context.pin_to_nidaqmx_task("SystemPin1")
+        assert isinstance(pin_query_context, NIDAQmxSinglePinSingleTaskQueryContext)
+        assert isinstance(queried_task, nidaqmx.Task)
+        assert isinstance(queried_channel_list, str)
+        assert queried_task in simulated_nidaqmx_tasks
+
+    def test_pin_to_nidaqmx_tasks(self, standalone_tsm_context, simulated_nidaqmx_tasks):
+        (
+            pin_query_context,
+            queried_tasks,
+            queried_channel_lists,
+        ) = standalone_tsm_context.pin_to_nidaqmx_tasks("PinGroup1")
+        assert isinstance(pin_query_context, NIDAQmxSinglePinMultipleTaskQueryContext)
+        assert isinstance(queried_tasks, tuple)
+        assert isinstance(queried_channel_lists, tuple)
+        assert len(queried_tasks) == len(queried_channel_lists)
+        for queried_task, queried_channel_list in zip(queried_tasks, queried_channel_lists):
             assert isinstance(queried_task, nidaqmx.Task)
             assert isinstance(queried_channel_list, str)
             assert queried_task in simulated_nidaqmx_tasks
-
-    def test_pin_to_nidaqmx_tasks(self, standalone_tsm_context, simulated_nidaqmx_tasks):
-        for pin_group in self.pin_map_pin_groups:
-            (
-                pin_query_context,
-                queried_tasks,
-                queried_channel_lists,
-            ) = standalone_tsm_context.pin_to_nidaqmx_tasks(pin_group)
-            assert isinstance(pin_query_context, NIDAQmxSinglePinMultipleTaskQueryContext)
-            assert isinstance(queried_channel_lists, tuple)
-            assert len(queried_tasks) == len(queried_channel_lists)
-            for queried_task in queried_tasks:
-                assert isinstance(queried_task, nidaqmx.Task)
-                assert queried_task in simulated_nidaqmx_tasks
 
     def test_pins_to_nidaqmx_task(self, standalone_tsm_context, simulated_nidaqmx_tasks):
         (
@@ -97,6 +97,7 @@ class TestNIDAQmx:
         assert isinstance(queried_tasks, tuple)
         assert isinstance(queried_channel_lists, tuple)
         assert len(queried_tasks) == len(queried_channel_lists)
-        for queried_task in queried_tasks:
+        for queried_task, queried_channel_list in zip(queried_tasks, queried_channel_lists):
             assert isinstance(queried_task, nidaqmx.Task)
+            assert isinstance(queried_channel_list, str)
             assert queried_task in simulated_nidaqmx_tasks
