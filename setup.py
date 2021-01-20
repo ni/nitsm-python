@@ -7,7 +7,7 @@ setuptools.setup(
     name="nitsm",
     version="0.0.1",
     author="NI",
-    authoremail="opensource@ni.com",
+    author_email="opensource@ni.com",
     description="NI TestStand Semiconductor Module Python API",
     long_description=long_description,
     long_description_content_type="text/markdown",
