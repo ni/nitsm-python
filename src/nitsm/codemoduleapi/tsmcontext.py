@@ -166,7 +166,7 @@ class SemiconductorModuleContext:
                 included in the Semiconductor Module context.
         """
 
-        return self.filter_pins_by_instrument_type(pin_groups, "", "All")
+        return self.filter_pins_by_instrument_type(pin_groups, "", "")
 
     @property
     def site_numbers(self):
