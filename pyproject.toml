@@ -19,6 +19,9 @@ exclude = '''
 )
 '''
 
+[tool.ni-python-styleguide]
+extend_exclude = "src/nitsm/codemoduleapi/pinmapinterfaces.py"
+
 [tool.pytest.ini_options]
 testpaths = [
     "tests"
