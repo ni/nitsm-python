@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PinMap schemaVersion="1.1" xmlns="http://www.ni.com/TestStand/SemiconductorModule/PinMap.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<Instruments>
-		<Instrument name="PXI0::16" instrumentTypeId="Relay1_Id">
+		<Instrument name="CustomInstrument1" instrumentTypeId="CustomInstrumentTypeId1">
 			<ChannelGroup id="ChannelGroup">
 				<Channel id="Ch0" />
 				<Channel id="Ch1" />
@@ -24,8 +24,8 @@
 		<Site siteNumber="1" />
 	</Sites>
 	<Connections>
-		<Connection pin="DUTPin1" siteNumber="0" instrument="PXI0::16" channel="Ch0" />
-		<Connection pin="DUTPin1" siteNumber="1" instrument="PXI0::16" channel="Ch1" />
-		<SystemConnection pin="SystemPin1" instrument="PXI0::16" channel="Ch2" />
+		<Connection pin="DUTPin1" siteNumber="0" instrument="CustomInstrument1" channel="Ch0" />
+		<Connection pin="DUTPin1" siteNumber="1" instrument="CustomInstrument1" channel="Ch1" />
+		<SystemConnection pin="SystemPin1" instrument="CustomInstrument1" channel="Ch2" />
 	</Connections>
 </PinMap>
