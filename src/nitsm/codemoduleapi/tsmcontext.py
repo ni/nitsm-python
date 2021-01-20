@@ -141,7 +141,9 @@ class SemiconductorModuleContext:
         """
 
         if isinstance(instrument_type_id, InstrumentTypeIdConstants):
-            instrument_type_id = str(instrument_type_id)
+            instrument_type_id = instrument_type_id.value
+        if isinstance(capability, Capability):
+            capability = capability.value
         return self._context.FilterPinsByInstrumentType(pins, instrument_type_id, capability)
 
     def get_pins_in_pin_group(self, pin_group):
