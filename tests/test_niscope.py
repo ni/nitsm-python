@@ -80,9 +80,7 @@ class TestNIScope:
         assert isinstance(queried_sessions, tuple)
         assert isinstance(queried_channel_lists, tuple)
         assert len(queried_sessions) == len(queried_channel_lists)
-        for queried_session, queried_channel_list in zip(
-                queried_sessions, queried_channel_lists
-        ):
+        for queried_session, queried_channel_list in zip(queried_sessions, queried_channel_lists):
             assert isinstance(queried_session, niscope.Session)
             assert isinstance(queried_channel_list, str)
             assert queried_session in simulated_niscope_sessions
@@ -114,9 +112,7 @@ class TestNIScope:
         assert isinstance(queried_sessions, tuple)
         assert isinstance(queried_channel_lists, tuple)
         assert len(queried_sessions) == len(queried_channel_lists)
-        for queried_session, queried_channel_list in zip(
-                queried_sessions, queried_channel_lists
-        ):
+        for queried_session, queried_channel_list in zip(queried_sessions, queried_channel_lists):
             assert isinstance(queried_session, niscope.Session)
             assert isinstance(queried_channel_list, str)
             assert queried_session in simulated_niscope_sessions

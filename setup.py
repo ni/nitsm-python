@@ -15,7 +15,7 @@ setuptools.setup(
     packages=["src/nitsm"],
     classifiers=[
         "License :: OSI Approved :: MIT License",
-        "Operating System :: Microsoft :: Windows"
+        "Operating System :: Microsoft :: Windows",
     ],
-    python_requires=">=3.6"
+    python_requires=">=3.6",
 )

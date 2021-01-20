@@ -211,6 +211,4 @@ class TestNIRelayDriver:
             relay_position = (
                 RelayPosition.OPEN if relay_action == RelayAction.OPEN else RelayPosition.CLOSED
             )
-            assert_relay_positions(
-                standalone_tsm_context, [pin_map_site_relay], relay_position
-            )
+            assert_relay_positions(standalone_tsm_context, [pin_map_site_relay], relay_position)
