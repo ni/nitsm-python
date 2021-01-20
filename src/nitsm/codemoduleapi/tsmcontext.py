@@ -16,8 +16,8 @@ __all__ = ["Capability", "InstrumentTypeIdConstants", "SemiconductorModuleContex
 
 
 class Capability(enum.Enum):
-    ALL = 0
-    NI_HSDIO_DYNAMIC_DIO = 1
+    ALL = ""
+    NI_HSDIO_DYNAMIC_DIO = "NIHSDIODynamicDIOCapable"
 
 
 class InstrumentTypeIdConstants(enum.Enum):
@@ -35,9 +35,6 @@ class InstrumentTypeIdConstants(enum.Enum):
     NI_RFSA = "niRFSA"
     NI_RFSG = "niRFSG"
     NI_SCOPE = "niScope"
-
-    def __str__(self):
-        return self.value
 
 
 class SemiconductorModuleContext:
@@ -109,10 +106,8 @@ class SemiconductorModuleContext:
         if isinstance(capability, Capability):
             capability = capability.value
         if isinstance(instrument_type_id, InstrumentTypeIdConstants):
-            instrument_type_id = str(instrument_type_id)
-        return self._context.GetPinNames(
-            instrument_type_id, capability
-        )  # TODO: Unable to return system pin?
+            instrument_type_id = instrument_type_id.value
+        return self._context.GetPinNames(instrument_type_id, capability)
 
     def filter_pins_by_instrument_type(self, pins, instrument_type_id, capability):
         """
