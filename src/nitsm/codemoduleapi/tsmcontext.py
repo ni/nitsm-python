@@ -103,10 +103,10 @@ class SemiconductorModuleContext:
                 specify in the instrument_type_id.
         """
 
-        if isinstance(capability, Capability):
-            capability = capability.value
         if isinstance(instrument_type_id, InstrumentTypeIdConstants):
             instrument_type_id = instrument_type_id.value
+        if isinstance(capability, Capability):
+            capability = capability.value
         return self._context.GetPinNames(instrument_type_id, capability)
 
     def filter_pins_by_instrument_type(self, pins, instrument_type_id, capability):
