@@ -6,35 +6,12 @@ import ctypes
 import ctypes.util
 import sys
 import time
-import enum
 import pythoncom
 import nitsm.codemoduleapi.pinmapinterfaces
 import nitsm.codemoduleapi.pinquerycontexts
+import nitsm.codemoduleapi.enums
 
-
-__all__ = ["Capability", "InstrumentTypeIdConstants", "SemiconductorModuleContext"]
-
-
-class Capability(enum.Enum):
-    ALL = ""
-    NI_HSDIO_DYNAMIC_DIO = "NIHSDIODynamicDIOCapable"
-
-
-class InstrumentTypeIdConstants(enum.Enum):
-    ANY = ""
-    NI_DAQMX = "niDAQmx"
-    NI_DCPOWER = "niDCPower"
-    NI_DIGITAL_PATTERN = "niDigitalPattern"
-    NI_DMM = "niDMM"
-    NI_FGEN = "niFGen"
-    NI_GENERIC_MULTIPLEXER = "NIGenericMultiplexer"
-    NI_HSDIO = "niHSDIO"
-    NI_MODEL_BASED_INSTRUMENT = "niModelBasedInstrument"
-    NI_RELAY_DRIVER = "niRelayDriver"
-    NI_RFPM = "niRFPM"
-    NI_RFSA = "niRFSA"
-    NI_RFSG = "niRFSG"
-    NI_SCOPE = "niScope"
+__all__ = ["SemiconductorModuleContext"]
 
 
 class SemiconductorModuleContext:
@@ -103,9 +80,9 @@ class SemiconductorModuleContext:
                 specify in the instrument_type_id.
         """
 
-        if isinstance(instrument_type_id, InstrumentTypeIdConstants):
+        if isinstance(instrument_type_id, nitsm.codemoduleapi.enums.InstrumentTypeIdConstants):
             instrument_type_id = instrument_type_id.value
-        if isinstance(capability, Capability):
+        if isinstance(capability, nitsm.codemoduleapi.enums.Capability):
             capability = capability.value
         return self._context.GetPinNames(instrument_type_id, capability)
 
@@ -140,9 +117,9 @@ class SemiconductorModuleContext:
             the filtered instrument_type_id.
         """
 
-        if isinstance(instrument_type_id, InstrumentTypeIdConstants):
+        if isinstance(instrument_type_id, nitsm.codemoduleapi.enums.InstrumentTypeIdConstants):
             instrument_type_id = instrument_type_id.value
-        if isinstance(capability, Capability):
+        if isinstance(capability, nitsm.codemoduleapi.enums.Capability):
             capability = capability.value
         return self._context.FilterPinsByInstrumentType(pins, instrument_type_id, capability)
 
