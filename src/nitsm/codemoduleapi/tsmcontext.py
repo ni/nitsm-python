@@ -6,38 +6,11 @@ import ctypes
 import ctypes.util
 import sys
 import time
-import enum
 import pythoncom
 import nitsm.codemoduleapi.pinmapinterfaces
 import nitsm.codemoduleapi.pinquerycontexts
 
-
-__all__ = ["Capability", "InstrumentTypeIdConstants", "SemiconductorModuleContext"]
-
-
-class Capability(enum.Enum):
-    ALL = 0
-    NI_HSDIO_DYNAMIC_DIO = 1
-
-
-class InstrumentTypeIdConstants(enum.Enum):
-    ANY = ""
-    NI_DAQMX = "niDAQmx"
-    NI_DCPOWER = "niDCPower"
-    NI_DIGITAL_PATTERN = "niDigitalPattern"
-    NI_DMM = "niDMM"
-    NI_FGEN = "niFGen"
-    NI_GENERIC_MULTIPLEXER = "NIGenericMultiplexer"
-    NI_HSDIO = "niHSDIO"
-    NI_MODEL_BASED_INSTRUMENT = "niModelBasedInstrument"
-    NI_RELAY_DRIVER = "niRelayDriver"
-    NI_RFPM = "niRFPM"
-    NI_RFSA = "niRFSA"
-    NI_RFSG = "niRFSG"
-    NI_SCOPE = "niScope"
-
-    def __str__(self):
-        return self.value
+__all__ = ["SemiconductorModuleContext"]
 
 
 class SemiconductorModuleContext:
