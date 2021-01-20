@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SourceFile Checksum="26CD74F44E2025A23300A7F492A1D7CE" xmlns="http://www.ni.com/PlatformFramework">
+	<SourceModelFeatureSet>
+		<ParsableNamespace AssemblyFileVersion="5.3.1.52024" FeatureSetName="Digital Pattern Editor" Name="http://www.ni.com/PatternBasedDigital" OldestCompatibleVersion="4.5.0.0" Version="4.6.0.49152" />
+		<ParsableNamespace AssemblyFileVersion="5.3.1.52024" FeatureSetName="Editor" Name="http://www.ni.com/PlatformFramework" OldestCompatibleVersion="5.2.0.49153" Version="5.2.0.49153" />
+		<ApplicationVersionInfo Build="5.3.1.52024" Name="Digital Pattern Editor" Version="19.0.0" />
+	</SourceModelFeatureSet>
+	<Project xmlns="http://www.ni.com/PlatformFramework">
+		<ProjectSettings Id="1" ModelDefinitionType="ProjectSettings" Name="ZProjectSettings" />
+		<EmbeddedDefinitionReference Id="2" ModelDefinitionType="NationalInstruments.ProjectExplorer.Modeling.ProjectDataManager" Name="ProjectExplorer">
+			<ProjectExplorer />
+		</EmbeddedDefinitionReference>
+		<NameScopingEnvoy Id="3" ModelDefinitionType="DefaultTarget" Name="DefaultTarget">
+			<DefaultTarget />
+			<EmbeddedDefinitionReference Id="8" ModelDefinitionType="{http://www.ni.com/PatternBasedDigital}CaptureResultsDefinition" Name="CaptureResults">
+				<CaptureResultsDefinition xmlns="http://www.ni.com/PatternBasedDigital" />
+			</EmbeddedDefinitionReference>
+			<EmbeddedDefinitionReference Id="10" ModelDefinitionType="{http://www.ni.com/PatternBasedDigital}BurstResultsDefinition" Name="BurstResults">
+				<BurstResultsDefinition xmlns="http://www.ni.com/PatternBasedDigital" />
+			</EmbeddedDefinitionReference>
+			<EmbeddedDefinitionReference Id="12" ModelDefinitionType="{http://www.ni.com/PatternBasedDigital}SystemInfoDefinition" Name="SystemInfo">
+				<SystemInfoDefinition xmlns="http://www.ni.com/PatternBasedDigital" />
+			</EmbeddedDefinitionReference>
+			<EmbeddedDefinitionReference Id="13" ModelDefinitionType="{http://www.ni.com/PatternBasedDigital}DigitalScopeDefinition" Name="DigitalScope">
+				<DigitalScopeDefinition xmlns="http://www.ni.com/PatternBasedDigital" />
+			</EmbeddedDefinitionReference>
+			<FileReference Id="23" ModelDefinitionType="DigitalPatternEditor.PatternDefinition" Name="Pattern1\.digipat" StoragePath="Pattern1.digipat" />
+			<FileReference Id="32" ModelDefinitionType="SpecificationsDefinition" Name="Specifications2\.specs" StoragePath="Specifications2.specs" />
+			<FileReference Id="33" ModelDefinitionType="TimingDefinition" Name="Timing1\.digitiming" StoragePath="Timing1.digitiming" p4:IsActive="True" xmlns:p4="http://www.ni.com/PatternBasedDigital" />
+			<FileReference Id="34" ModelDefinitionType="PinLevelsDefinition" Name="PinLevels1\.digilevels" StoragePath="PinLevels1.digilevels" p4:IsActive="True" xmlns:p4="http://www.ni.com/PatternBasedDigital" />
+			<FileReference Id="37" ModelDefinitionType="CaptureWaveformDefinition" Name="CaptureWaveform\.digicapture" StoragePath="CaptureWaveform.digicapture" />
+			<FileReference Id="43" ModelDefinitionType="PinMap" Name="nidigital\.pinmap" StoragePath="nidigital.pinmap" />
+			<FileReference Id="46" ModelDefinitionType="SourceWaveformDefinition" Name="SourceWaveform\.tdms" StoragePath="SourceWaveform.tdms" />
+			<FileReference Id="49" ModelDefinitionType="DigitalPatternEditor.PatternDefinition" Name="Pattern2\.digipat" StoragePath="Pattern2.digipat" />
+			<FileReference Id="50" ModelDefinitionType="PinLevelsDefinition" Name="PinLevels2\.digilevels" StoragePath="PinLevels2.digilevels" />
+			<FileReference Id="51" ModelDefinitionType="TimingDefinition" Name="Timing2\.digitiming" StoragePath="Timing2.digitiming" />
+			<FileReference Id="52" ModelDefinitionType="SpecificationsDefinition" Name="Specifications1\.specs" StoragePath="Specifications1.specs" />
+		</NameScopingEnvoy>
+		<EmbeddedDefinitionReference Id="7" ModelDefinitionType="DigitalPatternEditor.ProjectPropertiesDefinition" Name="ProjectProperties">
+			<ProjectPropertiesDefinition xmlns="http://www.ni.com/PatternBasedDigital" />
+		</EmbeddedDefinitionReference>
+	</Project>
+	<ProjectInformation xmlns="http://www.ni.com/PlatformFramework" />
+</SourceFile>
