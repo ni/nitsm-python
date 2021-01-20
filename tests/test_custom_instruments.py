@@ -36,7 +36,6 @@ class TestCustomInstruments:
     pin_map_instruments = ["PXI0::16"]
     pin_map_dut_pins = ["DUTPin1"]
     pin_map_system_pins = ["SystemPin1"]
-    pin_map_pin_groups = ["PinGroup1"]
     pin_map_instrument_type_id = "Relay1_Id"
 
     def test_get_custom_instrument_names(self, standalone_tsm_context: SemiconductorModuleContext):
@@ -103,49 +102,47 @@ class TestCustomInstruments:
         standalone_tsm_context: SemiconductorModuleContext,
         simulated_custom_instrument_sessions,
     ):
-        for system_pin in self.pin_map_system_pins:
-            (
-                pin_query_context,
-                queried_session,
-                queried_channel_group_id,
-                queried_channel_list,
-            ) = standalone_tsm_context.pin_to_custom_session(
-                self.pin_map_instrument_type_id, system_pin
-            )
-            assert isinstance(pin_query_context, SinglePinSingleSessionQueryContext)
-            assert isinstance(queried_session, niswitch.Session)
-            assert isinstance(queried_channel_group_id, str)
-            assert isinstance(queried_channel_list, str)
-            assert queried_session in simulated_custom_instrument_sessions
+        (
+            pin_query_context,
+            queried_session,
+            queried_channel_group_id,
+            queried_channel_list,
+        ) = standalone_tsm_context.pin_to_custom_session(
+            self.pin_map_instrument_type_id, "SystemPin1"
+        )
+        assert isinstance(pin_query_context, SinglePinSingleSessionQueryContext)
+        assert isinstance(queried_session, niswitch.Session)
+        assert isinstance(queried_channel_group_id, str)
+        assert isinstance(queried_channel_list, str)
+        assert queried_session in simulated_custom_instrument_sessions
 
     def test_pin_to_custom_sessions(
         self,
         standalone_tsm_context: SemiconductorModuleContext,
         simulated_custom_instrument_sessions,
     ):
-        for pin_group in self.pin_map_pin_groups:
-            (
-                pin_query_context,
-                queried_sessions,
-                queried_channel_group_ids,
-                queried_channel_lists,
-            ) = standalone_tsm_context.pin_to_custom_sessions(
-                self.pin_map_instrument_type_id, pin_group
-            )
-            assert isinstance(pin_query_context, SinglePinMultipleSessionQueryContext)
-            assert isinstance(queried_sessions, tuple)
-            assert isinstance(queried_channel_group_ids, tuple)
-            assert isinstance(queried_channel_lists, tuple)
-            assert len(queried_sessions) == len(simulated_custom_instrument_sessions)
-            assert len(queried_sessions) == len(queried_channel_group_ids)
-            assert len(queried_sessions) == len(queried_channel_lists)
-            for queried_session, queried_channel_group_id, queried_channel_list in zip(
-                queried_sessions, queried_channel_group_ids, queried_channel_lists
-            ):
-                assert isinstance(queried_session, niswitch.Session)
-                assert isinstance(queried_channel_group_id, str)
-                assert isinstance(queried_channel_list, str)
-                assert queried_session in simulated_custom_instrument_sessions
+        (
+            pin_query_context,
+            queried_sessions,
+            queried_channel_group_ids,
+            queried_channel_lists,
+        ) = standalone_tsm_context.pin_to_custom_sessions(
+            self.pin_map_instrument_type_id, "PinGroup1"
+        )
+        assert isinstance(pin_query_context, SinglePinMultipleSessionQueryContext)
+        assert isinstance(queried_sessions, tuple)
+        assert isinstance(queried_channel_group_ids, tuple)
+        assert isinstance(queried_channel_lists, tuple)
+        assert len(queried_sessions) == len(simulated_custom_instrument_sessions)
+        assert len(queried_sessions) == len(queried_channel_group_ids)
+        assert len(queried_sessions) == len(queried_channel_lists)
+        for queried_session, queried_channel_group_id, queried_channel_list in zip(
+            queried_sessions, queried_channel_group_ids, queried_channel_lists
+        ):
+            assert isinstance(queried_session, niswitch.Session)
+            assert isinstance(queried_channel_group_id, str)
+            assert isinstance(queried_channel_list, str)
+            assert queried_session in simulated_custom_instrument_sessions
 
     def test_pins_to_custom_session(
         self,
