@@ -3,6 +3,7 @@ import pytest
 from nitsm.codemoduleapi import SemiconductorModuleContext
 from nitsm.codemoduleapi.pinquerycontexts import NIDigitalPatternSingleSessionPinQueryContext
 from nitsm.codemoduleapi.pinquerycontexts import NIDigitalPatternPinQueryContext
+import os
 
 
 @pytest.fixture
@@ -27,31 +28,27 @@ class TestNIDigital:
     pin_map_dut_pins = ["DUTPin1", "DUTPin2"]
     pin_map_system_pins = ["SystemPin1"]
     pin_map_pin_groups = ["PinGroup1"]
-    pin_map_file_path = (
-        "C:\\Users\\chmitng\\Documents\\GitHub\\nitsm-python\\tests\\nidigital.pinmap"
-    )
+    application_directory = os.getcwd()
+    pin_map_file_path = application_directory + "\\nidigital.pinmap"
+
     project_specifications_file_paths = (
-        "C:\\Users\\chmitng\\Documents\\GitHub\\nitsm-python\\tests\\Specifications1.specs",
-        "C:\\Users\\chmitng\\Documents\\GitHub\\nitsm-python\\tests\\Specifications2.specs",
+        application_directory + "\\Specifications1.specs",
+        application_directory + "\\Specifications2.specs",
     )
     project_levels_file_paths = (
-        "C:\\Users\\chmitng\\Documents\\GitHub\\nitsm-python\\tests\\PinLevels1.digilevels",
-        "C:\\Users\\chmitng\\Documents\\GitHub\\nitsm-python\\tests\\PinLevels2.digilevels",
+        application_directory + "\\PinLevels1.digilevels",
+        application_directory + "\\PinLevels2.digilevels",
     )
     project_timing_file_paths = (
-        "C:\\Users\\chmitng\\Documents\\GitHub\\nitsm-python\\tests\\Timing1.digitiming",
-        "C:\\Users\\chmitng\\Documents\\GitHub\\nitsm-python\\tests\\Timing2.digitiming",
+        application_directory + "\\Timing1.digitiming",
+        application_directory + "\\Timing2.digitiming",
     )
     project_pattern_file_paths = (
-        "C:\\Users\\chmitng\\Documents\\GitHub\\nitsm-python\\tests\\Pattern1.digipat",
-        "C:\\Users\\chmitng\\Documents\\GitHub\\nitsm-python\\tests\\Pattern2.digipat",
+        application_directory + "\\Pattern1.digipat",
+        application_directory + "\\Pattern2.digipat",
     )
-    project_source_waveform_file_paths = (
-        "C:\\Users\\chmitng\\Documents\\GitHub\\nitsm-python\\tests\\SourceWaveform.tdms"
-    )
-    project_capture_waveform_file_paths = (
-        "C:\\Users\\chmitng\\Documents\\GitHub\\nitsm-python\\tests\\CaptureWaveform.digicapture"
-    )
+    project_source_waveform_file_paths = (application_directory + "\\SourceWaveform.tdms",)
+    project_capture_waveform_file_paths = (application_directory + "\\CaptureWaveform.digicapture",)
 
     def test_get_all_nidigital_instrument_names(
         self, standalone_tsm_context: SemiconductorModuleContext
