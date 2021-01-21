@@ -4,8 +4,8 @@ __all__ = ["Capability", "InstrumentTypeIdConstants"]
 
 
 class Capability(enum.Enum):
-    ALL = 0
-    NI_HSDIO_DYNAMIC_DIO = 1
+    ALL = ""
+    NI_HSDIO_DYNAMIC_DIO = "NIHSDIODynamicDIOCapable"
 
 
 class InstrumentTypeIdConstants(enum.Enum):
@@ -23,6 +23,3 @@ class InstrumentTypeIdConstants(enum.Enum):
     NI_RFSA = "niRFSA"
     NI_RFSG = "niRFSG"
     NI_SCOPE = "niScope"
-
-    def __str__(self):
-        return self.value
