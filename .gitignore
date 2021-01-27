@@ -3,5 +3,12 @@
 
 # Python
 __pycache__/
-.pytest_cache/
 *.pyc
+
+# Pytest
+.pytest_cache/
+
+# Setuptools
+build/
+dist/
+*.egg-info
