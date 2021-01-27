@@ -80,13 +80,11 @@ class SemiconductorModuleContext:
                 specify in the instrument_type_id.
         """
 
+        if isinstance(instrument_type_id, nitsm.codemoduleapi.enums.InstrumentTypeIdConstants):
+            instrument_type_id = instrument_type_id.value
         if isinstance(capability, nitsm.codemoduleapi.enums.Capability):
             capability = capability.value
-        if isinstance(instrument_type_id, nitsm.codemoduleapi.enums.InstrumentTypeIdConstants):
-            instrument_type_id = str(instrument_type_id)
-        return self._context.GetPinNames(
-            instrument_type_id, capability
-        )  # TODO: Unable to return system pin?
+        return self._context.GetPinNames(instrument_type_id, capability)
 
     def filter_pins_by_instrument_type(self, pins, instrument_type_id, capability):
         """
@@ -120,7 +118,9 @@ class SemiconductorModuleContext:
         """
 
         if isinstance(instrument_type_id, nitsm.codemoduleapi.enums.InstrumentTypeIdConstants):
-            instrument_type_id = str(instrument_type_id)
+            instrument_type_id = instrument_type_id.value
+        if isinstance(capability, nitsm.codemoduleapi.enums.Capability):
+            capability = capability.value
         return self._context.FilterPinsByInstrumentType(pins, instrument_type_id, capability)
 
     def get_pins_in_pin_group(self, pin_group):
@@ -143,7 +143,7 @@ class SemiconductorModuleContext:
                 included in the Semiconductor Module context.
         """
 
-        return self.filter_pins_by_instrument_type(pin_groups, "", "All")
+        return self.filter_pins_by_instrument_type(pin_groups, "", "")
 
     @property
     def site_numbers(self):
