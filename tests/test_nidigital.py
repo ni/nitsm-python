@@ -26,7 +26,6 @@ class TestNIDigital:
     pin_map_instruments = ["DigitalPattern1", "DigitalPattern2"]
     pin_map_dut_pins = ["DUTPin1", "DUTPin2"]
     pin_map_system_pins = ["SystemPin1"]
-    pin_map_pin_groups = ["PinGroup1"]
     pin_map_file_path = os.path.join(os.path.dirname(__file__), "nidigital.pinmap")
 
     def test_get_all_nidigital_instrument_names(self, standalone_tsm_context):
