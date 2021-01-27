@@ -32,6 +32,6 @@ jobs:
         python -m ni_python_styleguide lint
     - name: Install package in edit mode
       run: |
-        pip install -e src/nitsm
+        pip install -e .
     - name: Run unit tests
       run: pytest
