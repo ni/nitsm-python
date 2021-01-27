@@ -30,6 +30,8 @@ jobs:
     - name: Lint with NI style guide
       run: |
         python -m ni_python_styleguide lint
-    - name: Build package
+    - name: Install package in edit mode
       run: |
-        python setup.py sdist bdist_wheel
+        pip install -e src/nitsm
+    - name: Run unit tests
+      run: pytest
