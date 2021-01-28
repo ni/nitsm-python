@@ -1,10 +1,10 @@
 import pytest
 
 from nitsm.codemoduleapi import SemiconductorModuleContext
-from nitsm.codemoduleapi.pinquerycontexts import SinglePinSingleSessionQueryContext
-from nitsm.codemoduleapi.pinquerycontexts import SinglePinMultipleSessionQueryContext
-from nitsm.codemoduleapi.pinquerycontexts import MultiplePinSingleSessionQueryContext
-from nitsm.codemoduleapi.pinquerycontexts import MultiplePinMultipleSessionQueryContext
+from nitsm.pinquerycontexts import SinglePinSingleSessionQueryContext
+from nitsm.pinquerycontexts import SinglePinMultipleSessionQueryContext
+from nitsm.pinquerycontexts import MultiplePinSingleSessionQueryContext
+from nitsm.pinquerycontexts import MultiplePinMultipleSessionQueryContext
 
 
 @pytest.fixture
