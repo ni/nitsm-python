@@ -15,7 +15,7 @@ exclude = '''
     | build
     | dist
   )/
-  | nitsm/codemoduleapi/pinmapinterfaces.py
+  | nitsm/pinmapinterfaces.py
 )
 '''
 

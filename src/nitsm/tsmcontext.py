@@ -7,9 +7,9 @@ import ctypes.util
 import sys
 import time
 import pythoncom
-import nitsm.codemoduleapi.pinmapinterfaces
-import nitsm.codemoduleapi.pinquerycontexts
-import nitsm.codemoduleapi.enums
+import nitsm.pinmapinterfaces
+import nitsm.pinquerycontexts
+import nitsm.enums
 
 __all__ = ["SemiconductorModuleContext"]
 
@@ -24,9 +24,7 @@ class SemiconductorModuleContext:
                 TestStand
         """
 
-        self._context = nitsm.codemoduleapi.pinmapinterfaces.ISemiconductorModuleContext(
-            tsm_com_obj
-        )
+        self._context = nitsm.pinmapinterfaces.ISemiconductorModuleContext(tsm_com_obj)
         self._context._oleobj_ = tsm_com_obj._oleobj_.QueryInterface(
             self._context.CLSID, pythoncom.IID_IDispatch
         )
@@ -80,9 +78,9 @@ class SemiconductorModuleContext:
                 specify in the instrument_type_id.
         """
 
-        if isinstance(instrument_type_id, nitsm.codemoduleapi.enums.InstrumentTypeIdConstants):
+        if isinstance(instrument_type_id, nitsm.enums.InstrumentTypeIdConstants):
             instrument_type_id = instrument_type_id.value
-        if isinstance(capability, nitsm.codemoduleapi.enums.Capability):
+        if isinstance(capability, nitsm.enums.Capability):
             capability = capability.value
         return self._context.GetPinNames(instrument_type_id, capability)
 
@@ -117,9 +115,9 @@ class SemiconductorModuleContext:
             the filtered instrument_type_id.
         """
 
-        if isinstance(instrument_type_id, nitsm.codemoduleapi.enums.InstrumentTypeIdConstants):
+        if isinstance(instrument_type_id, nitsm.enums.InstrumentTypeIdConstants):
             instrument_type_id = instrument_type_id.value
-        if isinstance(capability, nitsm.codemoduleapi.enums.Capability):
+        if isinstance(capability, nitsm.enums.Capability):
             capability = capability.value
         return self._context.FilterPinsByInstrumentType(pins, instrument_type_id, capability)
 
@@ -304,10 +302,8 @@ class SemiconductorModuleContext:
                 site_list is needed as an input to certain NI-Digital Pattern driver calls.
         """
 
-        pin_query_context = (
-            nitsm.codemoduleapi.pinquerycontexts.NIDigitalPatternSingleSessionPinQueryContext(
-                self._context, pin
-            )
+        pin_query_context = nitsm.pinquerycontexts.NIDigitalPatternSingleSessionPinQueryContext(
+            self._context, pin
         )
         session_id, pin_set_string, site_list = self._context.GetNIDigitalPatternSession_2(pin)
         session = SemiconductorModuleContext._sessions[session_id]
@@ -340,10 +336,8 @@ class SemiconductorModuleContext:
                 site_list is needed as an input to certain NI-Digital Pattern driver calls.
         """
 
-        pin_query_context = (
-            nitsm.codemoduleapi.pinquerycontexts.NIDigitalPatternSingleSessionPinQueryContext(
-                self._context, pins
-            )
+        pin_query_context = nitsm.pinquerycontexts.NIDigitalPatternSingleSessionPinQueryContext(
+            self._context, pins
         )
         session_id, pin_set_string, site_list = self._context.GetNIDigitalPatternSession(pins)
         session = SemiconductorModuleContext._sessions[session_id]
@@ -374,7 +368,7 @@ class SemiconductorModuleContext:
                 site_list is needed as an input to certain NI-Digital Pattern driver calls.
         """
 
-        pin_query_context = nitsm.codemoduleapi.pinquerycontexts.NIDigitalPatternPinQueryContext(
+        pin_query_context = nitsm.pinquerycontexts.NIDigitalPatternPinQueryContext(
             self._context, pin
         )
         session_ids, pin_set_strings, site_lists = self._context.GetNIDigitalPatternSessions_3(pin)
@@ -408,7 +402,7 @@ class SemiconductorModuleContext:
                 site_list is needed as an input to certain NI-Digital Pattern driver calls.
         """
 
-        pin_query_context = nitsm.codemoduleapi.pinquerycontexts.NIDigitalPatternPinQueryContext(
+        pin_query_context = nitsm.pinquerycontexts.NIDigitalPatternPinQueryContext(
             self._context, pins
         )
         session_ids, pin_set_strings, site_lists = self._context.GetNIDigitalPatternSessions_2(pins)
@@ -580,10 +574,8 @@ class SemiconductorModuleContext:
                 <instrument>/<channel>.
         """
 
-        pin_query_context = (
-            nitsm.codemoduleapi.pinquerycontexts.NIDCPowerSinglePinSingleSessionQueryContext(
-                self._context, pin
-            )
+        pin_query_context = nitsm.pinquerycontexts.NIDCPowerSinglePinSingleSessionQueryContext(
+            self._context, pin
         )
         session_id, channel_string = self._context.GetNIDCPowerSession(pin)
         session = SemiconductorModuleContext._sessions[session_id]
@@ -609,10 +601,8 @@ class SemiconductorModuleContext:
                 <instrument>/<channel>.
         """
 
-        pin_query_context = (
-            nitsm.codemoduleapi.pinquerycontexts.NIDCPowerMultiplePinSingleSessionQueryContext(
-                self._context, pins
-            )
+        pin_query_context = nitsm.pinquerycontexts.NIDCPowerMultiplePinSingleSessionQueryContext(
+            self._context, pins
         )
         session_id, channel_string = self._context.GetNIDCPowerSession_2(pins)
         session = SemiconductorModuleContext._sessions[session_id]
@@ -637,10 +627,8 @@ class SemiconductorModuleContext:
                 <instrument>/<channel>.
         """
 
-        pin_query_context = (
-            nitsm.codemoduleapi.pinquerycontexts.NIDCPowerSinglePinMultipleSessionQueryContext(
-                self._context, pin
-            )
+        pin_query_context = nitsm.pinquerycontexts.NIDCPowerSinglePinMultipleSessionQueryContext(
+            self._context, pin
         )
         session_ids, channel_strings = self._context.GetNIDCPowerSessions_2(pin)
         sessions = tuple(
@@ -667,10 +655,8 @@ class SemiconductorModuleContext:
                 <instrument>/<channel>.
         """
 
-        pin_query_context = (
-            nitsm.codemoduleapi.pinquerycontexts.NIDCPowerMultiplePinMultipleSessionQueryContext(
-                self._context, pins
-            )
+        pin_query_context = nitsm.pinquerycontexts.NIDCPowerMultiplePinMultipleSessionQueryContext(
+            self._context, pins
         )
         session_ids, channel_strings = self._context.GetNIDCPowerSessions_3(pins)
         sessions = tuple(
@@ -745,10 +731,8 @@ class SemiconductorModuleContext:
                 sites, the channel appears only once in the list.
         """
 
-        pin_query_context = (
-            nitsm.codemoduleapi.pinquerycontexts.NIDAQmxSinglePinSingleTaskQueryContext(
-                self._context, pin
-            )
+        pin_query_context = nitsm.pinquerycontexts.NIDAQmxSinglePinSingleTaskQueryContext(
+            self._context, pin
         )
         task_id, channel_list = self._context.GetNIDAQmxTask(pin)
         task = SemiconductorModuleContext._sessions[task_id]
@@ -776,10 +760,8 @@ class SemiconductorModuleContext:
                 multiple sites, the channel appears only once in the list.
         """
 
-        pin_query_context = (
-            nitsm.codemoduleapi.pinquerycontexts.NIDAQmxMultiplePinSingleTaskQueryContext(
-                self._context, pins
-            )
+        pin_query_context = nitsm.pinquerycontexts.NIDAQmxMultiplePinSingleTaskQueryContext(
+            self._context, pins
         )
         task_id, channel_list = self._context.GetNIDAQmxTask_2(pins)
         task = SemiconductorModuleContext._sessions[task_id]
@@ -806,10 +788,8 @@ class SemiconductorModuleContext:
                 the channel appears only once in the list.
         """
 
-        pin_query_context = (
-            nitsm.codemoduleapi.pinquerycontexts.NIDAQmxSinglePinMultipleTaskQueryContext(
-                self._context, pin
-            )
+        pin_query_context = nitsm.pinquerycontexts.NIDAQmxSinglePinMultipleTaskQueryContext(
+            self._context, pin
         )
         task_ids, channel_lists = self._context.GetNIDAQmxTasks_2(pin)
         tasks = tuple(SemiconductorModuleContext._sessions[task_id] for task_id in task_ids)
@@ -836,10 +816,8 @@ class SemiconductorModuleContext:
                 sites, the channel appears only once in the list.
         """
 
-        pin_query_context = (
-            nitsm.codemoduleapi.pinquerycontexts.NIDAQmxMultiplePinMultipleTaskQueryContext(
-                self._context, pins
-            )
+        pin_query_context = nitsm.pinquerycontexts.NIDAQmxMultiplePinMultipleTaskQueryContext(
+            self._context, pins
         )
         task_ids, channel_lists = self._context.GetNIDAQmxTasks_3(pins)
         tasks = tuple(SemiconductorModuleContext._sessions[task_id] for task_id in task_ids)
@@ -893,10 +871,8 @@ class SemiconductorModuleContext:
                 for all sites in the Semiconductor Module context.
         """
 
-        pin_query_context = (
-            nitsm.codemoduleapi.pinquerycontexts.NIDmmSinglePinSingleSessionQueryContext(
-                self._context, pin
-            )
+        pin_query_context = nitsm.pinquerycontexts.NIDmmSinglePinSingleSessionQueryContext(
+            self._context, pin
         )
         session_id = self._context.GetNIDmmSession(pin)
         session = SemiconductorModuleContext._sessions[session_id]
@@ -916,10 +892,8 @@ class SemiconductorModuleContext:
                 pin for all sites in the Semiconductor Module context.
         """
 
-        pin_query_context = (
-            nitsm.codemoduleapi.pinquerycontexts.NIDmmSinglePinMultipleSessionQueryContext(
-                self._context, pin
-            )
+        pin_query_context = nitsm.pinquerycontexts.NIDmmSinglePinMultipleSessionQueryContext(
+            self._context, pin
         )
         session_ids = self._context.GetNIDmmSessions_2(pin)
         sessions = tuple(
@@ -941,10 +915,8 @@ class SemiconductorModuleContext:
                 for all sites in the Semiconductor Module context.
         """
 
-        pin_query_context = (
-            nitsm.codemoduleapi.pinquerycontexts.NIDmmMultiplePinMultipleSessionQueryContext(
-                self._context, pins
-            )
+        pin_query_context = nitsm.pinquerycontexts.NIDmmMultiplePinMultipleSessionQueryContext(
+            self._context, pins
         )
         session_ids = self._context.GetNIDmmSessions_3(pins)
         sessions = tuple(
@@ -1004,10 +976,8 @@ class SemiconductorModuleContext:
                 appears once in the list.
         """
 
-        pin_query_context = (
-            nitsm.codemoduleapi.pinquerycontexts.NIFGenSinglePinSingleSessionQueryContext(
-                self._context, pin
-            )
+        pin_query_context = nitsm.pinquerycontexts.NIFGenSinglePinSingleSessionQueryContext(
+            self._context, pin
         )
         session_id, channel_list = self._context.GetNIFGenSession(pin)
         session = SemiconductorModuleContext._sessions[session_id]
@@ -1033,10 +1003,8 @@ class SemiconductorModuleContext:
                 only once in the list.
         """
 
-        pin_query_context = (
-            nitsm.codemoduleapi.pinquerycontexts.NIFGenMultiplePinSingleSessionQueryContext(
-                self._context, pins
-            )
+        pin_query_context = nitsm.pinquerycontexts.NIFGenMultiplePinSingleSessionQueryContext(
+            self._context, pins
         )
         session_id, channel_list = self._context.GetNIFGenSession_2(pins)
         session = SemiconductorModuleContext._sessions[session_id]
@@ -1060,10 +1028,8 @@ class SemiconductorModuleContext:
                 appears once in each list.
         """
 
-        pin_query_context = (
-            nitsm.codemoduleapi.pinquerycontexts.NIFGenSinglePinMultipleSessionQueryContext(
-                self._context, pin
-            )
+        pin_query_context = nitsm.pinquerycontexts.NIFGenSinglePinMultipleSessionQueryContext(
+            self._context, pin
         )
         session_ids, channel_lists = self._context.GetNIFGenSessions_2(pin)
         sessions = tuple(
@@ -1089,10 +1055,8 @@ class SemiconductorModuleContext:
                 only once in the list.
         """
 
-        pin_query_context = (
-            nitsm.codemoduleapi.pinquerycontexts.NIFGenMultiplePinMultipleSessionQueryContext(
-                self._context, pins
-            )
+        pin_query_context = nitsm.pinquerycontexts.NIFGenMultiplePinMultipleSessionQueryContext(
+            self._context, pins
         )
         session_ids, channel_lists = self._context.GetNIFGenSessions_3(pins)
         sessions = tuple(
@@ -1155,10 +1119,8 @@ class SemiconductorModuleContext:
                 appears once in the list.
         """
 
-        pin_query_context = (
-            nitsm.codemoduleapi.pinquerycontexts.NIScopeSinglePinSingleSessionQueryContext(
-                self._context, pin
-            )
+        pin_query_context = nitsm.pinquerycontexts.NIScopeSinglePinSingleSessionQueryContext(
+            self._context, pin
         )
         session_id, channel_list = self._context.GetNIScopeSession(pin)
         session = SemiconductorModuleContext._sessions[session_id]
@@ -1185,10 +1147,8 @@ class SemiconductorModuleContext:
                 only once in the list.
         """
 
-        pin_query_context = (
-            nitsm.codemoduleapi.pinquerycontexts.NIScopeMultiplePinSingleSessionQueryContext(
-                self._context, pins
-            )
+        pin_query_context = nitsm.pinquerycontexts.NIScopeMultiplePinSingleSessionQueryContext(
+            self._context, pins
         )
         session_id, channel_list = self._context.GetNIScopeSession_2(pins)
         session = SemiconductorModuleContext._sessions[session_id]
@@ -1212,10 +1172,8 @@ class SemiconductorModuleContext:
                 appears once in each list.
         """
 
-        pin_query_context = (
-            nitsm.codemoduleapi.pinquerycontexts.NIScopeSinglePinMultipleSessionQueryContext(
-                self._context, pin
-            )
+        pin_query_context = nitsm.pinquerycontexts.NIScopeSinglePinMultipleSessionQueryContext(
+            self._context, pin
         )
         session_ids, channel_lists = self._context.GetNIScopeSessions_2(pin)
         sessions = tuple(
@@ -1241,10 +1199,8 @@ class SemiconductorModuleContext:
                 only once in the list.
         """
 
-        pin_query_context = (
-            nitsm.codemoduleapi.pinquerycontexts.NIScopeMultiplePinMultipleSessionQueryContext(
-                self._context, pins
-            )
+        pin_query_context = nitsm.pinquerycontexts.NIScopeMultiplePinMultipleSessionQueryContext(
+            self._context, pins
         )
         session_ids, channel_lists = self._context.GetNIScopeSessions_3(pins)
         sessions = tuple(
@@ -1626,7 +1582,7 @@ class SemiconductorModuleContext:
                 channel to the pin, the channel only appears once in the list.
         """
 
-        pin_query_context = nitsm.codemoduleapi.pinquerycontexts.SinglePinSingleSessionQueryContext(
+        pin_query_context = nitsm.pinquerycontexts.SinglePinSingleSessionQueryContext(
             self._context, pin
         )
         _, *session_and_channel_data = self.pins_to_custom_session(instrument_type_id, [pin])
@@ -1663,10 +1619,8 @@ class SemiconductorModuleContext:
                 multiple sites, the channel appears only once in the list.
         """
 
-        pin_query_context = (
-            nitsm.codemoduleapi.pinquerycontexts.MultiplePinSingleSessionQueryContext(
-                self._context, pins
-            )
+        pin_query_context = nitsm.pinquerycontexts.MultiplePinSingleSessionQueryContext(
+            self._context, pins
         )
         session_id, *channel_data = self._context.GetSessionData_2(instrument_type_id, pins)
         session_data = SemiconductorModuleContext._sessions[session_id]
@@ -1702,10 +1656,8 @@ class SemiconductorModuleContext:
                 channel to the pin, the channel only appears once in each list.
         """
 
-        pin_query_context = (
-            nitsm.codemoduleapi.pinquerycontexts.SinglePinMultipleSessionQueryContext(
-                self._context, pin
-            )
+        pin_query_context = nitsm.pinquerycontexts.SinglePinMultipleSessionQueryContext(
+            self._context, pin
         )
         _, *session_and_channel_data = self.pins_to_custom_sessions(instrument_type_id, [pin])
         return (pin_query_context, *session_and_channel_data)
@@ -1741,10 +1693,8 @@ class SemiconductorModuleContext:
                 multiple sites, the channel appears only once in the list.
         """
 
-        pin_query_context = (
-            nitsm.codemoduleapi.pinquerycontexts.MultiplePinMultipleSessionQueryContext(
-                self._context, pins
-            )
+        pin_query_context = nitsm.pinquerycontexts.MultiplePinMultipleSessionQueryContext(
+            self._context, pins
         )
         session_ids, *channel_data = self._context.GetSessionData(instrument_type_id, pins)
         session_data = tuple(
