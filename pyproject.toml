@@ -15,12 +15,12 @@ exclude = '''
     | build
     | dist
   )/
-  | nitsm/codemoduleapi/pinmapinterfaces.py
+  | nitsm/pinmapinterfaces.py
 )
 '''
 
 [tool.ni-python-styleguide]
-extend_exclude = "src/nitsm/codemoduleapi/pinmapinterfaces.py"
+extend_exclude = "src/nitsm/pinmapinterfaces.py"
 
 [tool.pytest.ini_options]
 testpaths = [

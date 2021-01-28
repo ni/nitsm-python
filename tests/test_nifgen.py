@@ -1,9 +1,9 @@
 import nifgen
 import pytest
-from nitsm.codemoduleapi.pinquerycontexts import NIFGenSinglePinSingleSessionQueryContext
-from nitsm.codemoduleapi.pinquerycontexts import NIFGenSinglePinMultipleSessionQueryContext
-from nitsm.codemoduleapi.pinquerycontexts import NIFGenMultiplePinSingleSessionQueryContext
-from nitsm.codemoduleapi.pinquerycontexts import NIFGenMultiplePinMultipleSessionQueryContext
+from nitsm.pinquerycontexts import NIFGenSinglePinSingleSessionQueryContext
+from nitsm.pinquerycontexts import NIFGenSinglePinMultipleSessionQueryContext
+from nitsm.pinquerycontexts import NIFGenMultiplePinSingleSessionQueryContext
+from nitsm.pinquerycontexts import NIFGenMultiplePinMultipleSessionQueryContext
 
 
 @pytest.fixture
