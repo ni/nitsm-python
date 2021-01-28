@@ -30,13 +30,11 @@ __all__ = [
 
 
 if typing.TYPE_CHECKING:
-    import nitsm.codemoduleapi.pinmapinterfaces
+    import nitsm.pinmapinterfaces
 
 
 class PinQueryContext:
-    def __init__(
-        self, tsm_context: "nitsm.codemoduleapi.pinmapinterfaces.ISemiconductorModuleContext"
-    ):
+    def __init__(self, tsm_context: "nitsm.pinmapinterfaces.ISemiconductorModuleContext"):
         self._tsm_context = tsm_context
 
 

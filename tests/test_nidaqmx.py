@@ -1,10 +1,10 @@
 import nidaqmx
 import pytest
 from nitsm.codemoduleapi import SemiconductorModuleContext
-from nitsm.codemoduleapi.pinquerycontexts import NIDAQmxSinglePinSingleTaskQueryContext
-from nitsm.codemoduleapi.pinquerycontexts import NIDAQmxSinglePinMultipleTaskQueryContext
-from nitsm.codemoduleapi.pinquerycontexts import NIDAQmxMultiplePinSingleTaskQueryContext
-from nitsm.codemoduleapi.pinquerycontexts import NIDAQmxMultiplePinMultipleTaskQueryContext
+from nitsm.pinquerycontexts import NIDAQmxSinglePinSingleTaskQueryContext
+from nitsm.pinquerycontexts import NIDAQmxSinglePinMultipleTaskQueryContext
+from nitsm.pinquerycontexts import NIDAQmxMultiplePinSingleTaskQueryContext
+from nitsm.pinquerycontexts import NIDAQmxMultiplePinMultipleTaskQueryContext
 
 
 @pytest.fixture
