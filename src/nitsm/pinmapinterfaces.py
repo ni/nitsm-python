@@ -2,7 +2,7 @@
 # Created by makepy.py version 0.5.01
 # By python version 3.6.8 (tags/v3.6.8:3c6b436a57, Dec 24 2018, 00:16:47) [MSC v.1916 64 bit (AMD64)]
 # From type library 'NationalInstruments.TestStand.SemiconductorModule.PinMapInterfaces.tlb'
-# On Thu Dec  3 11:20:50 2020
+# On Thu Jan 28 09:47:32 2021
 'NI TestStand 2020 Semiconductor Module Pin Map Interfaces'
 makepy_version = '0.5.01'
 python_version = 0x30608f0
@@ -985,7 +985,7 @@ class ISemiconductorModuleContext(DispatchBaseClass):
 		# Method 'MeasurementPublisher' returns object of type 'IMeasurementPublisher'
 		"MeasurementPublisher": (1610743808, 2, (9, 0), (), "MeasurementPublisher", '{48E8AD0C-C048-47D7-BA19-2D79CF62FF77}'),
 		"PinMapPath": (1610743963, 2, (8, 0), (), "PinMapPath", None),
-		"PinMapUsesNIDCPowerChannel": (1610744052, 2, (11, 0), (), "PinMapUsesNIDCPowerChannelGroups", None),
+		"PinMapUsesNIDCPowerChannelGroups": (1610744052, 2, (11, 0), (), "PinMapUsesNIDCPowerChannelGroups", None),
 		"SiteNumbers": (1610743809, 2, (8195, 0), (), "SiteNumbers", None),
 	}
 	_prop_map_put_ = {

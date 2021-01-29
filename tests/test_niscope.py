@@ -2,10 +2,10 @@ import niscope
 import pytest
 
 from nitsm.codemoduleapi import SemiconductorModuleContext
-from nitsm.codemoduleapi.pinquerycontexts import NIScopeSinglePinSingleSessionQueryContext
-from nitsm.codemoduleapi.pinquerycontexts import NIScopeSinglePinMultipleSessionQueryContext
-from nitsm.codemoduleapi.pinquerycontexts import NIScopeMultiplePinSingleSessionQueryContext
-from nitsm.codemoduleapi.pinquerycontexts import NIScopeMultiplePinMultipleSessionQueryContext
+from nitsm.pinquerycontexts import NIScopeSinglePinSingleSessionQueryContext
+from nitsm.pinquerycontexts import NIScopeSinglePinMultipleSessionQueryContext
+from nitsm.pinquerycontexts import NIScopeMultiplePinSingleSessionQueryContext
+from nitsm.pinquerycontexts import NIScopeMultiplePinMultipleSessionQueryContext
 
 
 @pytest.fixture
