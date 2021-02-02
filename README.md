@@ -1,18 +1,34 @@
 # nitsm-python
 
 ## Tests
-
+### Dependencies
 Before you can run tests you must install the following:
-* Python for Win32 extensions (pip install pywin32)
-* TestStand
-* TestStand Semiconductor Module
+* [TestStand 20.0+](https://www.ni.com/en-us/support/downloads/software-products/download.teststand.html)
+* [TestStand Semiconductor Module 20.0+](https://www.ni.com/en-us/support/downloads/software-products/download.teststand-semiconductor-module.html)
 * TSM standalone context
-    * copy locally from \\nirvana\perforceexports\TesterOS\TSM\StandaloneSemiconductorModuleContext
-    * execute RegisterAssembly.bat as administrator (see Readme.txt)
-* NI drivers: NI-DCPower, NI-DMM, NI-SCOPE, NI-Digital, NI-SWITCH, NI-DAQmx, NIFGEN
-* NI drivers python API (use pip install <package> for the following packages): nidcpower, nidmm, niscope, nidigital, niswitch, nidaqmx, nifgen
-
-To run pytest from the command line, install nitsm in edit mode then run pytest.
+    * Copy locally from \\nirvana\perforceexports\TesterOS\TSM\StandaloneSemiconductorModuleContext
+    * Execute RegisterAssembly.bat as administrator (see Readme.txt)
+* NI drivers:
+  - [NI-DCPower](https://www.ni.com/en-us/support/downloads/drivers/download.ni-dcpower.html)
+  - [NI-DMM](https://www.ni.com/en-us/support/downloads/drivers/download.ni-dmm.html)
+  - [NI-SCOPE](https://www.ni.com/en-us/support/downloads/drivers/download.ni-scope.html)
+  - [NI-Digital](https://www.ni.com/en-us/support/downloads/drivers/download.ni-digital-pattern-driver.html)
+  - [NI-SWITCH](https://www.ni.com/en-us/support/downloads/drivers/download.ni-switch.html)
+  - [NI-DAQmx](https://www.ni.com/en-us/support/downloads/drivers/download.ni-daqmx.html)
+  - [NI-FGEN](https://www.ni.com/en-us/support/downloads/drivers/download.ni-fgen.html)
+* NI python bindings:
+```
+pip install nidcpower nidmm niscope nidigital niswitch nidaqmx nifegn
+```
+* Pytest 
+```
+pip install pytest
+```
+* Python for Win32 extensions
+```
+pip install pywin32
+```
+After installing the required dependencies, install nitsm in edit mode then run pytest.
 ```
 pip install -e .
 pytest
