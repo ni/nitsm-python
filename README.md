@@ -18,7 +18,7 @@ Before you can run tests you must install the following:
   - [NI-FGEN](https://www.ni.com/en-us/support/downloads/drivers/download.ni-fgen.html)
 * NI python bindings:
 ```
-pip install nidcpower nidmm niscope nidigital niswitch nidaqmx nifegn
+pip install nidcpower nidmm niscope nidigital niswitch nidaqmx nifgen
 ```
 * Pytest 
 ```
