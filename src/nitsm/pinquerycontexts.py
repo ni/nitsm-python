@@ -20,7 +20,7 @@ class PinQueryContext:
         return self._pins
 
     def publish(self, data, published_data_id=""):
-        if isinstance(data, float):
+        if isinstance(data, (float, int)):
             return self._publish_float_scalar(data, published_data_id)
         elif isinstance(data, bool):
             return self._publish_bool_scalar(data, published_data_id)
@@ -34,7 +34,7 @@ class PinQueryContext:
         return self._publish_bool_1d([data], published_data_id)
 
     def _publish_sequence(self, data, published_data_id):
-        if isinstance(data[0], float):
+        if isinstance(data[0], (float, int)):
             return self._publish_float_1d(data, published_data_id)
         elif isinstance(data[0], bool):
             return self._publish_bool_1d(data, published_data_id)
@@ -54,7 +54,7 @@ class PinQueryContext:
             return self._tsm_context.Publish_6(self._pins, published_data_id, data)
 
     def _publish_sequence_2d(self, data, published_data_id):
-        if isinstance(data[0][0], float):
+        if isinstance(data[0][0], (float, int)):
             return self._publish_float_2d(data, published_data_id)
         else:
             return self._publish_bool_2d(data, published_data_id)
