@@ -1,10 +1,7 @@
 import nidcpower
 import pytest
 from nitsm.codemoduleapi import SemiconductorModuleContext
-from nitsm.pinquerycontexts import NIDCPowerSinglePinSingleSessionQueryContext
-from nitsm.pinquerycontexts import NIDCPowerSinglePinMultipleSessionQueryContext
-from nitsm.pinquerycontexts import NIDCPowerMultiplePinSingleSessionQueryContext
-from nitsm.pinquerycontexts import NIDCPowerMultiplePinMultipleSessionQueryContext
+from nitsm.pinquerycontexts import PinQueryContext
 
 
 @pytest.fixture
@@ -72,7 +69,7 @@ class TestNIDCPower:
             queried_session,
             queried_channel_string,
         ) = standalone_tsm_context.pin_to_nidcpower_session("SystemPin1")
-        assert isinstance(pin_query_context, NIDCPowerSinglePinSingleSessionQueryContext)
+        assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_session, nidcpower.Session)
         assert isinstance(queried_channel_string, str)
         assert queried_session in simulated_nidcpower_sessions
@@ -83,7 +80,7 @@ class TestNIDCPower:
             queried_sessions,
             queried_channel_strings,
         ) = standalone_tsm_context.pin_to_nidcpower_sessions("PinGroup1")
-        assert isinstance(pin_query_context, NIDCPowerSinglePinMultipleSessionQueryContext)
+        assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_sessions, tuple)
         assert isinstance(queried_channel_strings, tuple)
         assert len(queried_sessions) == len(queried_channel_strings)
@@ -101,7 +98,7 @@ class TestNIDCPower:
             queried_sessions,
             queried_channel_strings,
         ) = standalone_tsm_context.pins_to_nidcpower_sessions(all_pins)
-        assert isinstance(pin_query_context, NIDCPowerMultiplePinMultipleSessionQueryContext)
+        assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_sessions, tuple)
         assert isinstance(queried_channel_strings, tuple)
         assert len(queried_sessions) == len(queried_channel_strings)
@@ -154,7 +151,7 @@ class TestNIDCPowerChannelGroups:
             queried_session,
             queried_channel_string,
         ) = standalone_tsm_context.pins_to_nidcpower_session(self.pin_map_channel_group_pins)
-        assert isinstance(pin_query_context, NIDCPowerMultiplePinSingleSessionQueryContext)
+        assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_session, nidcpower.Session)
         assert isinstance(queried_channel_string, str)
         assert queried_session in simulated_nidcpower_sessions_with_resource_strings

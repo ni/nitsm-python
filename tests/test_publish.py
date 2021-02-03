@@ -24,26 +24,25 @@ class TestSinglePinSingleSessionQueryContext:
         return pin_query_context
 
     def test_publish_float_scalar(self, pin_query_context, published_data_reader):
-        pin_query_context.publish_float_scalar(1150.0)
+        pin_query_context.publish(1150.0)
         published_data = published_data_reader.get_and_clear_published_data()
         assert published_data.__next__().double_value == 1150.0
 
     def test_publish_float_1d(self, pin_query_context, published_data_reader):
         test_data = [1150.0, 1952.5]
-        pin_query_context.publish_float_1d(test_data)
+        pin_query_context.publish(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         for published_data_point, test_data_point in zip(published_data, test_data):
             assert published_data_point.double_value == test_data_point
 
     def test_publish_bool_scalar(self, pin_query_context, published_data_reader):
-        test_data = True
-        pin_query_context.publish_bool_scalar(test_data)
+        pin_query_context.publish(True)
         published_data = published_data_reader.get_and_clear_published_data()
         assert published_data.__next__().boolean_value
 
     def test_publish_bool_1d(self, pin_query_context, published_data_reader):
         test_data = [True, False]
-        pin_query_context.publish_bool_1d(test_data)
+        pin_query_context.publish(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         for published_data_point, test_data_point in zip(published_data, test_data):
             assert published_data_point.boolean_value == test_data_point
@@ -59,14 +58,14 @@ class TestSinglePinMultipleSessionQueryContext:
 
     def test_publish_float_1d(self, pin_query_context, published_data_reader):
         test_data = [1150.0, 1952.5]
-        pin_query_context.publish_float_1d(test_data)
+        pin_query_context.publish(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         for published_data_point, test_data_point in zip(published_data, test_data):
             assert published_data_point.double_value == test_data_point
 
     def test_publish_float_2d(self, pin_query_context, published_data_reader):
         test_data = [[1150.0], [1952.5]]
-        pin_query_context.publish_float_2d(test_data)
+        pin_query_context.publish(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         flattened_test_data = (data_point for row in test_data for data_point in row)
         for published_data_point, test_data_point in zip(published_data, flattened_test_data):
@@ -74,14 +73,14 @@ class TestSinglePinMultipleSessionQueryContext:
 
     def test_publish_bool_1d(self, pin_query_context, published_data_reader):
         test_data = [True, False]
-        pin_query_context.publish_bool_1d(test_data)
+        pin_query_context.publish(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         for published_data_point, test_data_point in zip(published_data, test_data):
             assert published_data_point.boolean_value == test_data_point
 
     def test_publish_bool_2d(self, pin_query_context, published_data_reader):
         test_data = [[True], [False]]
-        pin_query_context.publish_bool_2d(test_data)
+        pin_query_context.publish(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         flattened_test_data = (data_point for row in test_data for data_point in row)
         for published_data_point, test_data_point in zip(published_data, flattened_test_data):
@@ -100,14 +99,14 @@ class TestMultiplePinSingleSessionQueryContext:
 
     def test_publish_float_1d(self, pin_query_context, published_data_reader):
         test_data = [1150.0, 1952.5]
-        pin_query_context.publish_float_1d(test_data)
+        pin_query_context.publish(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         for published_data_point, test_data_point in zip(published_data, test_data):
             assert published_data_point.double_value == test_data_point
 
     def test_publish_bool_1d(self, pin_query_context, published_data_reader):
         test_data = [True, False]
-        pin_query_context.publish_bool_1d(test_data)
+        pin_query_context.publish(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         for published_data_point, test_data_point in zip(published_data, test_data):
             assert published_data_point.boolean_value == test_data_point
@@ -125,14 +124,14 @@ class TestMultiplePinMultipleSessionQueryContext:
 
     def test_publish_float_1d(self, pin_query_context, published_data_reader):
         test_data = [1150.0, 1952.5]
-        pin_query_context.publish_float_1d(test_data)
+        pin_query_context.publish(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         for published_data_point, test_data_point in zip(published_data, test_data):
             assert published_data_point.double_value == test_data_point
 
     def test_publish_float_2d(self, pin_query_context, published_data_reader):
         test_data = [[1150.0], [1952.5]]
-        pin_query_context.publish_float_2d(test_data)
+        pin_query_context.publish(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         flattened_test_data = (data_point for row in test_data for data_point in row)
         for published_data_point, test_data_point in zip(published_data, flattened_test_data):
@@ -140,14 +139,14 @@ class TestMultiplePinMultipleSessionQueryContext:
 
     def test_publish_bool_1d(self, pin_query_context, published_data_reader):
         test_data = [True, False]
-        pin_query_context.publish_bool_1d(test_data)
+        pin_query_context.publish(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         for published_data_point, test_data_point in zip(published_data, test_data):
             assert published_data_point.boolean_value == test_data_point
 
     def test_publish_bool_2d(self, pin_query_context, published_data_reader):
         test_data = [[True], [False]]
-        pin_query_context.publish_bool_2d(test_data)
+        pin_query_context.publish(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         flattened_test_data = (data_point for row in test_data for data_point in row)
         for published_data_point, test_data_point in zip(published_data, flattened_test_data):

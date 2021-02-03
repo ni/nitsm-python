@@ -1,11 +1,7 @@
 import niscope
 import pytest
-
 from nitsm.codemoduleapi import SemiconductorModuleContext
-from nitsm.pinquerycontexts import NIScopeSinglePinSingleSessionQueryContext
-from nitsm.pinquerycontexts import NIScopeSinglePinMultipleSessionQueryContext
-from nitsm.pinquerycontexts import NIScopeMultiplePinSingleSessionQueryContext
-from nitsm.pinquerycontexts import NIScopeMultiplePinMultipleSessionQueryContext
+from nitsm.pinquerycontexts import PinQueryContext
 
 
 @pytest.fixture
@@ -63,7 +59,7 @@ class TestNIScope:
             queried_session,
             queried_channel_list,
         ) = standalone_tsm_context.pin_to_niscope_session("SystemPin1")
-        assert isinstance(pin_query_context, NIScopeSinglePinSingleSessionQueryContext)
+        assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_session, niscope.Session)
         assert isinstance(queried_channel_list, str)
         assert queried_session in simulated_niscope_sessions
@@ -76,7 +72,7 @@ class TestNIScope:
             queried_sessions,
             queried_channel_lists,
         ) = standalone_tsm_context.pin_to_niscope_sessions("PinGroup1")
-        assert isinstance(pin_query_context, NIScopeSinglePinMultipleSessionQueryContext)
+        assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_sessions, tuple)
         assert isinstance(queried_channel_lists, tuple)
         assert len(queried_sessions) == len(queried_channel_lists)
@@ -94,7 +90,7 @@ class TestNIScope:
             queried_session,
             queried_channel_list,
         ) = standalone_tsm_context.pins_to_niscope_session(all_pins)
-        assert isinstance(pin_query_context, NIScopeMultiplePinSingleSessionQueryContext)
+        assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_session, niscope.Session)
         assert isinstance(queried_channel_list, str)
         assert queried_session in simulated_niscope_sessions
@@ -108,7 +104,7 @@ class TestNIScope:
             queried_sessions,
             queried_channel_lists,
         ) = standalone_tsm_context.pins_to_niscope_sessions(all_pins)
-        assert isinstance(pin_query_context, NIScopeMultiplePinMultipleSessionQueryContext)
+        assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_sessions, tuple)
         assert isinstance(queried_channel_lists, tuple)
         assert len(queried_sessions) == len(queried_channel_lists)

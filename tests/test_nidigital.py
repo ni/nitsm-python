@@ -1,8 +1,7 @@
 import os.path
 import nidigital
 import pytest
-from nitsm.codemoduleapi.pinquerycontexts import NIDigitalPatternSingleSessionPinQueryContext
-from nitsm.codemoduleapi.pinquerycontexts import NIDigitalPatternPinQueryContext
+from nitsm.pinquerycontexts import PinQueryContext
 
 
 @pytest.fixture
@@ -60,7 +59,7 @@ class TestNIDigital:
             pin_set_string,
             site_list,
         ) = standalone_tsm_context.pin_to_nidigital_session("SystemPin1")
-        assert isinstance(pin_query_context, NIDigitalPatternSingleSessionPinQueryContext)
+        assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_session, nidigital.Session)
         assert isinstance(pin_set_string, str)
         assert isinstance(site_list, str)
@@ -73,7 +72,7 @@ class TestNIDigital:
             pin_set_strings,
             site_lists,
         ) = standalone_tsm_context.pin_to_nidigital_sessions("PinGroup1")
-        assert isinstance(pin_query_context, NIDigitalPatternPinQueryContext)
+        assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_sessions, tuple)
         assert isinstance(pin_set_strings, tuple)
         assert isinstance(site_lists, tuple)
@@ -95,7 +94,7 @@ class TestNIDigital:
             pin_set_string,
             site_list,
         ) = standalone_tsm_context.pins_to_nidigital_session(self.pin_map_dut_pins)
-        assert isinstance(pin_query_context, NIDigitalPatternSingleSessionPinQueryContext)
+        assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_session, nidigital.Session)
         assert isinstance(pin_set_string, str)
         assert isinstance(site_list, str)
@@ -109,7 +108,7 @@ class TestNIDigital:
             pin_set_strings,
             site_lists,
         ) = standalone_tsm_context.pins_to_nidigital_sessions(all_pins)
-        assert isinstance(pin_query_context, NIDigitalPatternPinQueryContext)
+        assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_sessions, tuple)
         assert isinstance(pin_set_strings, tuple)
         assert isinstance(site_lists, tuple)
