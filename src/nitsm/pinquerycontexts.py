@@ -63,7 +63,6 @@ class PinQueryContext:
                 for sub_seq in data
             )
         )
-
         if isinstance(data[0][0], bool):
             return self._publish_bool_2d(data, published_data_id)
         else:
