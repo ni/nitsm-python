@@ -54,6 +54,10 @@ class PinQueryContext:
             return self._tsm_context.Publish_6(self._pins, published_data_id, data)
 
     def _publish_sequence_2d(self, data, published_data_id):
+        # pad jagged lists with 0s to make 2d sequence rectangular
+        max_length = max(map(len, data))
+        data = [list(sub_sequence) + [0] * (max_length - len(sub_sequence)) for sub_sequence in data]
+
         if isinstance(data[0][0], bool):
             return self._publish_bool_2d(data, published_data_id)
         else:
