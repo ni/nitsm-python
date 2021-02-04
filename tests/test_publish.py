@@ -18,7 +18,7 @@ class TestSinglePinScalar:
         pin_query_context, *_ = standalone_tsm_context.pin_to_nidigital_session("SystemPin1")
         return pin_query_context
 
-    def test_publish_float(self, pin_query_context, published_data_reader):
+    def test_publish_float_scalar(self, pin_query_context, published_data_reader):
         pin_query_context.publish(1150.0)
         published_data = published_data_reader.get_and_clear_published_data()
         assert published_data.__next__().double_value == 1150.0
