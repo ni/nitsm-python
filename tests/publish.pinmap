@@ -1,37 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<PinMap schemaVersion="1.1" xmlns="http://www.ni.com/TestStand/SemiconductorModule/PinMap.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PinMap schemaVersion="1.2" xmlns="http://www.ni.com/TestStand/SemiconductorModule/PinMap.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<Instruments>
-		<Instrument name="Custom1" instrumentTypeId="pytest">
-			<ChannelGroup id="Custom1ChannelGroup1">
-				<Channel id="ch0" />
-				<Channel id="ch1" />
-			</ChannelGroup>
-		</Instrument>
-		<Instrument name="Custom2" instrumentTypeId="pytest">
-			<Channel id="ch0" />
-		</Instrument>
-		<Instrument name="Custom3" instrumentTypeId="pytest">
-			<Channel id="ch0" />
-		</Instrument>
+		<NIDigitalPatternInstrument name="DigitalPattern1" numberOfChannels="32" />
+		<NIDigitalPatternInstrument name="DigitalPattern2" numberOfChannels="32" />
 	</Instruments>
 	<Pins>
 		<DUTPin name="DUTPin1" />
 		<DUTPin name="DUTPin2" />
-		<SystemPin name="SystemPin1" />
 		<DUTPin name="DUTPin3" />
+		<SystemPin name="SystemPin1" />
 	</Pins>
-	<PinGroups>
-		<PinGroup name="PinGroup1">
-			<PinReference pin="SystemPin1" />
-		</PinGroup>
-	</PinGroups>
+	<PinGroups></PinGroups>
 	<Sites>
 		<Site siteNumber="0" />
+		<Site siteNumber="1" />
 	</Sites>
 	<Connections>
-		<Connection pin="DUTPin1" siteNumber="0" instrument="Custom1" channel="ch0" />
-		<Connection pin="DUTPin2" siteNumber="0" instrument="Custom2" channel="ch0" />
-		<Connection pin="DUTPin3" siteNumber="0" instrument="Custom1" channel="ch1" />
-		<SystemConnection pin="SystemPin1" instrument="Custom3" channel="ch0" />
+		<Connection pin="DUTPin1" siteNumber="0" instrument="DigitalPattern1" channel="0" />
+		<Connection pin="DUTPin1" siteNumber="1" instrument="DigitalPattern1" channel="1" />
+		<Connection pin="DUTPin2" siteNumber="0" instrument="DigitalPattern1" channel="2" />
+		<Connection pin="DUTPin2" siteNumber="1" instrument="DigitalPattern1" channel="3" />
+		<Connection pin="DUTPin3" siteNumber="0" instrument="DigitalPattern1" channel="4" />
+		<Connection pin="DUTPin3" siteNumber="1" instrument="DigitalPattern2" channel="0" />
+		<SystemConnection pin="SystemPin1" instrument="DigitalPattern1" channel="5" />
 	</Connections>
 </PinMap>
