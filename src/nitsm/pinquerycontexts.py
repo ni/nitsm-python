@@ -56,7 +56,7 @@ class PinQueryContext:
     def _publish_sequence_2d(self, data, published_data_id):
         # pad jagged lists with 0s to make 2d sequence rectangular
         max_length = max(map(len, data))
-        data = [list(sub_sequence) + [0] * (max_length - len(sub_sequence)) for sub_sequence in data]
+        data = [list(sub_seq) + [0] * (max_length - len(sub_seq)) for sub_seq in data]
 
         if isinstance(data[0][0], bool):
             return self._publish_bool_2d(data, published_data_id)
