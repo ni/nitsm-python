@@ -3,6 +3,7 @@ Pin Query Contexts
 """
 
 import typing
+import itertools
 
 __all__ = ["PinQueryContext"]
 
@@ -56,7 +57,12 @@ class PinQueryContext:
     def _publish_sequence_2d(self, data, published_data_id):
         # pad jagged sequences with 0s to make 2d sequence rectangular
         max_length = max(map(len, data))
-        data = [list(sub_seq) + [0] * (max_length - len(sub_seq)) for sub_seq in data]
+        data = data.__class__(
+            (
+                sub_seq + sub_seq.__class__(itertools.repeat(0, max_length - len(sub_seq)))
+                for sub_seq in data
+            )
+        )
 
         if isinstance(data[0][0], bool):
             return self._publish_bool_2d(data, published_data_id)
