@@ -75,7 +75,7 @@ class PublishedDataReader:
 
     def get_and_clear_published_data(self):
         published_data = self._published_data_reader.GetAndClearPublishedData()
-        return (PublishedData(published_data_point) for published_data_point in published_data)
+        return list(PublishedData(published_data_point) for published_data_point in published_data)
 
 
 @pytest.fixture
