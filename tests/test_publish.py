@@ -13,7 +13,6 @@ def simulated_nidigital_sessions(standalone_tsm_context: SemiconductorModuleCont
 @pytest.mark.pin_map("publish.pinmap")
 @pytest.mark.usefixtures("simulated_nidigital_sessions")
 class TestSinglePinScalar:
-
     @pytest.fixture
     def num_sites(self):
         return 2  # defined in publish.pinmap
