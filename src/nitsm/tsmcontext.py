@@ -15,10 +15,11 @@ import nitsm.enums
 __all__ = ["SemiconductorModuleContext"]
 
 if typing.TYPE_CHECKING:
+    import nidmm
+
     _PinQueryContext = nitsm.pinquerycontexts.PinQueryContext
     _PinsArg = typing.Union[str, typing.Sequence[str]]  # argument that accepts 1 or more pins
 
-    import nidmm
     _NIDmmSingleSessionQuery = typing.Tuple[_PinQueryContext, nidmm.Session]
     _NIDmmMultipleSessionQuery = typing.Tuple[_PinQueryContext, typing.Tuple[nidmm.Session, ...]]
 
