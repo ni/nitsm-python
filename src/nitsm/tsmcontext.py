@@ -6,12 +6,21 @@ import ctypes
 import ctypes.util
 import sys
 import time
+import typing
 import pythoncom
 import nitsm.pinmapinterfaces
 import nitsm.pinquerycontexts
 import nitsm.enums
 
 __all__ = ["SemiconductorModuleContext"]
+
+if typing.TYPE_CHECKING:
+    _PinQueryContext = nitsm.pinquerycontexts.PinQueryContext
+    _PinsArg = typing.Union[str, typing.Sequence[str]]  # argument that accepts 1 or more pins
+
+    import nidmm
+    _NIDmmSingleSessionQuery = typing.Tuple[_PinQueryContext, nidmm.Session]
+    _NIDmmMultipleSessionQuery = typing.Tuple[_PinQueryContext, typing.Tuple[nidmm.Session, ...]]
 
 
 class SemiconductorModuleContext:
@@ -801,7 +810,7 @@ class SemiconductorModuleContext:
 
     # NI-DMM
 
-    def get_all_nidmm_instrument_names(self):
+    def get_all_nidmm_instrument_names(self) -> typing.Tuple[str]:
         """
         Returns a tuple of all NI-DMM instrument names in the Semiconductor Module context. You can
         use instrument names to open driver sessions.
@@ -809,7 +818,7 @@ class SemiconductorModuleContext:
 
         return self._context.GetNIDmmInstrumentNames()
 
-    def set_nidmm_session(self, instrument_name, session):
+    def set_nidmm_session(self, instrument_name: str, session: "nidmm.Session"):
         """
         Associates an instrument session with an NI-DMM instrument name.
 
@@ -822,7 +831,7 @@ class SemiconductorModuleContext:
         SemiconductorModuleContext._sessions[session_id] = session
         return self._context.SetNIDmmSession(instrument_name, session_id)
 
-    def get_all_nidmm_sessions(self):
+    def get_all_nidmm_sessions(self) -> typing.Tuple["nidmm.Session"]:
         """
         Returns a tuple of all NI-DMM instrument sessions in the Semiconductor Module context. You
         can use instrument sessions to close driver sessions.
@@ -831,7 +840,7 @@ class SemiconductorModuleContext:
         session_ids = self._context.GetNIDmmSessions()
         return tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
 
-    def pin_to_nidmm_session(self, pin):
+    def pin_to_nidmm_session(self, pin: str) -> "_NIDmmSingleSessionQuery":
         """
         Returns the NI-DMM session required to access the pin. If more than one session is required,
         the method raises an exception.
@@ -852,43 +861,25 @@ class SemiconductorModuleContext:
         session = SemiconductorModuleContext._sessions[session_id]
         return pin_query_context, session
 
-    def pin_to_nidmm_sessions(self, pin):
+    def pins_to_nidmm_sessions(self, pins: "_PinsArg") -> "_NIDmmMultipleSessionQuery":
         """
-        Returns the NI-DMM sessions required to access the pin.
+        Returns the NI-DMM instrument sessions required to access the pin(s).
 
         Args:
-            pin: The name of the pin or pin group to translate to instrument sessions.
+            pins: The names of the pin(s) or pin group(s) to translate to instrument sessions.
 
         Returns:
             pin_query_context: An object that tracks the sessions associated with this pin query.
                 Use this object to publish measurements and extract data from a set of measurements.
             sessions: Returns the NI-DMM instrument sessions for the instruments connected to the
-                pin for all sites in the Semiconductor Module context.
-        """
-
-        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pin)
-        session_ids = self._context.GetNIDmmSessions_2(pin)
-        sessions = tuple(
-            SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
-        )
-        return pin_query_context, sessions
-
-    def pins_to_nidmm_sessions(self, pins):
-        """
-        Returns the NI-DMM instrument sessions required to access the pins.
-
-        Args:
-            pins: The names of the pins or pin groups to translate to instrument sessions.
-
-        Returns:
-            pin_query_context: An object that tracks the sessions associated with this pin query.
-                Use this object to publish measurements and extract data from a set of measurements.
-            sessions: Returns the NI-DMM instrument sessions for the instruments connected to pins
-                for all sites in the Semiconductor Module context.
+                pin(s) for all sites in the Semiconductor Module context.
         """
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
-        session_ids = self._context.GetNIDmmSessions_3(pins)
+        if isinstance(pins, str):
+            session_ids = self._context.GetNIDmmSessions_2(pins)
+        else:
+            session_ids = self._context.GetNIDmmSessions_3(pins)
         sessions = tuple(
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
         )
