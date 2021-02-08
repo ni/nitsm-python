@@ -61,10 +61,10 @@ class TestNIDMM:
         assert isinstance(queried_session, nidmm.Session)
         assert queried_session in simulated_nidmm_sessions
 
-    def test_pin_to_nidmm_sessions(
+    def test_pins_to_nidmm_sessions_single_pin(
         self, standalone_tsm_context: SemiconductorModuleContext, simulated_nidmm_sessions
     ):
-        pin_query_context, queried_sessions = standalone_tsm_context.pin_to_nidmm_sessions(
+        pin_query_context, queried_sessions = standalone_tsm_context.pins_to_nidmm_sessions(
             "PinGroup1"
         )
         assert isinstance(pin_query_context, PinQueryContext)
@@ -73,7 +73,7 @@ class TestNIDMM:
             assert isinstance(queried_session, nidmm.Session)
             assert queried_session in simulated_nidmm_sessions
 
-    def test_pins_to_nidmm_sessions(
+    def test_pins_to_nidmm_sessions_multiple_pins(
         self, standalone_tsm_context: SemiconductorModuleContext, simulated_nidmm_sessions
     ):
         all_pins = self.pin_map_dut_pins + self.pin_map_system_pins
