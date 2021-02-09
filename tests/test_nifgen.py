@@ -42,34 +42,18 @@ class TestNIFGen:
             assert isinstance(queried_session, nifgen.Session)
             assert queried_session in simulated_nifgen_sessions
 
-    def test_pin_to_nifgen_session(self, standalone_tsm_context, simulated_nifgen_sessions):
+    def test_pin_to_nifgen_session_single_pin(self, standalone_tsm_context, simulated_nifgen_sessions):
         (
             pin_query_context,
             queried_session,
             queried_channel_list,
-        ) = standalone_tsm_context.pin_to_nifgen_session("SystemPin1")
+        ) = standalone_tsm_context.pins_to_nifgen_session("SystemPin1")
         assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_session, nifgen.Session)
         assert isinstance(queried_channel_list, str)
         assert queried_session in simulated_nifgen_sessions
 
-    def test_pin_to_nifgen_sessions(self, standalone_tsm_context, simulated_nifgen_sessions):
-        (
-            pin_query_context,
-            queried_sessions,
-            queried_channel_lists,
-        ) = standalone_tsm_context.pin_to_nifgen_sessions("PinGroup1")
-        assert isinstance(pin_query_context, PinQueryContext)
-        assert isinstance(queried_sessions, tuple)
-        assert isinstance(queried_channel_lists, tuple)
-        assert len(queried_sessions) == len(simulated_nifgen_sessions)
-        assert len(queried_sessions) == len(queried_channel_lists)
-        for queried_session, queried_channel_list in zip(queried_sessions, queried_channel_lists):
-            assert isinstance(queried_session, nifgen.Session)
-            assert isinstance(queried_channel_list, str)
-            assert queried_session in simulated_nifgen_sessions
-
-    def test_pins_to_nifgen_session(self, standalone_tsm_context, simulated_nifgen_sessions):
+    def test_pins_to_nifgen_session_muliple_pins(self, standalone_tsm_context, simulated_nifgen_sessions):
         (
             pin_query_context,
             queried_session,
@@ -80,7 +64,23 @@ class TestNIFGen:
         assert isinstance(queried_channel_list, str)
         assert queried_session in simulated_nifgen_sessions
 
-    def test_pins_to_nifgen_sessions(self, standalone_tsm_context, simulated_nifgen_sessions):
+    def test_pins_to_nifgen_sessions_single_pin(self, standalone_tsm_context, simulated_nifgen_sessions):
+        (
+            pin_query_context,
+            queried_sessions,
+            queried_channel_lists,
+        ) = standalone_tsm_context.pins_to_nifgen_sessions("PinGroup1")
+        assert isinstance(pin_query_context, PinQueryContext)
+        assert isinstance(queried_sessions, tuple)
+        assert isinstance(queried_channel_lists, tuple)
+        assert len(queried_sessions) == len(simulated_nifgen_sessions)
+        assert len(queried_sessions) == len(queried_channel_lists)
+        for queried_session, queried_channel_list in zip(queried_sessions, queried_channel_lists):
+            assert isinstance(queried_session, nifgen.Session)
+            assert isinstance(queried_channel_list, str)
+            assert queried_session in simulated_nifgen_sessions
+
+    def test_pins_to_nifgen_sessions_multiple_pins(self, standalone_tsm_context, simulated_nifgen_sessions):
         all_pins = self.pin_map_dut_pins + self.pin_map_system_pins
         (
             pin_query_context,

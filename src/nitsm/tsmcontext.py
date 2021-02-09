@@ -16,12 +16,18 @@ __all__ = ["SemiconductorModuleContext"]
 
 if typing.TYPE_CHECKING:
     import nidmm
+    import nifgen
 
     _PinQueryContext = nitsm.pinquerycontexts.PinQueryContext
     _PinsArg = typing.Union[str, typing.Sequence[str]]  # argument that accepts 1 or more pins
 
     _NIDmmSingleSessionQuery = typing.Tuple[_PinQueryContext, nidmm.Session]
     _NIDmmMultipleSessionQuery = typing.Tuple[_PinQueryContext, typing.Tuple[nidmm.Session, ...]]
+
+    _NIFgenSingleSessionQuery = typing.Tuple[_PinQueryContext, nifgen.Session, str]
+    _NIFgenMultipleSessionQuery = typing.Tuple[
+        _PinQueryContext, typing.Tuple[nifgen.Session, ...], typing.Tuple[str, ...]
+    ]
 
 
 class SemiconductorModuleContext:
@@ -918,101 +924,57 @@ class SemiconductorModuleContext:
         session_ids = self._context.GetNIFGenSessions()
         return tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
 
-    def pin_to_nifgen_session(self, pin):
+    def pins_to_nifgen_session(self, pins: "_PinsArg") -> "_NIFgenSingleSessionQuery":
         """
-        Returns the NI-FGEN session and channel list required to access the pin. If more than one
+        Returns the NI-FGEN session and channel list required to access the pin(s). If more than one
         session is required, the method raises an exception.
 
         Args:
-            pin: The name of the pin or pin group to translate to a session. If more than one
-                session is required, the method raises an exception.
-
-        Returns:
-            pin_query_context: An object that tracks the sessions associated with this pin query.
-                Use this object to publish measurements and extract data from a set of measurements.
-            session: Returns the NI-FGEN instrument session for the instrument connected to the pin
-                for all sites in the Semiconductor Module context.
-            channel_list: Returns the comma-separated channel list for the instrument connected to
-                the pin for all sites in the Semiconductor Module context. If the pin is shared and
-                there are multiple connections of the same channel to the pin, the channel only
-                appears once in the list.
-        """
-
-        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pin)
-        session_id, channel_list = self._context.GetNIFGenSession(pin)
-        session = SemiconductorModuleContext._sessions[session_id]
-        return pin_query_context, session, channel_list
-
-    def pins_to_nifgen_session(self, pins):
-        """
-        Returns the NI-FGEN session and channel list required to access the pins. If more than one
-        session is required, the method raises an exception.
-
-        Args:
-            pins: The names of the pins or pin groups to translate to a session. If more than one
-                session is required, the method raises an exception.
+            pins: The name(s) of the pin(s) or pin group(s) to translate to a session. If more than
+                one session is required, the method raises an exception.
 
         Returns:
             pin_query_context: An object that tracks the session associated with this pin query. Use
                 this object to publish measurements and extract data from a set of measurements.
-            session: Returns the NI-FGEN instrument session for the instrument connected to the pins
-                for all sites in the Semiconductor Module context.
+            session: Returns the NI-FGEN instrument session for the instrument connected to the
+                pin(s) for all sites in the Semiconductor Module context.
             channel_list: Returns the comma-separated channel list for the instrument connected to
-                the pins for all sites in the Semiconductor Module context. If any of the pins are
-                connected to the same instrument channel for multiple sites, the channel appears
-                only once in the list.
-        """
-
-        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
-        session_id, channel_list = self._context.GetNIFGenSession_2(pins)
-        session = SemiconductorModuleContext._sessions[session_id]
-        return pin_query_context, session, channel_list
-
-    def pin_to_nifgen_sessions(self, pin):
-        """
-        Returns the NI-FGEN sessions and channel lists required to access the pin.
-
-        Args:
-            pin: The name of the pin or pin group to translate to sessions.
-
-        Returns:
-            pin_query_context: An object that tracks the sessions associated with this pin query.
-                Use this object to publish measurements and extract data from a set of measurements.
-            sessions: Returns the NI-FGEN instrument sessions for the instruments connected to the
-                pin for all sites in the Semiconductor Module context.
-            channel_lists: Returns the comma-separated channel lists for the instruments connected
-                to the pin for all sites in the Semiconductor Module context. If the pin is shared
-                and there are multiple connections of the same channel to the pin, the channel only
-                appears once in each list.
-        """
-
-        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pin)
-        session_ids, channel_lists = self._context.GetNIFGenSessions_2(pin)
-        sessions = tuple(
-            SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
-        )
-        return pin_query_context, sessions, channel_lists
-
-    def pins_to_nifgen_sessions(self, pins):
-        """
-        Returns the NI-FGEN sessions and channel lists required to access the pins.
-
-        Args:
-            pins: The names of the pins or pin groups to translate to sessions.
-
-        Returns:
-            pin_query_context: An object that tracks the sessions associated with this pin query.
-                Use this object to publish measurements and extract data from a set of measurements.
-            sessions: Returns the NI-FGEN instrument sessions for the instruments connected to the
-                pins for all sites in the Semiconductor Module context.
-            channel_lists: Returns the comma-separated channel lists for the instruments connected
-                to the pins for all sites in the Semiconductor Module context. If any of the pins
+                the pin(s) for all sites in the Semiconductor Module context. If any of the pin(s)
                 are connected to the same instrument channel for multiple sites, the channel appears
                 only once in the list.
         """
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
-        session_ids, channel_lists = self._context.GetNIFGenSessions_3(pins)
+        if isinstance(pins, str):
+            session_id, channel_list = self._context.GetNIFGenSession(pins)
+        else:
+            session_id, channel_list = self._context.GetNIFGenSession_2(pins)
+        session = SemiconductorModuleContext._sessions[session_id]
+        return pin_query_context, session, channel_list
+
+    def pins_to_nifgen_sessions(self, pins: "_PinsArg") -> "_NIFgenMultipleSessionQuery":
+        """
+        Returns the NI-FGEN sessions and channel lists required to access the pin(s).
+
+        Args:
+            pins: The names of the pin(s) or pin group(s) to translate to sessions.
+
+        Returns:
+            pin_query_context: An object that tracks the sessions associated with this pin query.
+                Use this object to publish measurements and extract data from a set of measurements.
+            sessions: Returns the NI-FGEN instrument sessions for the instruments connected to the
+                pin(s) for all sites in the Semiconductor Module context.
+            channel_lists: Returns the comma-separated channel lists for the instruments connected
+                to the pin(s) for all sites in the Semiconductor Module context. If any of the
+                pin(s) are connected to the same instrument channel for multiple sites, the channel
+                appears only once in the list.
+        """
+
+        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
+        if isinstance(pins, str):
+            session_ids, channel_lists = self._context.GetNIFGenSessions_2(pins)
+        else:
+            session_ids, channel_lists = self._context.GetNIFGenSessions_3(pins)
         sessions = tuple(
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
         )
