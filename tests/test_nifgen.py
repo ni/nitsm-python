@@ -42,7 +42,9 @@ class TestNIFGen:
             assert isinstance(queried_session, nifgen.Session)
             assert queried_session in simulated_nifgen_sessions
 
-    def test_pin_to_nifgen_session_single_pin(self, standalone_tsm_context, simulated_nifgen_sessions):
+    def test_pin_to_nifgen_session_single_pin(
+        self, standalone_tsm_context, simulated_nifgen_sessions
+    ):
         (
             pin_query_context,
             queried_session,
@@ -53,7 +55,9 @@ class TestNIFGen:
         assert isinstance(queried_channel_list, str)
         assert queried_session in simulated_nifgen_sessions
 
-    def test_pins_to_nifgen_session_muliple_pins(self, standalone_tsm_context, simulated_nifgen_sessions):
+    def test_pins_to_nifgen_session_muliple_pins(
+        self, standalone_tsm_context, simulated_nifgen_sessions
+    ):
         (
             pin_query_context,
             queried_session,
@@ -64,7 +68,9 @@ class TestNIFGen:
         assert isinstance(queried_channel_list, str)
         assert queried_session in simulated_nifgen_sessions
 
-    def test_pins_to_nifgen_sessions_single_pin(self, standalone_tsm_context, simulated_nifgen_sessions):
+    def test_pins_to_nifgen_sessions_single_pin(
+        self, standalone_tsm_context, simulated_nifgen_sessions
+    ):
         (
             pin_query_context,
             queried_sessions,
@@ -80,7 +86,9 @@ class TestNIFGen:
             assert isinstance(queried_channel_list, str)
             assert queried_session in simulated_nifgen_sessions
 
-    def test_pins_to_nifgen_sessions_multiple_pins(self, standalone_tsm_context, simulated_nifgen_sessions):
+    def test_pins_to_nifgen_sessions_multiple_pins(
+        self, standalone_tsm_context, simulated_nifgen_sessions
+    ):
         all_pins = self.pin_map_dut_pins + self.pin_map_system_pins
         (
             pin_query_context,
