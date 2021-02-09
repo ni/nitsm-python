@@ -15,10 +15,16 @@ import nitsm.enums
 __all__ = ["SemiconductorModuleContext"]
 
 if typing.TYPE_CHECKING:
+    import nidaqmx
     import nidmm
 
     _PinQueryContext = nitsm.pinquerycontexts.PinQueryContext
     _PinsArg = typing.Union[str, typing.Sequence[str]]  # argument that accepts 1 or more pins
+
+    _NIDAQmxSingleSessionQuery = typing.Tuple[_PinQueryContext, nidaqmx.Task, str]
+    _NIDAQmxMultipleSessionQuery = typing.Tuple[
+        _PinQueryContext, typing.Tuple[nidaqmx.Task, ...], typing.Tuple[str, ...]
+    ]
 
     _NIDmmSingleSessionQuery = typing.Tuple[_PinQueryContext, nidmm.Session]
     _NIDmmMultipleSessionQuery = typing.Tuple[_PinQueryContext, typing.Tuple[nidmm.Session, ...]]
@@ -703,109 +709,61 @@ class SemiconductorModuleContext:
         task_ids = self._context.GetNIDAQmxTasks(task_type)
         return tuple(SemiconductorModuleContext._sessions[task_id] for task_id in task_ids)
 
-    def pin_to_nidaqmx_task(self, pin):
+    def pins_to_nidaqmx_task(self, pins: "_PinsArg") -> "_NIDAQmxSingleSessionQuery":
         """
-        Returns the NI-DAQmx task and channels list required to access the pin. If more than one
-        task is required, the method raises an exception.
-
-        Args:
-            pin: The name of the pin or pin group to translate to a task. If more than one task is
-                required, the method raises an exception.
-
-        Returns:
-            pin_query_context: An object that tracks the task associated with this pin query. Use
-                this object to publish measurements and extract data from a set of measurements.
-            task: Returns the NI-DAQmx task associated with the pin or pin group for all sites in
-                the Semiconductor Module context.
-            channel_list: Returns the comma-separated list of channels in the task associated with
-                the pin or pin group for all sites in the Semiconductor Module context. Use the
-                channel list to set the channels to read from for an input task or as an input to
-                one of the per task data methods associated with this pin query context for an
-                output task. If the pin is connected to the same instrument channel for multiple
-                sites, the channel appears only once in the list.
-        """
-
-        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pin)
-        task_id, channel_list = self._context.GetNIDAQmxTask(pin)
-        task = SemiconductorModuleContext._sessions[task_id]
-        return pin_query_context, task, channel_list
-
-    def pins_to_nidaqmx_task(self, pins):
-        """
-        Returns the NI-DAQmx task and available channels list required to access the pins. If more
+        Returns the NI-DAQmx task and available channels list required to access the pin(s). If more
         than one task is required, the method raises an exception.
 
         Args:
-            pins: The name of the pins or pin groups to translate to a task.
+            pins: The name of the pin(s) or pin group(s) to translate to a task.
 
         Returns:
             pin_query_context: An object that tracks the task associated with this pin query. Use
                 this object to publish measurements and extract data from a set of measurements.
-            task: Returns the NI-DAQmx task associated with the pin or pin group for all sites in
-                the Semiconductor Module context. If more than one task is required, the method
-                raises an exception.
+            task: Returns the NI-DAQmx task associated with the pin(s) or pin group(s) for all sites
+                in the Semiconductor Module context.
             channel_list: Returns the comma-separated list of channels in the task associated with
-                the pins or pin groups for all sites in the Semiconductor Module context. Use the
-                channel list to set the channels to read from for an input task or as an input to
-                one of the per task data methods associated with this pin query context for an
+                the pin(s) or pin group(s) for all sites in the Semiconductor Module context. Use
+                the channel list to set the channels to read from for an input task or as an input
+                to one of the per task data methods associated with this pin query context for an
                 output task. If any of the pins are connected to the same instrument channel for
                 multiple sites, the channel appears only once in the list.
         """
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
-        task_id, channel_list = self._context.GetNIDAQmxTask_2(pins)
+        if isinstance(pins, str):
+            task_id, channel_list = self._context.GetNIDAQmxTask(pins)
+        else:
+            task_id, channel_list = self._context.GetNIDAQmxTask_2(pins)
         task = SemiconductorModuleContext._sessions[task_id]
         return pin_query_context, task, channel_list
 
-    def pin_to_nidaqmx_tasks(self, pin):
+    def pins_to_nidaqmx_tasks(self, pins: "_PinsArg") -> "_NIDAQmxMultipleSessionQuery":
         """
-        Returns the NI-DAQmx tasks and available channels lists required to access the pin or pin
-        group.
+        Returns the NI-DAQmx tasks and available channels lists required to access the pin(s) or pin
+        group(s).
 
         Args:
-            pin: The name of the pin or pin group to translate to a set of tasks.
+            pins: The name of the pin(s) or pin group(s) to translate to a set of tasks.
 
         Returns:
             pin_query_context: An object that tracks the tasks associated with this pin query. Use
                 this object to publish measurements and extract data from a set of measurements.
-            tasks: Returns the NI-DAQmx tasks associated with the pin or pin group for all sites in
-                the Semiconductor Module context.
+            tasks: Returns the NI-DAQmx tasks associated with the pin(s) or pin group(s) for all
+                sites in the Semiconductor Module context.
             channel_lists: Returns the comma-separated lists of channels in the tasks associated
-                with the pin or pin group for all sites in the Semiconductor Module context. Use the
-                channel lists to set the channels to read from for input tasks or as an input to one
-                of the per task data methods associated with this pin query context for output
-                tasks. If the pin is connected to the same instrument channel for multiple sites,
-                the channel appears only once in the list.
-        """
-
-        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pin)
-        task_ids, channel_lists = self._context.GetNIDAQmxTasks_2(pin)
-        tasks = tuple(SemiconductorModuleContext._sessions[task_id] for task_id in task_ids)
-        return pin_query_context, tasks, channel_lists
-
-    def pins_to_nidaqmx_tasks(self, pins):
-        """
-        Returns the NI-DAQmx tasks and available channels lists required to access the pins or pin
-        groups.
-
-        Args:
-            pins: The name of the pins or pin groups to translate to a set of tasks.
-
-        Returns:
-            pin_query_context: An object that tracks the tasks associated with this pin query. Use
-                this object to publish measurements and extract data from a set of measurements.
-            tasks: Returns the NI-DAQmx tasks associated with the pin or pin group for all sites in
-                the Semiconductor Module context.
-            channel_lists: Returns the comma-separated lists of channels in the tasks associated
-                with the pins or pin groups for all sites in the Semiconductor Module context. Use
-                the channel lists to set the channels to read from for input tasks or as an input to
-                one of the per task data methods associated with this pin query context for output
-                tasks. If any of the pins are connected to the same instrument channel for multiple
-                sites, the channel appears only once in the list.
+                with the pin(s) or pin group(s) for all sites in the Semiconductor Module context.
+                Use the channel lists to set the channels to read from for input tasks or as an
+                input to one of the per task data methods associated with this pin query context for
+                output tasks. If any of the pin(s) are connected to the same instrument channel for
+                multiple sites, the channel appears only once in the list.
         """
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
-        task_ids, channel_lists = self._context.GetNIDAQmxTasks_3(pins)
+        if isinstance(pins, str):
+            task_ids, channel_lists = self._context.GetNIDAQmxTasks_2(pins)
+        else:
+            task_ids, channel_lists = self._context.GetNIDAQmxTasks_3(pins)
         tasks = tuple(SemiconductorModuleContext._sessions[task_id] for task_id in task_ids)
         return pin_query_context, tasks, channel_lists
 
