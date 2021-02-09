@@ -52,7 +52,9 @@ class TestNIDigital:
             assert isinstance(queried_session, nidigital.Session)
             assert queried_session in simulated_nidigital_sessions
 
-    def test_pins_to_nidigital_session_single_pin(self, standalone_tsm_context, simulated_nidigital_sessions):
+    def test_pins_to_nidigital_session_single_pin(
+        self, standalone_tsm_context, simulated_nidigital_sessions
+    ):
         (
             pin_query_context,
             queried_session,
@@ -65,7 +67,9 @@ class TestNIDigital:
         assert isinstance(site_list, str)
         assert queried_session in simulated_nidigital_sessions
 
-    def test_pins_to_nidigital_session_multiple_pins(self, standalone_tsm_context, simulated_nidigital_sessions):
+    def test_pins_to_nidigital_session_multiple_pins(
+        self, standalone_tsm_context, simulated_nidigital_sessions
+    ):
         (
             pin_query_context,
             queried_session,
@@ -78,7 +82,9 @@ class TestNIDigital:
         assert isinstance(site_list, str)
         assert queried_session in simulated_nidigital_sessions
 
-    def test_pins_to_nidigital_sessions_single_pin(self, standalone_tsm_context, simulated_nidigital_sessions):
+    def test_pins_to_nidigital_sessions_single_pin(
+        self, standalone_tsm_context, simulated_nidigital_sessions
+    ):
         (
             pin_query_context,
             queried_sessions,
@@ -100,7 +106,9 @@ class TestNIDigital:
             assert isinstance(site_list, str)
             assert queried_session in simulated_nidigital_sessions
 
-    def test_pins_to_nidigital_sessions_multiple_pins(self, standalone_tsm_context, simulated_nidigital_sessions):
+    def test_pins_to_nidigital_sessions_multiple_pins(
+        self, standalone_tsm_context, simulated_nidigital_sessions
+    ):
         all_pins = self.pin_map_dut_pins + self.pin_map_system_pins
         (
             pin_query_context,
