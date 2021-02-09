@@ -52,26 +52,39 @@ class TestNIDigital:
             assert isinstance(queried_session, nidigital.Session)
             assert queried_session in simulated_nidigital_sessions
 
-    def test_pin_to_nidigital_session(self, standalone_tsm_context, simulated_nidigital_sessions):
+    def test_pins_to_nidigital_session_single_pin(self, standalone_tsm_context, simulated_nidigital_sessions):
         (
             pin_query_context,
             queried_session,
             pin_set_string,
             site_list,
-        ) = standalone_tsm_context.pin_to_nidigital_session("SystemPin1")
+        ) = standalone_tsm_context.pins_to_nidigital_session("SystemPin1")
         assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_session, nidigital.Session)
         assert isinstance(pin_set_string, str)
         assert isinstance(site_list, str)
         assert queried_session in simulated_nidigital_sessions
 
-    def test_pin_to_nidigital_sessions(self, standalone_tsm_context, simulated_nidigital_sessions):
+    def test_pins_to_nidigital_session_multiple_pins(self, standalone_tsm_context, simulated_nidigital_sessions):
+        (
+            pin_query_context,
+            queried_session,
+            pin_set_string,
+            site_list,
+        ) = standalone_tsm_context.pins_to_nidigital_session(self.pin_map_dut_pins)
+        assert isinstance(pin_query_context, PinQueryContext)
+        assert isinstance(queried_session, nidigital.Session)
+        assert isinstance(pin_set_string, str)
+        assert isinstance(site_list, str)
+        assert queried_session in simulated_nidigital_sessions
+
+    def test_pins_to_nidigital_sessions_single_pin(self, standalone_tsm_context, simulated_nidigital_sessions):
         (
             pin_query_context,
             queried_sessions,
             pin_set_strings,
             site_lists,
-        ) = standalone_tsm_context.pin_to_nidigital_sessions("PinGroup1")
+        ) = standalone_tsm_context.pins_to_nidigital_sessions("PinGroup1")
         assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_sessions, tuple)
         assert isinstance(pin_set_strings, tuple)
@@ -87,20 +100,7 @@ class TestNIDigital:
             assert isinstance(site_list, str)
             assert queried_session in simulated_nidigital_sessions
 
-    def test_pins_to_nidigital_session(self, standalone_tsm_context, simulated_nidigital_sessions):
-        (
-            pin_query_context,
-            queried_session,
-            pin_set_string,
-            site_list,
-        ) = standalone_tsm_context.pins_to_nidigital_session(self.pin_map_dut_pins)
-        assert isinstance(pin_query_context, PinQueryContext)
-        assert isinstance(queried_session, nidigital.Session)
-        assert isinstance(pin_set_string, str)
-        assert isinstance(site_list, str)
-        assert queried_session in simulated_nidigital_sessions
-
-    def test_pins_to_nidigital_sessions(self, standalone_tsm_context, simulated_nidigital_sessions):
+    def test_pins_to_nidigital_sessions_multiple_pins(self, standalone_tsm_context, simulated_nidigital_sessions):
         all_pins = self.pin_map_dut_pins + self.pin_map_system_pins
         (
             pin_query_context,
