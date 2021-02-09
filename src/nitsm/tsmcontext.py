@@ -832,7 +832,7 @@ class SemiconductorModuleContext:
         SemiconductorModuleContext._sessions[session_id] = session
         return self._context.SetNIDmmSession(instrument_name, session_id)
 
-    def get_all_nidmm_sessions(self) -> typing.Tuple["nidmm.Session"]:
+    def get_all_nidmm_sessions(self) -> typing.Tuple["nidmm.Session", ...]:
         """
         Returns a tuple of all NI-DMM instrument sessions in the Semiconductor Module context. You
         can use instrument sessions to close driver sessions.
