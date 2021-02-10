@@ -1149,11 +1149,10 @@ class SemiconductorModuleContext:
                 the relay action(s).
         """
 
-        from niswitch import RelayAction
-        if isinstance(relay_actions, RelayAction):
-            return self._control_relays_single_action(relays, relay_actions, wait_seconds)
-        else:
+        if isinstance(relay_actions, (list, tuple)):
             return self._control_relays_multiple_action(relays, relay_actions, wait_seconds)
+        else:
+            return self._control_relays_single_action(relays, relay_actions, wait_seconds)
 
     # Custom Instruments
 
