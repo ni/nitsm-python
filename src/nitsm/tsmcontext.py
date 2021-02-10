@@ -21,6 +21,7 @@ if typing.TYPE_CHECKING:
     import nidmm
     import nifgen
     import niscope
+    import niswitch
 
     _PinQueryContext = nitsm.pinquerycontexts.PinQueryContext
     _PinsArg = typing.Union[str, typing.Sequence[str]]  # argument that accepts 1 or more pins
@@ -54,6 +55,11 @@ if typing.TYPE_CHECKING:
     _NIScopeSingleSessionQuery = typing.Tuple[_PinQueryContext, niscope.Session, str]
     _NIScopeMultipleSessionQuery = typing.Tuple[
         _PinQueryContext, typing.Tuple[niscope.Session, ...], typing.Tuple[str, ...]
+    ]
+
+    _RelayDriverSingleSessionQuery = typing.Tuple[niswitch.Session, str]
+    _RelayDriverMultipleSessionQuery = typing.Tuple[
+        typing.Tuple[niswitch.Session, ...], typing.Tuple[str, ...]
     ]
 
 
@@ -1001,93 +1007,56 @@ class SemiconductorModuleContext:
         session_ids = self._context.GetNIRelayDriverSessions()
         return tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
 
-    def relay_to_relay_driver_niswitch_session(self, relay):
+    def relays_to_relay_driver_niswitch_session(
+        self, relays: "_PinsArg"
+    ) -> "_RelayDriverSingleSessionQuery":
         """
-        Returns the NI-SWITCH session and relay names required to access the relays connected to a
-        relay driver module. If more than one session is required to access the relay, the method
+        Returns the NI-SWITCH session and relay names required to access the relay(s) connected to a
+        relay driver module. If more than one session is required to access the relay(s), the method
         raises an exception.
 
         Args:
-            relay: The name of the relay or relay group to translate to an NI-SWITCH session and
-                NI-SWITCH relay names. If more than one session is required, the method raises an
-                exception.
+            relays: The name(s) of the relay(s) or relay group(s) to translate to an NI-SWITCH
+                session and NI-SWITCH relay names.
 
         Returns:
             niswitch_session: Returns the NI-SWITCH session for the relay driver module connected to
-                the relay for all sites in the Semiconductor Module context.
+                the relay(s) for all sites in the Semiconductor Module context.
             niswitch_relay_names: Returns a comma-separated list of NI-SWITCH relay names for the
-                relay driver module session connected to the relay for all sites in the
+                relay driver module session connected to the relay(s) for all sites in the
                 Semiconductor Module context.
         """
 
-        session_id, niswitch_relay_names = self._context.GetNIRelayDriverSession(relay)
+        if isinstance(relays, str):
+            session_id, niswitch_relay_names = self._context.GetNIRelayDriverSession(relays)
+        else:
+            session_id, niswitch_relay_names = self._context.GetNIRelayDriverSession_2(relays)
         niswitch_session = SemiconductorModuleContext._sessions[session_id]
         return niswitch_session, niswitch_relay_names
 
-    def relays_to_relay_driver_niswitch_session(self, relays):
+    def relays_to_relay_driver_niswitch_sessions(
+        self, relays: "_PinsArg"
+    ) -> "_RelayDriverMultipleSessionQuery":
         """
-        Returns the NI-SWITCH session and relay names required to access the relays connected to a
-        relay driver module. If more than one session is required to access the relays, the method
-        raises an exception.
+        Returns the NI-SWITCH sessions and relay names required to access the relay(s) connected to
+        a relay driver module.
 
         Args:
-            relays: The name of the relays or relay groups to translate to an NI-SWITCH session and
-                NI-SWITCH relay names. If more than one session is required, the method raises an
-                exception.
-
-        Returns:
-            niswitch_session: Returns the NI-SWITCH session for the relay driver module connected to
-                the relays for all sites in the Semiconductor Module context.
-            niswitch_relay_names: Returns a comma-separated list of NI-SWITCH relay names for the
-                relay driver module session connected to the relays for all sites in the
-                Semiconductor Module context.
-        """
-
-        session_id, niswitch_relay_names = self._context.GetNIRelayDriverSession_2(relays)
-        niswitch_session = SemiconductorModuleContext._sessions[session_id]
-        return niswitch_session, niswitch_relay_names
-
-    def relay_to_relay_driver_niswitch_sessions(self, relay):
-        """
-        Returns the NI-SWITCH sessions and relay names required to access the relay connected to a
-        relay driver module.
-
-        Args:
-            relay: The name of the relay or relay group to translate to NI-SWITCH sessions and
-                NI-SWITCH relay names.
+            relays: The name(s) of the relay(s) or relay group(s) to translate to NI-SWITCH sessions
+                and NI-SWITCH relay names.
 
         Returns:
             niswitch_sessions: Returns NI-SWITCH sessions for the relay driver modules connected to
-                the relay for all sites in the Semiconductor Module context.
+                the relay(s) for all sites in the Semiconductor Module context.
             niswitch_relay_names: Returns comma-separated lists of NI-SWITCH relay names for the
-                relay driver module sessions connected to the relay for all sites in the
+                relay driver module sessions connected to the relay(s) for all sites in the
                 Semiconductor Module context.
         """
 
-        session_ids, niswitch_relay_names = self._context.GetNIRelayDriverSessions_2(relay)
-        niswitch_sessions = tuple(
-            SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
-        )
-        return niswitch_sessions, niswitch_relay_names
-
-    def relays_to_relay_driver_niswitch_sessions(self, relays):
-        """
-        Returns the NI-SWITCH sessions and relay names required to access the relays connected to a
-        relay driver module.
-
-        Args:
-            relays: The names of the relays or relay groups to translate to NI-SWITCH sessions and
-                NI-SWITCH relay names.
-
-        Returns:
-            niswitch_sessions: Returns NI-SWITCH sessions for the relay driver modules connected to
-                the relays for all sites in the Semiconductor Module context.
-            niswitch_relay_names: Returns comma-separated lists of NI-SWITCH relay names for the
-                relay driver module sessions connected to the relays for all sites in the
-                Semiconductor Module context.
-        """
-
-        session_ids, niswitch_relay_names = self._context.GetNIRelayDriverSessions_3(relays)
+        if isinstance(relays, str):
+            session_ids, niswitch_relay_names = self._context.GetNIRelayDriverSessions_2(relays)
+        else:
+            session_ids, niswitch_relay_names = self._context.GetNIRelayDriverSessions_3(relays)
         niswitch_sessions = tuple(
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
         )
@@ -1142,52 +1111,14 @@ class SemiconductorModuleContext:
         self.__relay_wait(wait_seconds)
         return None
 
-    def control_relay_single_action(self, relay, relay_action, wait_seconds=0.0):
-        """
-        Performs the relay action on the relays.
-
-        Args:
-            relay: The name of the relay or relay group that identifies the relays.
-            relay_action: The action to perform on all identified relays.
-            wait_seconds: The time to wait, in seconds, for the relays to settle after performing
-                the relay action.
-        """
-
-        niswitch_sessions, relay_names = self.relay_to_relay_driver_niswitch_sessions(relay)
-        for niswitch_session, niswitch_relay_name in zip(niswitch_sessions, relay_names):
-            niswitch_session.relay_control(niswitch_relay_name, relay_action)
-        self.__relay_wait(wait_seconds)
-        return None
-
-    def control_relays_single_action(self, relays, relay_action, wait_seconds=0.0):
-        """
-        Performs the relay action on the relays.
-
-        Args:
-            relays: The names of the relays or relay groups that identify the relays.
-            relay_action: The action to perform on all identified relays.
-            wait_seconds: The time to wait, in seconds, for the relays to settle after performing
-                the relay action.
-        """
-
+    def _control_relays_single_action(self, relays, relay_action, wait_seconds=0.0):
         niswitch_sessions, relay_names = self.relays_to_relay_driver_niswitch_sessions(relays)
         for niswitch_session, niswitch_relay_name in zip(niswitch_sessions, relay_names):
             niswitch_session.relay_control(niswitch_relay_name, relay_action)
         self.__relay_wait(wait_seconds)
         return None
 
-    def control_relays_multiple_action(self, relays, relay_actions, wait_seconds=0.0):
-        """
-        Performs the relay actions on the relays.
-
-        Args:
-            relays: The names of the relays or relay groups that identify the relays.
-            relay_actions: The actions to perform on the relays identified by the corresponding
-                relay or relay group.
-            wait_seconds: The time to wait, in seconds, for the relays to settle after performing
-                all relay actions.
-        """
-
+    def _control_relays_multiple_action(self, relays, relay_actions, wait_seconds=0.0):
         if len(relays) != len(relay_actions):
             self._context.ReportIncompatibleArrayLengths("relays", "relay_actions")
         else:
@@ -1206,6 +1137,22 @@ class SemiconductorModuleContext:
             )
             self.__relay_wait(wait_seconds)
         return None
+
+    def control_relays(self, relays, relay_actions, wait_seconds=0.0):
+        """
+        Performs the relay action(s) on the relay(s).
+
+        Args:
+            relays: The name(s) of the relay(s) or relay group(s) that identify the relays.
+            relay_actions: The action(s) to perform on all identified relays.
+            wait_seconds: The time to wait, in seconds, for the relay(s) to settle after performing
+                the relay action(s).
+        """
+
+        if isinstance(relay_actions, (list, tuple)):
+            return self._control_relays_multiple_action(relays, relay_actions, wait_seconds)
+        else:
+            return self._control_relays_single_action(relays, relay_actions, wait_seconds)
 
     # Custom Instruments
 
