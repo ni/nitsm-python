@@ -1195,7 +1195,11 @@ class SemiconductorModuleContext:
         return self._context.GetAllInstrumentDefinitions(instrument_type_id)
 
     def set_custom_session(
-        self, instrument_type_id: str, instrument_name: str, channel_group_id: str, session_data: typing.Any
+        self,
+        instrument_type_id: str,
+        instrument_name: str,
+        channel_group_id: str,
+        session_data: typing.Any,
     ):
         """
         Associates a session with an instrument and channel group.
