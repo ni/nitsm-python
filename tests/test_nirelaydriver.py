@@ -131,9 +131,7 @@ class TestNIRelayDriver:
             assert queried_niswitch_session in simulated_niswitch_sessions
 
     @pytest.mark.usefixtures("simulated_niswitch_sessions")
-    def test_apply_relay_configuration(
-        self, standalone_tsm_context: SemiconductorModuleContext
-    ):
+    def test_apply_relay_configuration(self, standalone_tsm_context: SemiconductorModuleContext):
         standalone_tsm_context.apply_relay_configuration("RelayConfiguration1")
         assert_relay_positions(
             standalone_tsm_context, self.pin_map_site_relays, RelayPosition.CLOSED
@@ -208,9 +206,7 @@ class TestNIRelayDriver:
             RelayAction.OPEN if i % 2 else RelayAction.CLOSE
             for i in range(len(self.pin_map_site_relays))
         ]
-        standalone_tsm_context.control_relays(
-            self.pin_map_site_relays, relay_actions
-        )
+        standalone_tsm_context.control_relays(self.pin_map_site_relays, relay_actions)
         for pin_map_site_relay, relay_action in zip(self.pin_map_site_relays, relay_actions):
             relay_position = (
                 RelayPosition.OPEN if relay_action == RelayAction.OPEN else RelayPosition.CLOSED
