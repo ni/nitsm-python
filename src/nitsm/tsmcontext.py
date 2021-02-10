@@ -15,14 +15,47 @@ import nitsm.enums
 __all__ = ["SemiconductorModuleContext"]
 
 if typing.TYPE_CHECKING:
+    import nidigital
+    import nidcpower
+    import nidaqmx
     import nidmm
+    import nifgen
+    import niscope
     import niswitch
 
     _PinQueryContext = nitsm.pinquerycontexts.PinQueryContext
     _PinsArg = typing.Union[str, typing.Sequence[str]]  # argument that accepts 1 or more pins
 
+    _NIDigitalSingleSessionQuery = typing.Tuple[_PinQueryContext, nidigital.Session, str, str]
+    _NIDigitalMultipleSessionQuery = typing.Tuple[
+        _PinQueryContext,
+        typing.Tuple[nidigital.Session, ...],
+        typing.Tuple[str, ...],
+        typing.Tuple[str, ...],
+    ]
+
+    _NIDCPowerSingleSessionQuery = typing.Tuple[_PinQueryContext, nidcpower.Session, str]
+    _NIDCPowerMultipleSessionQuery = typing.Tuple[
+        _PinQueryContext, typing.Tuple[nidcpower.Session, ...], typing.Tuple[str, ...]
+    ]
+
+    _NIDAQmxSingleSessionQuery = typing.Tuple[_PinQueryContext, nidaqmx.Task, str]
+    _NIDAQmxMultipleSessionQuery = typing.Tuple[
+        _PinQueryContext, typing.Tuple[nidaqmx.Task, ...], typing.Tuple[str, ...]
+    ]
+
     _NIDmmSingleSessionQuery = typing.Tuple[_PinQueryContext, nidmm.Session]
     _NIDmmMultipleSessionQuery = typing.Tuple[_PinQueryContext, typing.Tuple[nidmm.Session, ...]]
+
+    _NIFgenSingleSessionQuery = typing.Tuple[_PinQueryContext, nifgen.Session, str]
+    _NIFgenMultipleSessionQuery = typing.Tuple[
+        _PinQueryContext, typing.Tuple[nifgen.Session, ...], typing.Tuple[str, ...]
+    ]
+
+    _NIScopeSingleSessionQuery = typing.Tuple[_PinQueryContext, niscope.Session, str]
+    _NIScopeMultipleSessionQuery = typing.Tuple[
+        _PinQueryContext, typing.Tuple[niscope.Session, ...], typing.Tuple[str, ...]
+    ]
 
     _RelayDriverSingleSessionQuery = typing.Tuple[niswitch.Session, str]
     _RelayDriverMultipleSessionQuery = typing.Tuple[
@@ -291,58 +324,26 @@ class SemiconductorModuleContext:
         session_ids = self._context.GetNIDigitalPatternSessions()
         return tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
 
-    def pin_to_nidigital_session(self, pin):
+    def pins_to_nidigital_session(self, pins: "_PinsArg") -> "_NIDigitalSingleSessionQuery":
         """
-        Returns the NI-Digital Pattern session and pin_set_string required to access the pin, as
+        Returns the NI-Digital Pattern session and pin_set_string required to access the pin(s), as
         well as the site_list associated with the pin_set_string. If more than one session is
-        required to access the pin, the method raises an exception. Each group of NI-Digital Pattern
-        instruments in the pin map creates a single instrument session.
-
-        Args:
-            pin: The name of the pin or pin group to translate to session and pin_set_string.
-
-        Returns:
-            pin_query_context: An object that tracks the session and channels associated with this
-                pin query. Use this object to publish measurements, to publish pattern results and
-                to extract data from a set of measurements.
-            session: Returns the NI-Digital Pattern instrument session for the instrument(s)
-                connected to pin for all sites in the Semiconductor Module context.
-            pin_set_string: Returns the pin set string for the instrument session required to access
-                the pin for all sites in the Semiconductor Module context. The pin set is specified
-                by site and pin e.g. "site0/A" as expected by the NI-Digital Pattern driver. If the
-                pin is shared and there are multiple connections of the same channel to the pin, the
-                channel only appears once in the string and is identified by one of the site/pin
-                combinations to which it is connected.
-            site_list: Returns a string that is a comma-separated list of sites (e.g. "site0,site1")
-                that correspond to the sites associated with the channels in the channel_list. This
-                site_list is needed as an input to certain NI-Digital Pattern driver calls.
-        """
-
-        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pin)
-        session_id, pin_set_string, site_list = self._context.GetNIDigitalPatternSession_2(pin)
-        session = SemiconductorModuleContext._sessions[session_id]
-        return pin_query_context, session, pin_set_string, site_list
-
-    def pins_to_nidigital_session(self, pins):
-        """
-        Returns the NI-Digital Pattern session and pin_set_string required to access the pins, as
-        well as the site_list associated with the pin_set_string. If more than one session is
-        required to access the pins, the method raises an exception. Each group of NI-Digital
+        required to access the pin(s), the method raises an exception. Each group of NI-Digital
         Pattern instruments in the pin map creates a single instrument session.
 
         Args:
-            pins: The name of the pins or pin groups to translate to session and pin_set_string.
+            pins: The name of the pin(s) or pin group(s) to translate to session and pin_set_string.
 
         Returns:
             pin_query_context: An object that tracks the session and channels associated with this
                 pin query. Use this object to publish measurements, to publish pattern results and
                 to extract data from a set of measurements.
             session: Returns the NI-Digital Pattern instrument session for the instrument(s)
-                connected to pins for all sites in the Semiconductor Module context.
+                connected to pin(s) for all sites in the Semiconductor Module context.
             pin_set_string: Returns the pin set string for the instrument session required to access
                 the pins for all sites in the Semiconductor Module context. The pin set is specified
                 by site and pin e.g. "site0/A" as expected by the NI-Digital Pattern driver. If any
-                of the pins are connected to the same instrument channel for multiple sites, the
+                of the pin(s) are connected to the same instrument channel for multiple sites, the
                 channel appears only once in the string and is identified by one of the site/pin
                 combinations to which it is connected.
             site_list: Returns a string that is a comma-separated list of sites (e.g. "site0,site1")
@@ -351,69 +352,48 @@ class SemiconductorModuleContext:
         """
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
-        session_id, pin_set_string, site_list = self._context.GetNIDigitalPatternSession(pins)
+        if isinstance(pins, str):
+            session_id, pin_set_string, site_list = self._context.GetNIDigitalPatternSession_2(pins)
+        else:
+            session_id, pin_set_string, site_list = self._context.GetNIDigitalPatternSession(pins)
         session = SemiconductorModuleContext._sessions[session_id]
         return pin_query_context, session, pin_set_string, site_list
 
-    def pin_to_nidigital_sessions(self, pin):
+    def pins_to_nidigital_sessions(self, pins: "_PinsArg") -> "_NIDigitalMultipleSessionQuery":
         """
-        Returns the NI-Digital Pattern sessions and pin_set_strings required to access the pin, as
-        well as the site_lists associated with the pin_set_strings.
+        Returns the NI-Digital Pattern sessions and pin_set_strings required to access the pin(s),
+        as well as the site_lists associated with the pin_set_strings.
 
         Args:
-            pin: The name of the pin or pin group to translate to sessions and pin_set_strings.
+            pins: The name of the pin(s) or pin group(s) to translate to sessions and
+                pin_set_strings.
 
         Returns:
             pin_query_context: An object that tracks the sessions and channels associated with this
                 pin query. Use this object to publish measurements, to publish pattern results and
                 to extract data from a set of measurements.
             sessions: Returns the NI-Digital Pattern instrument sessions for the instruments
-                connected to pin for all sites in the Semiconductor Module context.
+                connected to pin(s) for all sites in the Semiconductor Module context.
             pin_set_strings: Returns the pin set strings for each instrument session required to
-                access the pin for all sites in the Semiconductor Module context. The pin sets are
-                specified by site and pin e.g. "site0/A" as expected by the NI-Digital Pattern
-                driver. If the pin is shared and there are multiple connections of the same channel
-                to the pin, the channel only appears once in each string and is identified by one of
-                the site/pin combinations to which it is connected.
-            site_lists: Returns a tuple of comma-separated lists of sites (e.g. "site0,site1") that
-                correspond to the sites associated with the channels in the channel_list. This
-                site_list is needed as an input to certain NI-Digital Pattern driver calls.
-        """
-
-        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pin)
-        session_ids, pin_set_strings, site_lists = self._context.GetNIDigitalPatternSessions_3(pin)
-        sessions = tuple(
-            SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
-        )
-        return pin_query_context, sessions, pin_set_strings, site_lists
-
-    def pins_to_nidigital_sessions(self, pins):
-        """
-        Returns the NI-Digital Pattern sessions and pin_set_strings required to access the pins, as
-        well as the site_lists associated with the pin_set_strings.
-
-        Args:
-            pins: The name of the pins or pin groups to translate to sessions and pin_set_strings.
-
-        Returns:
-            pin_query_context: An object that tracks the sessions and channels associated with this
-                pin query. Use this object to publish measurements, to publish pattern results and
-                to extract data from a set of measurements.
-            sessions: Returns the NI-Digital Pattern instrument sessions for the instruments
-                connected to pins for all sites in the Semiconductor Module context.
-            pin_set_strings: Returns the pin set strings for each instrument session required to
-                access the pins for all sites in the Semiconductor Module context. The pin sets are
-                specified by site and pin e.g. "site0/A" as expected by the NI-Digital Pattern
-                driver. If any of the pins are connected to the same instrument channel for multiple
-                sites, the channel appears only once in the string and is identified by one of the
-                site/pin combinations to which it is connected.
+                access the pin(s) for all sites in the Semiconductor Module context. The pin sets
+                are specified by site and pin e.g. "site0/A" as expected by the NI-Digital Pattern
+                driver. If any of the pin(s) are connected to the same instrument channel for
+                multiple sites, the channel appears only once in the string and is identified by one
+                of the site/pin combinations to which it is connected.
             site_lists: Returns a tuple of comma-separated lists of sites (e.g. "site0,site1") that
                 correspond to the sites associated with the channels in the channel_lists. This
                 site_list is needed as an input to certain NI-Digital Pattern driver calls.
         """
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
-        session_ids, pin_set_strings, site_lists = self._context.GetNIDigitalPatternSessions_2(pins)
+        if isinstance(pins, str):
+            session_ids, pin_set_strings, site_lists = self._context.GetNIDigitalPatternSessions_3(
+                pins
+            )
+        else:
+            session_ids, pin_set_strings, site_lists = self._context.GetNIDigitalPatternSessions_2(
+                pins
+            )
         sessions = tuple(
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
         )
@@ -560,105 +540,61 @@ class SemiconductorModuleContext:
         session_ids = self._context.GetNIDCPowerSessions()
         return tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
 
-    def pin_to_nidcpower_session(self, pin):
+    def pins_to_nidcpower_session(self, pins: "_PinsArg") -> "_NIDCPowerSingleSessionQuery":
         """
-        Returns the NI-DCPower session and channel_string required to access the pin on all sites in
-        the Semiconductor Module context. If more than one session is required to access the pin,
-        the method raises an exception.
+        Returns the NI-DCPower session and channel_string required to access the pin(s) on all sites
+        in the Semiconductor Module context. If multiple sessions are required to access the
+        pin(s), the method raises an exception.
 
         Args:
-            pin: The name of the pin to translate to a session and channel_string. If multiple
-                sessions are required, the method raises an exception.
-
-        Returns:
-            pin_query_context: An object that tracks the session and channels associated with a pin
-                query. Use this object to publish measurements and extract data from a set of
-                measurements.
-            session: Returns the NI-DCPower instrument session for the instrument and channel
-                connected to pin.
-            channel_string: Returns the channel string for the NI-DCPower session required to access
-                the pin for all sites in the Semiconductor Module context. Each channel string is a
-                comma-separated list of channels, where each channel is defined as
-                <instrument>/<channel>.
-        """
-
-        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pin)
-        session_id, channel_string = self._context.GetNIDCPowerSession(pin)
-        session = SemiconductorModuleContext._sessions[session_id]
-        return pin_query_context, session, channel_string
-
-    def pins_to_nidcpower_session(self, pins):
-        """
-        Returns the NI-DCPower session and channel_string required to access the pins. If multiple
-        sessions are required, the method raises an exception.
-
-        Args:
-            pins: The names of the pins or pin groups to translate to session and channel_string.
+            pins: The name(s) of the pin(s) or pin group(s) to translate to a session and
+                channel_string.
 
         Returns:
             pin_query_context: An object that tracks the session and channels associated with this
                 pin query. Use this object to publish measurements and extract data from a set of
                 measurements.
             session: Returns the NI-DCPower instrument session for the instruments and channels
-                connected to pins for all sites in the Semiconductor Module context.
+                connected to pin(s) for all sites in the Semiconductor Module context.
             channel_string: Returns the channel string for the NI-DCPower session required to access
-                the pins for all sites in the Semiconductor Module context. The channel string is a
-                comma-separated list of resources, where each resource is defined as
+                the pin(s) for all sites in the Semiconductor Module context. The channel string is
+                a comma-separated list of resources, where each resource is defined as
                 <instrument>/<channel>.
         """
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
-        session_id, channel_string = self._context.GetNIDCPowerSession_2(pins)
+        if isinstance(pins, str):
+            session_id, channel_string = self._context.GetNIDCPowerSession(pins)
+        else:
+            session_id, channel_string = self._context.GetNIDCPowerSession_2(pins)
         session = SemiconductorModuleContext._sessions[session_id]
         return pin_query_context, session, channel_string
 
-    def pin_to_nidcpower_sessions(self, pin):
+    def pins_to_nidcpower_sessions(self, pins: "_PinsArg") -> "_NIDCPowerMultipleSessionQuery":
         """
-        Returns the NI-DCPower sessions and channel_strings required to access the pin.
+        Returns the NI-DCPower sessions and channel_strings required to access the pin(s).
 
         Args:
-            pin: The name of the pin or pin group to translate to sessions and channel_strings.
-
-        Returns:
-            pin_query_context: An object that tracks the sessions and channels associated with the
-                pin query. Use this object to publish measurements and extract data from a set of
-                measurements.
-            sessions: Returns the NI-DCPower instrument sessions for the instruments and channel
-                resources connected to pin for all sites in the Semiconductor Module context.
-            channel_strings: Returns the channel strings for the NI-DCPower sessions required to
-                access the pin for all sites in the Semiconductor Module context. Each channel
-                string is a comma-separated list of channels, where each channel is defined as
-                <instrument>/<channel>.
-        """
-
-        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pin)
-        session_ids, channel_strings = self._context.GetNIDCPowerSessions_2(pin)
-        sessions = tuple(
-            SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
-        )
-        return pin_query_context, sessions, channel_strings
-
-    def pins_to_nidcpower_sessions(self, pins):
-        """
-        Returns the NI-DCPower sessions and channel_strings required to access the pins.
-
-        Args:
-            pins: The names of the pins or pin groups to translate to sessions and channel_strings.
+            pins: The name(s) of the pin(s) or pin group(s) to translate to sessions and
+                channel_strings.
 
         Returns:
             pin_query_context: An object that tracks the sessions and channels associated with this
                 pin query. Use this object to publish measurements and extract data from a set of
                 measurements.
-            sessions: Returns the NI-DCPower instrument sessions for the instruments and channels
-                resources connected to pins for all sites in the Semiconductor Module context.
-            channel_strings: Returns the channel string for each instrument session required to
-                access the pins for all sites in the Semiconductor Module context. Each channel
+            sessions: Returns the NI-DCPower instrument sessions for the instruments and channel
+                resources connected to pin(s) for all sites in the Semiconductor Module context.
+            channel_strings: Returns the channel strings for each instrument session required to
+                access the pin(s) for all sites in the Semiconductor Module context. Each channel
                 string is a comma-separated list of channels, where each channel is defined as
                 <instrument>/<channel>.
         """
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
-        session_ids, channel_strings = self._context.GetNIDCPowerSessions_3(pins)
+        if isinstance(pins, str):
+            session_ids, channel_strings = self._context.GetNIDCPowerSessions_2(pins)
+        else:
+            session_ids, channel_strings = self._context.GetNIDCPowerSessions_3(pins)
         sessions = tuple(
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
         )
@@ -709,109 +645,61 @@ class SemiconductorModuleContext:
         task_ids = self._context.GetNIDAQmxTasks(task_type)
         return tuple(SemiconductorModuleContext._sessions[task_id] for task_id in task_ids)
 
-    def pin_to_nidaqmx_task(self, pin):
+    def pins_to_nidaqmx_task(self, pins: "_PinsArg") -> "_NIDAQmxSingleSessionQuery":
         """
-        Returns the NI-DAQmx task and channels list required to access the pin. If more than one
-        task is required, the method raises an exception.
-
-        Args:
-            pin: The name of the pin or pin group to translate to a task. If more than one task is
-                required, the method raises an exception.
-
-        Returns:
-            pin_query_context: An object that tracks the task associated with this pin query. Use
-                this object to publish measurements and extract data from a set of measurements.
-            task: Returns the NI-DAQmx task associated with the pin or pin group for all sites in
-                the Semiconductor Module context.
-            channel_list: Returns the comma-separated list of channels in the task associated with
-                the pin or pin group for all sites in the Semiconductor Module context. Use the
-                channel list to set the channels to read from for an input task or as an input to
-                one of the per task data methods associated with this pin query context for an
-                output task. If the pin is connected to the same instrument channel for multiple
-                sites, the channel appears only once in the list.
-        """
-
-        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pin)
-        task_id, channel_list = self._context.GetNIDAQmxTask(pin)
-        task = SemiconductorModuleContext._sessions[task_id]
-        return pin_query_context, task, channel_list
-
-    def pins_to_nidaqmx_task(self, pins):
-        """
-        Returns the NI-DAQmx task and available channels list required to access the pins. If more
+        Returns the NI-DAQmx task and available channels list required to access the pin(s). If more
         than one task is required, the method raises an exception.
 
         Args:
-            pins: The name of the pins or pin groups to translate to a task.
+            pins: The name of the pin(s) or pin group(s) to translate to a task.
 
         Returns:
             pin_query_context: An object that tracks the task associated with this pin query. Use
                 this object to publish measurements and extract data from a set of measurements.
-            task: Returns the NI-DAQmx task associated with the pin or pin group for all sites in
-                the Semiconductor Module context. If more than one task is required, the method
-                raises an exception.
+            task: Returns the NI-DAQmx task associated with the pin(s) or pin group(s) for all sites
+                in the Semiconductor Module context.
             channel_list: Returns the comma-separated list of channels in the task associated with
-                the pins or pin groups for all sites in the Semiconductor Module context. Use the
-                channel list to set the channels to read from for an input task or as an input to
-                one of the per task data methods associated with this pin query context for an
+                the pin(s) or pin group(s) for all sites in the Semiconductor Module context. Use
+                the channel list to set the channels to read from for an input task or as an input
+                to one of the per task data methods associated with this pin query context for an
                 output task. If any of the pins are connected to the same instrument channel for
                 multiple sites, the channel appears only once in the list.
         """
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
-        task_id, channel_list = self._context.GetNIDAQmxTask_2(pins)
+        if isinstance(pins, str):
+            task_id, channel_list = self._context.GetNIDAQmxTask(pins)
+        else:
+            task_id, channel_list = self._context.GetNIDAQmxTask_2(pins)
         task = SemiconductorModuleContext._sessions[task_id]
         return pin_query_context, task, channel_list
 
-    def pin_to_nidaqmx_tasks(self, pin):
+    def pins_to_nidaqmx_tasks(self, pins: "_PinsArg") -> "_NIDAQmxMultipleSessionQuery":
         """
-        Returns the NI-DAQmx tasks and available channels lists required to access the pin or pin
-        group.
+        Returns the NI-DAQmx tasks and available channels lists required to access the pin(s) or pin
+        group(s).
 
         Args:
-            pin: The name of the pin or pin group to translate to a set of tasks.
+            pins: The name of the pin(s) or pin group(s) to translate to a set of tasks.
 
         Returns:
             pin_query_context: An object that tracks the tasks associated with this pin query. Use
                 this object to publish measurements and extract data from a set of measurements.
-            tasks: Returns the NI-DAQmx tasks associated with the pin or pin group for all sites in
-                the Semiconductor Module context.
+            tasks: Returns the NI-DAQmx tasks associated with the pin(s) or pin group(s) for all
+                sites in the Semiconductor Module context.
             channel_lists: Returns the comma-separated lists of channels in the tasks associated
-                with the pin or pin group for all sites in the Semiconductor Module context. Use the
-                channel lists to set the channels to read from for input tasks or as an input to one
-                of the per task data methods associated with this pin query context for output
-                tasks. If the pin is connected to the same instrument channel for multiple sites,
-                the channel appears only once in the list.
-        """
-
-        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pin)
-        task_ids, channel_lists = self._context.GetNIDAQmxTasks_2(pin)
-        tasks = tuple(SemiconductorModuleContext._sessions[task_id] for task_id in task_ids)
-        return pin_query_context, tasks, channel_lists
-
-    def pins_to_nidaqmx_tasks(self, pins):
-        """
-        Returns the NI-DAQmx tasks and available channels lists required to access the pins or pin
-        groups.
-
-        Args:
-            pins: The name of the pins or pin groups to translate to a set of tasks.
-
-        Returns:
-            pin_query_context: An object that tracks the tasks associated with this pin query. Use
-                this object to publish measurements and extract data from a set of measurements.
-            tasks: Returns the NI-DAQmx tasks associated with the pin or pin group for all sites in
-                the Semiconductor Module context.
-            channel_lists: Returns the comma-separated lists of channels in the tasks associated
-                with the pins or pin groups for all sites in the Semiconductor Module context. Use
-                the channel lists to set the channels to read from for input tasks or as an input to
-                one of the per task data methods associated with this pin query context for output
-                tasks. If any of the pins are connected to the same instrument channel for multiple
-                sites, the channel appears only once in the list.
+                with the pin(s) or pin group(s) for all sites in the Semiconductor Module context.
+                Use the channel lists to set the channels to read from for input tasks or as an
+                input to one of the per task data methods associated with this pin query context for
+                output tasks. If any of the pin(s) are connected to the same instrument channel for
+                multiple sites, the channel appears only once in the list.
         """
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
-        task_ids, channel_lists = self._context.GetNIDAQmxTasks_3(pins)
+        if isinstance(pins, str):
+            task_ids, channel_lists = self._context.GetNIDAQmxTasks_2(pins)
+        else:
+            task_ids, channel_lists = self._context.GetNIDAQmxTasks_3(pins)
         tasks = tuple(SemiconductorModuleContext._sessions[task_id] for task_id in task_ids)
         return pin_query_context, tasks, channel_lists
 
@@ -924,101 +812,57 @@ class SemiconductorModuleContext:
         session_ids = self._context.GetNIFGenSessions()
         return tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
 
-    def pin_to_nifgen_session(self, pin):
+    def pins_to_nifgen_session(self, pins: "_PinsArg") -> "_NIFgenSingleSessionQuery":
         """
-        Returns the NI-FGEN session and channel list required to access the pin. If more than one
+        Returns the NI-FGEN session and channel list required to access the pin(s). If more than one
         session is required, the method raises an exception.
 
         Args:
-            pin: The name of the pin or pin group to translate to a session. If more than one
-                session is required, the method raises an exception.
-
-        Returns:
-            pin_query_context: An object that tracks the sessions associated with this pin query.
-                Use this object to publish measurements and extract data from a set of measurements.
-            session: Returns the NI-FGEN instrument session for the instrument connected to the pin
-                for all sites in the Semiconductor Module context.
-            channel_list: Returns the comma-separated channel list for the instrument connected to
-                the pin for all sites in the Semiconductor Module context. If the pin is shared and
-                there are multiple connections of the same channel to the pin, the channel only
-                appears once in the list.
-        """
-
-        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pin)
-        session_id, channel_list = self._context.GetNIFGenSession(pin)
-        session = SemiconductorModuleContext._sessions[session_id]
-        return pin_query_context, session, channel_list
-
-    def pins_to_nifgen_session(self, pins):
-        """
-        Returns the NI-FGEN session and channel list required to access the pins. If more than one
-        session is required, the method raises an exception.
-
-        Args:
-            pins: The names of the pins or pin groups to translate to a session. If more than one
-                session is required, the method raises an exception.
+            pins: The name(s) of the pin(s) or pin group(s) to translate to a session. If more than
+                one session is required, the method raises an exception.
 
         Returns:
             pin_query_context: An object that tracks the session associated with this pin query. Use
                 this object to publish measurements and extract data from a set of measurements.
-            session: Returns the NI-FGEN instrument session for the instrument connected to the pins
-                for all sites in the Semiconductor Module context.
+            session: Returns the NI-FGEN instrument session for the instrument connected to the
+                pin(s) for all sites in the Semiconductor Module context.
             channel_list: Returns the comma-separated channel list for the instrument connected to
-                the pins for all sites in the Semiconductor Module context. If any of the pins are
-                connected to the same instrument channel for multiple sites, the channel appears
-                only once in the list.
-        """
-
-        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
-        session_id, channel_list = self._context.GetNIFGenSession_2(pins)
-        session = SemiconductorModuleContext._sessions[session_id]
-        return pin_query_context, session, channel_list
-
-    def pin_to_nifgen_sessions(self, pin):
-        """
-        Returns the NI-FGEN sessions and channel lists required to access the pin.
-
-        Args:
-            pin: The name of the pin or pin group to translate to sessions.
-
-        Returns:
-            pin_query_context: An object that tracks the sessions associated with this pin query.
-                Use this object to publish measurements and extract data from a set of measurements.
-            sessions: Returns the NI-FGEN instrument sessions for the instruments connected to the
-                pin for all sites in the Semiconductor Module context.
-            channel_lists: Returns the comma-separated channel lists for the instruments connected
-                to the pin for all sites in the Semiconductor Module context. If the pin is shared
-                and there are multiple connections of the same channel to the pin, the channel only
-                appears once in each list.
-        """
-
-        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pin)
-        session_ids, channel_lists = self._context.GetNIFGenSessions_2(pin)
-        sessions = tuple(
-            SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
-        )
-        return pin_query_context, sessions, channel_lists
-
-    def pins_to_nifgen_sessions(self, pins):
-        """
-        Returns the NI-FGEN sessions and channel lists required to access the pins.
-
-        Args:
-            pins: The names of the pins or pin groups to translate to sessions.
-
-        Returns:
-            pin_query_context: An object that tracks the sessions associated with this pin query.
-                Use this object to publish measurements and extract data from a set of measurements.
-            sessions: Returns the NI-FGEN instrument sessions for the instruments connected to the
-                pins for all sites in the Semiconductor Module context.
-            channel_lists: Returns the comma-separated channel lists for the instruments connected
-                to the pins for all sites in the Semiconductor Module context. If any of the pins
+                the pin(s) for all sites in the Semiconductor Module context. If any of the pin(s)
                 are connected to the same instrument channel for multiple sites, the channel appears
                 only once in the list.
         """
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
-        session_ids, channel_lists = self._context.GetNIFGenSessions_3(pins)
+        if isinstance(pins, str):
+            session_id, channel_list = self._context.GetNIFGenSession(pins)
+        else:
+            session_id, channel_list = self._context.GetNIFGenSession_2(pins)
+        session = SemiconductorModuleContext._sessions[session_id]
+        return pin_query_context, session, channel_list
+
+    def pins_to_nifgen_sessions(self, pins: "_PinsArg") -> "_NIFgenMultipleSessionQuery":
+        """
+        Returns the NI-FGEN sessions and channel lists required to access the pin(s).
+
+        Args:
+            pins: The names of the pin(s) or pin group(s) to translate to sessions.
+
+        Returns:
+            pin_query_context: An object that tracks the sessions associated with this pin query.
+                Use this object to publish measurements and extract data from a set of measurements.
+            sessions: Returns the NI-FGEN instrument sessions for the instruments connected to the
+                pin(s) for all sites in the Semiconductor Module context.
+            channel_lists: Returns the comma-separated channel lists for the instruments connected
+                to the pin(s) for all sites in the Semiconductor Module context. If any of the
+                pin(s) are connected to the same instrument channel for multiple sites, the channel
+                appears only once in the list.
+        """
+
+        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
+        if isinstance(pins, str):
+            session_ids, channel_lists = self._context.GetNIFGenSessions_2(pins)
+        else:
+            session_ids, channel_lists = self._context.GetNIFGenSessions_3(pins)
         sessions = tuple(
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
         )
@@ -1058,103 +902,58 @@ class SemiconductorModuleContext:
         session_ids = self._context.GetNIScopeSessions()
         return tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
 
-    def pin_to_niscope_session(self, pin):
+    def pins_to_niscope_session(self, pins: "_PinsArg") -> "_NIScopeSingleSessionQuery":
         """
-        Returns the NI-SCOPE session and channel list required to access the pin.
-        If more than one session is required, the method raises an exception.
-        Each group of NI-SCOPE instruments in the pin map creates a single instrument session.
+        Returns the NI-SCOPE session and channel list required to access the pin(s). If more than
+        one session is required to access the pin(s), the method raises an exception. Each group of
+        NI-SCOPE instruments in the pin map creates a single instrument session.
 
         Args:
-            pin: The name of the pin or pin group to translate to a session. If more than one
-                session is required, the method raises an exception.
-
-        Returns:
-            pin_query_context: An object that tracks the sessions associated with this pin query.
-                Use this object to publish measurements and extract data from a set of measurements.
-            session: Returns the NI-SCOPE instrument session for the instrument connected to the pin
-                for all sites in the Semiconductor Module context.
-            channel_list: Returns the comma-separated channel list for the instrument connected to
-                the pin for all sites in the Semiconductor Module context. If the pin is shared and
-                there are multiple connections of the same channel to the pin, the channel only
-                appears once in the list.
-        """
-
-        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pin)
-        session_id, channel_list = self._context.GetNIScopeSession(pin)
-        session = SemiconductorModuleContext._sessions[session_id]
-        return pin_query_context, session, channel_list
-
-    def pins_to_niscope_session(self, pins):
-        """
-        Returns the NI-SCOPE session and channel list required to access the pins.
-        If more than one session is required to access the pins, the method raises an exception.
-        Each group of NI-SCOPE instruments in the pin map creates a single instrument session.
-
-        Args:
-            pins: The names of the pins or pin groups to translate to a session. If more than one
-                session is required, the method raises an exception.
+            pins: The name(s) of the pin(s) or pin group(s) to translate to a session. If more than
+                one session is required, the method raises an exception.
 
         Returns:
             pin_query_context: An object that tracks the session associated with this pin query. Use
                 this object to publish measurements and extract data from a set of measurements.
             session: Returns the NI-SCOPE instrument session for the instrument connected to the
-                pins for all sites in the Semiconductor Module context.
+                pin(s) for all sites in the Semiconductor Module context.
             channel_list: Returns the comma-separated channel list for the instrument connected to
-                the pins for all sites in the Semiconductor Module context. If any of the pins are
-                connected to the same instrument channel for multiple sites, the channel appears
-                only once in the list.
-        """
-
-        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
-        session_id, channel_list = self._context.GetNIScopeSession_2(pins)
-        session = SemiconductorModuleContext._sessions[session_id]
-        return pin_query_context, session, channel_list
-
-    def pin_to_niscope_sessions(self, pin):
-        """
-        Returns the NI-SCOPE sessions and channel lists required to access the pin.
-
-        Args:
-            pin: The name of the pin or pin group to translate to sessions.
-
-        Returns:
-            pin_query_context: An object that tracks the sessions associated with this pin query.
-                Use this object to publish measurements and extract data from a set of measurements.
-            sessions: Returns the NI-SCOPE instrument sessions for the instruments connected to the
-                pin for all sites in the Semiconductor Module context.
-            channel_lists: Returns the comma-separated channel lists for the instruments connected
-                to the pin for all sites in the Semiconductor Module context. If the pin is shared
-                and there are multiple connections of the same channel to the pin, the channel only
-                appears once in each list.
-        """
-
-        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pin)
-        session_ids, channel_lists = self._context.GetNIScopeSessions_2(pin)
-        sessions = tuple(
-            SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
-        )
-        return pin_query_context, sessions, channel_lists
-
-    def pins_to_niscope_sessions(self, pins):
-        """
-        Returns the NI-SCOPE sessions and channel lists required to access the pins.
-
-        Args:
-            pins: The names of the pins or pin groups to translate to sessions.
-
-        Returns:
-            pin_query_context: An object that tracks the sessions associated with this pin query.
-                Use this object to publish measurements and extract data from a set of measurements.
-            sessions: Returns the NI-SCOPE instrument sessions for the instruments connected to the
-                pins for all sites in the Semiconductor Module context.
-            channel_lists: Returns the comma-separated channel lists for the instruments connected
-                to the pins for all sites in the Semiconductor Module context. If any of the pins
+                the pin(s) for all sites in the Semiconductor Module context. If any of the pin(s)
                 are connected to the same instrument channel for multiple sites, the channel appears
                 only once in the list.
         """
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
-        session_ids, channel_lists = self._context.GetNIScopeSessions_3(pins)
+        if isinstance(pins, str):
+            session_id, channel_list = self._context.GetNIScopeSession(pins)
+        else:
+            session_id, channel_list = self._context.GetNIScopeSession_2(pins)
+        session = SemiconductorModuleContext._sessions[session_id]
+        return pin_query_context, session, channel_list
+
+    def pins_to_niscope_sessions(self, pins: "_PinsArg") -> "_NIScopeMultipleSessionQuery":
+        """
+        Returns the NI-SCOPE sessions and channel lists required to access the pin(s).
+
+        Args:
+            pins: The name(s) of the pin(s) or pin group(s) to translate to sessions.
+
+        Returns:
+            pin_query_context: An object that tracks the sessions associated with this pin query.
+                Use this object to publish measurements and extract data from a set of measurements.
+            sessions: Returns the NI-SCOPE instrument sessions for the instruments connected to the
+                pin(s) for all sites in the Semiconductor Module context.
+            channel_lists: Returns the comma-separated channel lists for the instruments connected
+                to the pin(s) for all sites in the Semiconductor Module context. If any of the
+                pin(s) are connected to the same instrument channel for multiple sites, the channel
+                appears only once in the list.
+        """
+
+        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
+        if isinstance(pins, str):
+            session_ids, channel_lists = self._context.GetNIScopeSessions_2(pins)
+        else:
+            session_ids, channel_lists = self._context.GetNIScopeSessions_3(pins)
         sessions = tuple(
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
         )
