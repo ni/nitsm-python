@@ -25,23 +25,24 @@ if typing.TYPE_CHECKING:
 
     _PinQueryContext = nitsm.pinquerycontexts.PinQueryContext
     _PinsArg = typing.Union[str, typing.Sequence[str]]  # argument that accepts 1 or more pins
+    _StringTuple = typing.Tuple[str, ...]
 
     _NIDigitalSingleSessionQuery = typing.Tuple[_PinQueryContext, nidigital.Session, str, str]
     _NIDigitalMultipleSessionQuery = typing.Tuple[
         _PinQueryContext,
         typing.Tuple[nidigital.Session, ...],
-        typing.Tuple[str, ...],
-        typing.Tuple[str, ...],
+        _StringTuple,
+        _StringTuple,
     ]
 
     _NIDCPowerSingleSessionQuery = typing.Tuple[_PinQueryContext, nidcpower.Session, str]
     _NIDCPowerMultipleSessionQuery = typing.Tuple[
-        _PinQueryContext, typing.Tuple[nidcpower.Session, ...], typing.Tuple[str, ...]
+        _PinQueryContext, typing.Tuple[nidcpower.Session, ...], _StringTuple
     ]
 
     _NIDAQmxSingleSessionQuery = typing.Tuple[_PinQueryContext, nidaqmx.Task, str]
     _NIDAQmxMultipleSessionQuery = typing.Tuple[
-        _PinQueryContext, typing.Tuple[nidaqmx.Task, ...], typing.Tuple[str, ...]
+        _PinQueryContext, typing.Tuple[nidaqmx.Task, ...], _StringTuple
     ]
 
     _NIDmmSingleSessionQuery = typing.Tuple[_PinQueryContext, nidmm.Session]
@@ -49,17 +50,23 @@ if typing.TYPE_CHECKING:
 
     _NIFgenSingleSessionQuery = typing.Tuple[_PinQueryContext, nifgen.Session, str]
     _NIFgenMultipleSessionQuery = typing.Tuple[
-        _PinQueryContext, typing.Tuple[nifgen.Session, ...], typing.Tuple[str, ...]
+        _PinQueryContext, typing.Tuple[nifgen.Session, ...], _StringTuple
     ]
 
     _NIScopeSingleSessionQuery = typing.Tuple[_PinQueryContext, niscope.Session, str]
     _NIScopeMultipleSessionQuery = typing.Tuple[
-        _PinQueryContext, typing.Tuple[niscope.Session, ...], typing.Tuple[str, ...]
+        _PinQueryContext, typing.Tuple[niscope.Session, ...], _StringTuple
     ]
 
     _RelayDriverSingleSessionQuery = typing.Tuple[niswitch.Session, str]
     _RelayDriverMultipleSessionQuery = typing.Tuple[
-        typing.Tuple[niswitch.Session, ...], typing.Tuple[str, ...]
+        typing.Tuple[niswitch.Session, ...], _StringTuple
+    ]
+
+    _InstrTypeIdArg = typing.Union[str, nitsm.enums.InstrumentTypeIdConstants]
+    _CustomSingleSessionQuery = typing.Tuple[_PinQueryContext, typing.Any, str, str]
+    _CustomMultipleSessionQuery = typing.Tuple[
+        _PinQueryContext, typing.Tuple[typing.Any, ...], _StringTuple, _StringTuple
     ]
 
 
@@ -1156,7 +1163,7 @@ class SemiconductorModuleContext:
 
     # Custom Instruments
 
-    def get_custom_instrument_names(self, instrument_type_id):
+    def get_custom_instrument_names(self, instrument_type_id: "_InstrTypeIdArg"):
         """
         Returns the channel_group_ids and associated instrument_names and channel_lists of all
         instruments of type instrument_type_id defined in the Semiconductor Module context. You can
@@ -1188,7 +1195,7 @@ class SemiconductorModuleContext:
         return self._context.GetAllInstrumentDefinitions(instrument_type_id)
 
     def set_custom_session(
-        self, instrument_type_id, instrument_name, channel_group_id, session_data
+        self, instrument_type_id: str, instrument_name: str, channel_group_id: str, session_data: typing.Any
     ):
         """
         Associates a session with an instrument and channel group.
@@ -1211,11 +1218,12 @@ class SemiconductorModuleContext:
 
         session_id = id(session_data)
         SemiconductorModuleContext._sessions[session_id] = session_data
-        return self._context.SetSessionData(
+        self._context.SetSessionData(
             instrument_type_id, instrument_name, channel_group_id, session_id
         )
+        return None
 
-    def get_all_custom_sessions(self, instrument_type_id):
+    def get_all_custom_sessions(self, instrument_type_id: "_InstrTypeIdArg"):
         """
         Returns all set sessions in the Semiconductor Module context that belong to instruments of
         type instrument_type_id.
@@ -1244,9 +1252,11 @@ class SemiconductorModuleContext:
         )
         return (session_data, *channel_data)
 
-    def pin_to_custom_session(self, instrument_type_id, pin):
+    def pins_to_custom_session(
+        self, instrument_type_id: "_InstrTypeIdArg", pins: "_PinsArg"
+    ) -> "_CustomSingleSessionQuery":
         """
-        Returns the session in the Semiconductor Module context associated with pin.
+        Returns the session in the Semiconductor Module context associated with pin(s).
 
         Args:
             instrument_type_id: The type of instrument for which you want to get a session. All
@@ -1256,67 +1266,42 @@ class SemiconductorModuleContext:
                 must define a type ID for the instrument in the pin map file. Typically, this type
                 ID is an instrument driver name or other ID that is common for instruments that
                 users program in a similar way.
-            pin: The name of the pin or pin group to translate to session_data, channel_group_id,
-                and channel_list. The pin must be connected to an instrument of type
-                instrument_type_id.
-
-        Returns:
-            pin_query_context: An object that tracks the sessions and channels associated with this
-                pin query. Use this object to publish measurements, extract data from a set of
-                measurements, and create or rearrange waveforms.
-            session_data: Returns the session data associated with pin.
-            channel_group_id: Returns the ID of the channel group that contains the channels
-                connected to pin. For channels that do not belong to a channel group in the pin map,
-                the Semiconductor Module creates a channel group with the same ID as the channel.
-            channel_list: Returns the channel list that correspond to pin associated with
-                session_data and channel_group_id. The channel list is a comma-separated list of
-                channels. If the pin is shared and there are multiple connections of the same
-                channel to the pin, the channel only appears once in the list.
-        """
-
-        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pin)
-        _, *session_and_channel_data = self.pins_to_custom_session(instrument_type_id, [pin])
-        return (pin_query_context, *session_and_channel_data)
-
-    def pins_to_custom_session(self, instrument_type_id, pins):
-        """
-        Returns all sessions in the Semiconductor Module context associated with pins.
-
-        Args:
-            instrument_type_id: The type of instrument for which you want to get a session. All
-                instruments defined in the pin map specify an associated type ID. The
-                nitsm.codemoduleapi.InstrumentTypeIdConstants class contains instrument type IDs for
-                instrument types that TSM supports natively. For all other types of instruments, you
-                must define a type ID for the instrument in the pin map file. Typically, this type
-                ID is an instrument driver name or other ID that is common for instruments that
-                users program in a similar way.
-            pins: The names of the pins or pin groups to translate to session_data,
-                channel_group_id, and channel_list. The pins must be connected to instruments of
+            pins: The name(s) of the pin(s) or pin group(s) to translate to session_data,
+                channel_group_id, and channel_list. The pin(s) must be connected to an instrument of
                 type instrument_type_id.
 
         Returns:
             pin_query_context: An object that tracks the sessions and channels associated with this
                 pin query. Use this object to publish measurements, extract data from a set of
                 measurements, and create or rearrange waveforms.
-            session_data: Returns the session data associated with pins.
-            channel_group_id: Returns the ID of the channel groups that contain the channels
-                connected to pins. For channels that do not belong to a channel group in the pin
+            session_data: Returns the session data associated with pin(s).
+            channel_group_id: Returns the ID of the channel group(s) that contain(s) the channels
+                connected to pin(s). For channels that do not belong to a channel group in the pin
                 map, the Semiconductor Module creates a channel group with the same ID as the
                 channel.
-            channel_list: Returns the channel list that corresponds to pins associated with
+            channel_list: Returns the channel list that corresponds to pin(s) associated with
                 session_data and channel_group_id. The channel list is a comma-separated list of
-                channels. If any of the pins are connected to the same instrument channel for
+                channels. If any of the pin(s) are connected to the same instrument channel for
                 multiple sites, the channel appears only once in the list.
         """
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
-        session_id, *channel_data = self._context.GetSessionData_2(instrument_type_id, pins)
+        if isinstance(pins, str):
+            session_id, channel_group_id, channel_list = self._context.GetSessionData_2(
+                instrument_type_id, [pins]
+            )
+        else:
+            session_id, channel_group_id, channel_list = self._context.GetSessionData_2(
+                instrument_type_id, pins
+            )
         session_data = SemiconductorModuleContext._sessions[session_id]
-        return (pin_query_context, session_data, *channel_data)
+        return pin_query_context, session_data, channel_group_id, channel_list
 
-    def pin_to_custom_sessions(self, instrument_type_id, pin):
+    def pins_to_custom_sessions(
+        self, instrument_type_id: "_InstrTypeIdArg", pins: "_PinsArg"
+    ) -> "_CustomMultipleSessionQuery":
         """
-        Returns all sessions in the Semiconductor Module context associated with pin.
+        Returns all sessions in the Semiconductor Module context associated with pin(s).
 
         Args:
             instrument_type_id: The type of instrument for which you want to get sessions. All
@@ -1326,62 +1311,35 @@ class SemiconductorModuleContext:
                 must define a type ID for the instrument in the pin map file. Typically, this type
                 ID is an instrument driver name or other ID that is common for instruments that
                 users program in a similar way.
-            pin: The name of the pin or pin group to translate to session_data, channel_group_ids,
-                and channel_lists. The pin must be connected to an instrument of type
-                instrument_type_id.
-
-        Returns:
-            pin_query_context: An object that tracks the sessions and channels associated with this
-                pin query. Use this object to publish measurements, extract data from a set of
-                measurements, and create or rearrange waveforms.
-            session_data: Returns a tuple of session data associated with pin.
-            channel_group_ids: Returns the IDs of the channel groups that contain the channels
-                connected to pin. For channels that do not belong to a channel group in the pin map,
-                the Semiconductor Module creates a channel group with the same ID as the channel.
-            channel_lists: Returns the channel lists that correspond to pin associated with
-                session_data and channel_group_ids. Each channel list is a comma-separated list of
-                channels. If the pin is shared and there are multiple connections of the same
-                channel to the pin, the channel only appears once in each list.
-        """
-
-        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pin)
-        _, *session_and_channel_data = self.pins_to_custom_sessions(instrument_type_id, [pin])
-        return (pin_query_context, *session_and_channel_data)
-
-    def pins_to_custom_sessions(self, instrument_type_id, pins):
-        """
-        Returns all sessions in the Semiconductor Module context associated with pins.
-
-        Args:
-            instrument_type_id: The type of instrument for which you want to get sessions. All
-                instruments defined in the pin map specify an associated type ID. The
-                nitsm.codemoduleapi.InstrumentTypeIdConstants class contains instrument type IDs for
-                instrument types that TSM supports natively. For all other types of instruments, you
-                must define a type ID for the instrument in the pin map file. Typically, this type
-                ID is an instrument driver name or other ID that is common for instruments that
-                users program in a similar way.
-            pins: The names of the pins or pin groups to translate to session_data,
-                channel_group_ids, and channel_lists. The pins must be connected to instruments of
+            pins: The name(s) of the pin(s) or pin group(s) to translate to session_data,
+                channel_group_ids, and channel_lists. The pin(s) must be connected to instruments of
                 type instrument_type_id.
 
         Returns:
             pin_query_context: An object that tracks the sessions and channels associated with this
                 pin query. Use this object to publish measurements, extract data from a set of
                 measurements, and create or rearrange waveforms.
-            session_data: Returns a tuple of session data associated with pins.
+            session_data: Returns a tuple of session data associated with pin(s).
             channel_group_ids: Returns the IDs of the channel groups that contain the channels
-                connected to pins. For channels that do not belong to a channel group in the pin
+                connected to pin(s). For channels that do not belong to a channel group in the pin
                 map, the Semiconductor Module creates a channel group with the same ID as the
                 channel.
-            channel_lists: Returns the channel lists that correspond to pins associated with
+            channel_lists: Returns the channel lists that correspond to the pin(s) associated with
                 session_data and channel_group_ids. Each channel list is a comma-separated list of
-                channels. If any of the pins are connected to the same instrument channel for
+                channels. If any of the pin(s) are connected to the same instrument channel for
                 multiple sites, the channel appears only once in the list.
         """
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
-        session_ids, *channel_data = self._context.GetSessionData(instrument_type_id, pins)
+        if isinstance(pins, str):
+            session_ids, channel_group_ids, channel_lists = self._context.GetSessionData(
+                instrument_type_id, [pins]
+            )
+        else:
+            session_ids, channel_group_ids, channel_lists = self._context.GetSessionData(
+                instrument_type_id, pins
+            )
         session_data = tuple(
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
         )
-        return (pin_query_context, session_data, *channel_data)
+        return pin_query_context, session_data, channel_group_ids, channel_lists
