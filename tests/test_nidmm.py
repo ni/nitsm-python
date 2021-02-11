@@ -19,7 +19,7 @@ def simulated_nidmm_sessions(standalone_tsm_context):
 
 
 @pytest.mark.pin_map("nidmm.pinmap")
-class TestNIDMM:
+class TestNIDmm:
 
     @pytest.mark.parametrize("pin_map_instruments", (["DMM1", "DMM2", "DMM3"],))
     def test_get_all_nidmm_instrument_names(self, standalone_tsm_context, pin_map_instruments):
