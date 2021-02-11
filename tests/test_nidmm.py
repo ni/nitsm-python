@@ -20,8 +20,7 @@ def simulated_nidmm_sessions(standalone_tsm_context):
 
 @pytest.mark.pin_map("nidmm.pinmap")
 class TestNIDmm:
-
-    @pytest.mark.parametrize("pin_map_instruments", (["DMM1", "DMM2", "DMM3"],))
+    @pytest.mark.parametrize("pin_map_instruments", ({"DMM1", "DMM2", "DMM3"},))
     def test_get_all_nidmm_instrument_names(self, standalone_tsm_context, pin_map_instruments):
         instrument_names = standalone_tsm_context.get_all_nidmm_instrument_names()
         assert isinstance(instrument_names, tuple)
@@ -37,16 +36,18 @@ class TestNIDmm:
                 standalone_tsm_context.set_nidmm_session(instrument_name, session)
                 assert SemiconductorModuleContext._sessions[id(session)] is session
 
-    @pytest.mark.parametrize("expected_instr_names", (["DMM1", "DMM2", "DMM3"],))
+    @pytest.mark.parametrize("expected_instr_names", ({"DMM1", "DMM2", "DMM3"},))
     def test_get_all_nidmm_sessions(
         self, standalone_tsm_context, simulated_nidmm_sessions, expected_instr_names
     ):
         queried_sessions = standalone_tsm_context.get_all_nidmm_sessions()
         assert isinstance(queried_sessions, tuple)
         assert len(queried_sessions) == len(expected_instr_names)
-        for queried_session, expected_instr_name in zip(queried_sessions, expected_instr_names):
+        for queried_session in queried_sessions:
             assert isinstance(queried_session, nidmm.Session)
-            assert queried_session is simulated_nidmm_sessions[expected_instr_name]
+            assert (
+                queried_session is simulated_nidmm_sessions[queried_session.io_resource_descriptor]
+            )
 
     @pytest.mark.parametrize("pin,expected_instr_name", [("SystemPin1", "DMM3")])
     def test_pin_to_nidmm_session(
@@ -60,9 +61,9 @@ class TestNIDmm:
     @pytest.mark.parametrize(
         "pins,expected_instr_names",
         [
-            ("DUTPin1", ["DMM1", "DMM2"]),
-            ("PinGroup1", ["DMM1", "DMM2", "DMM3"]),
-            (["DUTPin1", "SystemPin1"], ["DMM1", "DMM2", "DMM3"]),
+            ("DUTPin1", {"DMM1", "DMM2"}),
+            ("PinGroup1", {"DMM1", "DMM2", "DMM3"}),
+            (["DUTPin1", "SystemPin1"], {"DMM1", "DMM2", "DMM3"}),
         ],
     )
     def test_pins_to_nidmm_sessions(
@@ -72,6 +73,8 @@ class TestNIDmm:
         assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_sessions, tuple)
         assert len(queried_sessions) == len(expected_instr_names)
-        for queried_session, expected_instr_name in zip(queried_sessions, expected_instr_names):
+        for queried_session in queried_sessions:
             assert isinstance(queried_session, nidmm.Session)
-            assert queried_session is simulated_nidmm_sessions[expected_instr_name]
+            assert (
+                queried_session is simulated_nidmm_sessions[queried_session.io_resource_descriptor]
+            )
