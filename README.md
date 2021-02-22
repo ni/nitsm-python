@@ -1,3 +1,4 @@
+[![Build Status](https://ni.visualstudio.com/Users/_apis/build/status/nitsm-python?branchName=main)](https://ni.visualstudio.com/Users/_build/latest?definitionId=5837&branchName=main)
 # nitsm-python
 
 ## Tests
