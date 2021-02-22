@@ -10,6 +10,13 @@ pool:
   name: nitsm-python-test
 
 steps:
-- script: pytest
+- script: pytest --junitxml=test-results.xml
   displayName: 'Run python unit tests'
+  
+- task: PublishTestResults@2
+  condition: succeededOrFailed()
+  inputs:
+    testResultsFiles: '**/test-results.xml'
+    testRunTitle: 'Publish test results'
+  displayName: 'display results'
 
