@@ -10,10 +10,6 @@ pool:
   name: nitsm-python-test
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+- script: pytest
+  displayName: 'Run python unit tests'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
