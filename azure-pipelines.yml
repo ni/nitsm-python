@@ -7,7 +7,7 @@ trigger:
 - main
 
 pool:
-  vmImage: nitsm-python-test
+  name: nitsm-python-test
 
 steps:
 - script: echo Hello, world!
