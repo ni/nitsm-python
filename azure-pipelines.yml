@@ -13,6 +13,9 @@ steps:
 - script: pip install pytest-cov
   displayName: 'Install pytest-cov'
 
+- script: pip install .
+  displayName: 'Install nitsm-python'
+  
 - script: pytest --junitxml=test-results.xml --cov=nitsm --cov-report=xml
   displayName: 'Run python unit tests'
   
