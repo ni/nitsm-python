@@ -1,10 +1,6 @@
 import pytest
-
 from nitsm.codemoduleapi import SemiconductorModuleContext
-from nitsm.pinquerycontexts import SinglePinSingleSessionQueryContext
-from nitsm.pinquerycontexts import SinglePinMultipleSessionQueryContext
-from nitsm.pinquerycontexts import MultiplePinSingleSessionQueryContext
-from nitsm.pinquerycontexts import MultiplePinMultipleSessionQueryContext
+from nitsm.pinquerycontexts import PinQueryContext
 
 
 @pytest.fixture
@@ -91,7 +87,7 @@ class TestCustomInstruments:
             assert isinstance(queried_channel_list, str)
             assert queried_session in simulated_custom_instrument_sessions
 
-    def test_pin_to_custom_session(
+    def test_pins_to_custom_session_single_pin(
         self,
         standalone_tsm_context: SemiconductorModuleContext,
         simulated_custom_instrument_sessions,
@@ -101,16 +97,34 @@ class TestCustomInstruments:
             queried_session,
             queried_channel_group_id,
             queried_channel_list,
-        ) = standalone_tsm_context.pin_to_custom_session(
+        ) = standalone_tsm_context.pins_to_custom_session(
             self.pin_map_instrument_type_id, "SystemPin1"
         )
-        assert isinstance(pin_query_context, SinglePinSingleSessionQueryContext)
+        assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_session, int)
         assert isinstance(queried_channel_group_id, str)
         assert isinstance(queried_channel_list, str)
         assert queried_session in simulated_custom_instrument_sessions
 
-    def test_pin_to_custom_sessions(
+    def test_pins_to_custom_session_multiple_pins(
+        self,
+        standalone_tsm_context: SemiconductorModuleContext,
+        simulated_custom_instrument_sessions,
+    ):
+        all_pins = self.pin_map_dut_pins + self.pin_map_system_pins
+        (
+            pin_query_context,
+            queried_session,
+            queried_channel_group_id,
+            queried_channel_list,
+        ) = standalone_tsm_context.pins_to_custom_session(self.pin_map_instrument_type_id, all_pins)
+        assert isinstance(pin_query_context, PinQueryContext)
+        assert isinstance(queried_session, int)
+        assert isinstance(queried_channel_group_id, str)
+        assert isinstance(queried_channel_list, str)
+        assert queried_session in simulated_custom_instrument_sessions
+
+    def test_pins_to_custom_sessions_single_pin(
         self,
         standalone_tsm_context: SemiconductorModuleContext,
         simulated_custom_instrument_sessions,
@@ -120,10 +134,10 @@ class TestCustomInstruments:
             queried_sessions,
             queried_channel_group_ids,
             queried_channel_lists,
-        ) = standalone_tsm_context.pin_to_custom_sessions(
+        ) = standalone_tsm_context.pins_to_custom_sessions(
             self.pin_map_instrument_type_id, "PinGroup1"
         )
-        assert isinstance(pin_query_context, SinglePinMultipleSessionQueryContext)
+        assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_sessions, tuple)
         assert isinstance(queried_channel_group_ids, tuple)
         assert isinstance(queried_channel_lists, tuple)
@@ -138,25 +152,7 @@ class TestCustomInstruments:
             assert isinstance(queried_channel_list, str)
             assert queried_session in simulated_custom_instrument_sessions
 
-    def test_pins_to_custom_session(
-        self,
-        standalone_tsm_context: SemiconductorModuleContext,
-        simulated_custom_instrument_sessions,
-    ):
-        all_pins = self.pin_map_dut_pins + self.pin_map_system_pins
-        (
-            pin_query_context,
-            queried_session,
-            queried_channel_group_id,
-            queried_channel_list,
-        ) = standalone_tsm_context.pins_to_custom_session(self.pin_map_instrument_type_id, all_pins)
-        assert isinstance(pin_query_context, MultiplePinSingleSessionQueryContext)
-        assert isinstance(queried_session, int)
-        assert isinstance(queried_channel_group_id, str)
-        assert isinstance(queried_channel_list, str)
-        assert queried_session in simulated_custom_instrument_sessions
-
-    def test_pins_to_custom_sessions(
+    def test_pins_to_custom_sessions_multiple_pin(
         self,
         standalone_tsm_context: SemiconductorModuleContext,
         simulated_custom_instrument_sessions,
@@ -170,7 +166,7 @@ class TestCustomInstruments:
         ) = standalone_tsm_context.pins_to_custom_sessions(
             self.pin_map_instrument_type_id, all_pins
         )
-        assert isinstance(pin_query_context, MultiplePinMultipleSessionQueryContext)
+        assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_sessions, tuple)
         assert isinstance(queried_channel_group_ids, tuple)
         assert isinstance(queried_channel_lists, tuple)

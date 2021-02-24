@@ -1,10 +1,7 @@
 import nidaqmx
 import pytest
 from nitsm.codemoduleapi import SemiconductorModuleContext
-from nitsm.pinquerycontexts import NIDAQmxSinglePinSingleTaskQueryContext
-from nitsm.pinquerycontexts import NIDAQmxSinglePinMultipleTaskQueryContext
-from nitsm.pinquerycontexts import NIDAQmxMultiplePinSingleTaskQueryContext
-from nitsm.pinquerycontexts import NIDAQmxMultiplePinMultipleTaskQueryContext
+from nitsm.pinquerycontexts import PinQueryContext
 
 
 @pytest.fixture
@@ -49,24 +46,39 @@ class TestNIDAQmx:
             assert isinstance(queried_task, nidaqmx.Task)
             assert queried_task in simulated_nidaqmx_tasks
 
-    def test_pin_to_nidaqmx_task(self, standalone_tsm_context, simulated_nidaqmx_tasks):
+    def test_pins_to_nidaqmx_task_single_pin(self, standalone_tsm_context, simulated_nidaqmx_tasks):
         (
             pin_query_context,
             queried_task,
             queried_channel_list,
-        ) = standalone_tsm_context.pin_to_nidaqmx_task("SystemPin1")
-        assert isinstance(pin_query_context, NIDAQmxSinglePinSingleTaskQueryContext)
+        ) = standalone_tsm_context.pins_to_nidaqmx_task("SystemPin1")
+        assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_task, nidaqmx.Task)
         assert isinstance(queried_channel_list, str)
         assert queried_task in simulated_nidaqmx_tasks
 
-    def test_pin_to_nidaqmx_tasks(self, standalone_tsm_context, simulated_nidaqmx_tasks):
+    def test_pins_to_nidaqmx_task_multiple_pins(
+        self, standalone_tsm_context, simulated_nidaqmx_tasks
+    ):
+        (
+            pin_query_context,
+            queried_task,
+            queried_channel_list,
+        ) = standalone_tsm_context.pins_to_nidaqmx_task(self.pin_map_dut_pins)
+        assert isinstance(pin_query_context, PinQueryContext)
+        assert isinstance(queried_task, nidaqmx.Task)
+        assert isinstance(queried_channel_list, str)
+        assert queried_task in simulated_nidaqmx_tasks
+
+    def test_pins_to_nidaqmx_tasks_single_pin(
+        self, standalone_tsm_context, simulated_nidaqmx_tasks
+    ):
         (
             pin_query_context,
             queried_tasks,
             queried_channel_lists,
-        ) = standalone_tsm_context.pin_to_nidaqmx_tasks("PinGroup1")
-        assert isinstance(pin_query_context, NIDAQmxSinglePinMultipleTaskQueryContext)
+        ) = standalone_tsm_context.pins_to_nidaqmx_tasks("PinGroup1")
+        assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_tasks, tuple)
         assert isinstance(queried_channel_lists, tuple)
         assert len(queried_tasks) == len(queried_channel_lists)
@@ -75,25 +87,16 @@ class TestNIDAQmx:
             assert isinstance(queried_channel_list, str)
             assert queried_task in simulated_nidaqmx_tasks
 
-    def test_pins_to_nidaqmx_task(self, standalone_tsm_context, simulated_nidaqmx_tasks):
-        (
-            pin_query_context,
-            queried_task,
-            queried_channel_list,
-        ) = standalone_tsm_context.pins_to_nidaqmx_task(self.pin_map_dut_pins)
-        assert isinstance(pin_query_context, NIDAQmxMultiplePinSingleTaskQueryContext)
-        assert isinstance(queried_task, nidaqmx.Task)
-        assert isinstance(queried_channel_list, str)
-        assert queried_task in simulated_nidaqmx_tasks
-
-    def test_pins_to_nidaqmx_tasks(self, standalone_tsm_context, simulated_nidaqmx_tasks):
+    def test_pins_to_nidaqmx_tasks_multiple_pins(
+        self, standalone_tsm_context, simulated_nidaqmx_tasks
+    ):
         all_pins = self.pin_map_dut_pins + self.pin_map_system_pins
         (
             pin_query_context,
             queried_tasks,
             queried_channel_lists,
         ) = standalone_tsm_context.pins_to_nidaqmx_tasks(all_pins)
-        assert isinstance(pin_query_context, NIDAQmxMultiplePinMultipleTaskQueryContext)
+        assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_tasks, tuple)
         assert isinstance(queried_channel_lists, tuple)
         assert len(queried_tasks) == len(queried_channel_lists)

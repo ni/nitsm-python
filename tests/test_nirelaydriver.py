@@ -73,35 +73,18 @@ class TestNIRelayDriver:
             assert isinstance(queried_niswitch_session, niswitch.Session)
             assert queried_niswitch_session in simulated_niswitch_sessions
 
-    def test_relay_to_relay_driver_niswitch_session(
+    def test_relays_to_relay_driver_niswitch_session_single_relay(
         self, standalone_tsm_context: SemiconductorModuleContext, simulated_niswitch_sessions
     ):
         (
             queried_niswitch_session,
             queried_niswitch_relay_names,
-        ) = standalone_tsm_context.relay_to_relay_driver_niswitch_session("SystemRelay1")
+        ) = standalone_tsm_context.relays_to_relay_driver_niswitch_session("SystemRelay1")
         assert isinstance(queried_niswitch_session, niswitch.Session)
         assert isinstance(queried_niswitch_relay_names, str)
         assert queried_niswitch_session in simulated_niswitch_sessions
 
-    def test_relay_to_relay_driver_niswitch_sessions(
-        self, standalone_tsm_context: SemiconductorModuleContext, simulated_niswitch_sessions
-    ):
-        (
-            queried_niswitch_sessions,
-            queried_niswitch_relay_names,
-        ) = standalone_tsm_context.relay_to_relay_driver_niswitch_sessions("RelayGroup1")
-        assert isinstance(queried_niswitch_sessions, tuple)
-        assert isinstance(queried_niswitch_relay_names, tuple)
-        assert len(queried_niswitch_sessions) == len(queried_niswitch_relay_names)
-        for queried_niswitch_session, queried_relay_name in zip(
-            queried_niswitch_sessions, queried_niswitch_relay_names
-        ):
-            assert isinstance(queried_niswitch_session, niswitch.Session)
-            assert isinstance(queried_relay_name, str)
-            assert queried_niswitch_session in simulated_niswitch_sessions
-
-    def test_relays_to_relay_driver_niswitch_session(
+    def test_relays_to_relay_driver_niswitch_session_multiple_relays(
         self, standalone_tsm_context: SemiconductorModuleContext, simulated_niswitch_sessions
     ):
         (
@@ -112,7 +95,24 @@ class TestNIRelayDriver:
         assert isinstance(queried_niswitch_relay_names, str)
         assert queried_niswitch_session in simulated_niswitch_sessions
 
-    def test_relays_to_relay_driver_niswitch_sessions(
+    def test_relays_to_relay_driver_niswitch_sessions_single_relay(
+        self, standalone_tsm_context: SemiconductorModuleContext, simulated_niswitch_sessions
+    ):
+        (
+            queried_niswitch_sessions,
+            queried_niswitch_relay_names,
+        ) = standalone_tsm_context.relays_to_relay_driver_niswitch_sessions("RelayGroup1")
+        assert isinstance(queried_niswitch_sessions, tuple)
+        assert isinstance(queried_niswitch_relay_names, tuple)
+        assert len(queried_niswitch_sessions) == len(queried_niswitch_relay_names)
+        for queried_niswitch_session, queried_relay_name in zip(
+            queried_niswitch_sessions, queried_niswitch_relay_names
+        ):
+            assert isinstance(queried_niswitch_session, niswitch.Session)
+            assert isinstance(queried_relay_name, str)
+            assert queried_niswitch_session in simulated_niswitch_sessions
+
+    def test_relays_to_relay_driver_niswitch_sessions_multiple_relays(
         self, standalone_tsm_context: SemiconductorModuleContext, simulated_niswitch_sessions
     ):
         all_relays = self.pin_map_site_relays + self.pin_map_system_relays
@@ -130,9 +130,8 @@ class TestNIRelayDriver:
             assert isinstance(queried_relay_name, str)
             assert queried_niswitch_session in simulated_niswitch_sessions
 
-    def test_apply_relay_configuration(
-        self, standalone_tsm_context: SemiconductorModuleContext, simulated_niswitch_sessions
-    ):
+    @pytest.mark.usefixtures("simulated_niswitch_sessions")
+    def test_apply_relay_configuration(self, standalone_tsm_context: SemiconductorModuleContext):
         standalone_tsm_context.apply_relay_configuration("RelayConfiguration1")
         assert_relay_positions(
             standalone_tsm_context, self.pin_map_site_relays, RelayPosition.CLOSED
@@ -141,72 +140,73 @@ class TestNIRelayDriver:
             standalone_tsm_context, self.pin_map_system_relays, RelayPosition.OPEN
         )
 
-    def test_control_relay_single_action_open_system_relay(
-        self, standalone_tsm_context: SemiconductorModuleContext, simulated_niswitch_sessions
+    @pytest.mark.usefixtures("simulated_niswitch_sessions")
+    def test_control_relays_single_action_open_system_relay(
+        self, standalone_tsm_context: SemiconductorModuleContext
     ):
         (
             niswitch_session,
             niswitch_relay_name,
-        ) = standalone_tsm_context.relay_to_relay_driver_niswitch_session("SystemRelay1")
-        standalone_tsm_context.control_relay_single_action("SystemRelay1", RelayAction.OPEN)
+        ) = standalone_tsm_context.relays_to_relay_driver_niswitch_session("SystemRelay1")
+        standalone_tsm_context.control_relays("SystemRelay1", RelayAction.OPEN)
         assert niswitch_session.get_relay_position(niswitch_relay_name) == RelayPosition.OPEN
 
-    def test_control_relay_single_action_close_system_relay(
-        self, standalone_tsm_context: SemiconductorModuleContext, simulated_niswitch_sessions
+    @pytest.mark.usefixtures("simulated_niswitch_sessions")
+    def test_control_relays_single_action_close_system_relay(
+        self, standalone_tsm_context: SemiconductorModuleContext
     ):
         (
             niswitch_session,
             niswitch_relay_name,
-        ) = standalone_tsm_context.relay_to_relay_driver_niswitch_session("SystemRelay1")
-        standalone_tsm_context.control_relay_single_action("SystemRelay1", RelayAction.CLOSE)
+        ) = standalone_tsm_context.relays_to_relay_driver_niswitch_session("SystemRelay1")
+        standalone_tsm_context.control_relays("SystemRelay1", RelayAction.CLOSE)
         assert niswitch_session.get_relay_position(niswitch_relay_name) == RelayPosition.CLOSED
 
+    @pytest.mark.usefixtures("simulated_niswitch_sessions")
     def test_control_relays_single_action_open_all_site_relays(
-        self, standalone_tsm_context: SemiconductorModuleContext, simulated_niswitch_sessions
+        self, standalone_tsm_context: SemiconductorModuleContext
     ):
-        standalone_tsm_context.control_relays_single_action(
-            self.pin_map_site_relays, RelayAction.OPEN
-        )
+        standalone_tsm_context.control_relays(self.pin_map_site_relays, RelayAction.OPEN)
         assert_relay_positions(standalone_tsm_context, self.pin_map_site_relays, RelayPosition.OPEN)
 
+    @pytest.mark.usefixtures("simulated_niswitch_sessions")
     def test_control_relays_single_action_close_all_site_relays(
-        self, standalone_tsm_context: SemiconductorModuleContext, simulated_niswitch_sessions
+        self, standalone_tsm_context: SemiconductorModuleContext
     ):
-        standalone_tsm_context.control_relays_single_action(
-            self.pin_map_site_relays, RelayAction.CLOSE
-        )
+        standalone_tsm_context.control_relays(self.pin_map_site_relays, RelayAction.CLOSE)
         assert_relay_positions(
             standalone_tsm_context, self.pin_map_site_relays, RelayPosition.CLOSED
         )
 
+    @pytest.mark.usefixtures("simulated_niswitch_sessions")
     def test_control_relays_multiple_action_open_all_site_relays(
-        self, standalone_tsm_context: SemiconductorModuleContext, simulated_niswitch_sessions
+        self, standalone_tsm_context: SemiconductorModuleContext
     ):
-        standalone_tsm_context.control_relays_multiple_action(
+        standalone_tsm_context.control_relays(
             self.pin_map_site_relays, [RelayAction.OPEN] * len(self.pin_map_site_relays)
         )
         assert_relay_positions(standalone_tsm_context, self.pin_map_site_relays, RelayPosition.OPEN)
 
+    @pytest.mark.usefixtures("simulated_niswitch_sessions")
     def test_control_relays_multiple_action_close_all_site_relays(
-        self, standalone_tsm_context: SemiconductorModuleContext, simulated_niswitch_sessions
+        self, standalone_tsm_context: SemiconductorModuleContext
     ):
-        standalone_tsm_context.control_relays_multiple_action(
+        standalone_tsm_context.control_relays(
             self.pin_map_site_relays, [RelayAction.CLOSE] * len(self.pin_map_site_relays)
         )
         assert_relay_positions(
             standalone_tsm_context, self.pin_map_site_relays, RelayPosition.CLOSED
         )
 
+    @pytest.mark.usefixtures("simulated_niswitch_sessions")
     def test_control_relays_multiple_action_mixed_site_relay_positions(
-        self, standalone_tsm_context: SemiconductorModuleContext, simulated_niswitch_sessions
+        self, standalone_tsm_context: SemiconductorModuleContext
     ):
         relay_actions = [
             RelayAction.OPEN if i % 2 else RelayAction.CLOSE
             for i in range(len(self.pin_map_site_relays))
         ]
-        standalone_tsm_context.control_relays_multiple_action(
-            self.pin_map_site_relays, relay_actions
-        )
+        standalone_tsm_context.control_relays(self.pin_map_site_relays, relay_actions)
         for pin_map_site_relay, relay_action in zip(self.pin_map_site_relays, relay_actions):
             relay_position = (
                 RelayPosition.OPEN if relay_action == RelayAction.OPEN else RelayPosition.CLOSED

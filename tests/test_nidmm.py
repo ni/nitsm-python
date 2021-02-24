@@ -1,9 +1,7 @@
 import nidmm
 import pytest
 from nitsm.codemoduleapi import SemiconductorModuleContext
-from nitsm.pinquerycontexts import NIDmmSinglePinSingleSessionQueryContext
-from nitsm.pinquerycontexts import NIDmmSinglePinMultipleSessionQueryContext
-from nitsm.pinquerycontexts import NIDmmMultiplePinMultipleSessionQueryContext
+from nitsm.pinquerycontexts import PinQueryContext
 
 
 @pytest.fixture
@@ -59,30 +57,30 @@ class TestNIDMM:
         pin_query_context, queried_session = standalone_tsm_context.pin_to_nidmm_session(
             "SystemPin1"
         )
-        assert isinstance(pin_query_context, NIDmmSinglePinSingleSessionQueryContext)
+        assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_session, nidmm.Session)
         assert queried_session in simulated_nidmm_sessions
 
-    def test_pin_to_nidmm_sessions(
+    def test_pins_to_nidmm_sessions_single_pin(
         self, standalone_tsm_context: SemiconductorModuleContext, simulated_nidmm_sessions
     ):
-        pin_query_context, queried_sessions = standalone_tsm_context.pin_to_nidmm_sessions(
+        pin_query_context, queried_sessions = standalone_tsm_context.pins_to_nidmm_sessions(
             "PinGroup1"
         )
-        assert isinstance(pin_query_context, NIDmmSinglePinMultipleSessionQueryContext)
+        assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_sessions, tuple)
         for queried_session in queried_sessions:
             assert isinstance(queried_session, nidmm.Session)
             assert queried_session in simulated_nidmm_sessions
 
-    def test_pins_to_nidmm_sessions(
+    def test_pins_to_nidmm_sessions_multiple_pins(
         self, standalone_tsm_context: SemiconductorModuleContext, simulated_nidmm_sessions
     ):
         all_pins = self.pin_map_dut_pins + self.pin_map_system_pins
         pin_query_context, queried_sessions = standalone_tsm_context.pins_to_nidmm_sessions(
             all_pins
         )
-        assert isinstance(pin_query_context, NIDmmMultiplePinMultipleSessionQueryContext)
+        assert isinstance(pin_query_context, PinQueryContext)
         assert isinstance(queried_sessions, tuple)
         for queried_session in queried_sessions:
             assert isinstance(queried_session, nidmm.Session)
