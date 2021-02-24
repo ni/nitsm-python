@@ -27,5 +27,6 @@ testpaths = [
     "tests"
 ]
 markers = [
-    "pin_map"
+    "pin_map",
+    "sequence_file"
 ]
