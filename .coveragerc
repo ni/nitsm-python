@@ -1,0 +1,4 @@
+[report]
+omit =
+    */nitsm/pinmapinterfaces.py
+    */nitsm/__init__.py
