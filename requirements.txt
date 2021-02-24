@@ -1,5 +1,6 @@
 pywin32
 pytest
+pytest-cov
 black
 nidcpower
 nidmm
