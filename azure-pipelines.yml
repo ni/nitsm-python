@@ -1,0 +1,40 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+
+trigger:
+- main
+
+jobs:
+- job: mainJob
+  workspace:
+    clean: all
+    
+  pool:
+    name: nitsm-python-test
+
+  steps:
+  - script: pip install pytest-cov
+    displayName: 'Install pytest-cov'
+
+  - script: pip install .
+    displayName: 'Install nitsm-python'
+
+  - script: pytest --junitxml=test-results.xml --cov=nitsm --cov-report=xml
+    displayName: 'Run python unit tests'
+
+  - task: PublishTestResults@2
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFiles: '**/test-results.xml'
+      testRunTitle: 'Publish test results'
+    displayName: 'Display test results'
+
+  - task: PublishCodeCoverageResults@1
+    inputs:
+      codeCoverageTool: Cobertura
+      summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
+      reportDirectory: '$(System.DefaultWorkingDirectory)/**/htmlcov'
+    displayName: 'Display code coverage results'
