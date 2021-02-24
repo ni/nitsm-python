@@ -24,7 +24,7 @@ class SystemTestRunner:
             "TestExec.exe",
         )
         completed_process = subprocess.run(
-            [csharp_oi_path, "/runentrypoint", '"Test UUTs"', self._sequence_file_path, "/quit"],
+            [csharp_oi_path, "/runentrypoint", "Test UUTs", self._sequence_file_path, "/quit"],
             timeout=60,
         )
         return completed_process.returncode
