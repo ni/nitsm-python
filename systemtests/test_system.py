@@ -1,6 +1,6 @@
 import pytest
 
-from tests.conftest import SystemTestRunner
+from systemtests.conftest import SystemTestRunner
 
 
 class TestSystem:
