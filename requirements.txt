@@ -1,0 +1,10 @@
+pywin32
+pytest
+black
+nidcpower
+nidmm
+niscope
+nidigital
+niswitch
+nidaqmx
+nifgen
