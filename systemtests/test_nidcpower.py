@@ -1,16 +1,27 @@
-import nitsm.codemoduleapi
+import pytest
 import nidcpower
+import nitsm.codemoduleapi
 from nitsm.codemoduleapi import SemiconductorModuleContext
 
 OPTIONS = {"Simulate": True, "DriverSetup": {"Model": "4141", "BoardType": "PXIe"}}
+
+
+@pytest.mark.skip("Can't enable this test until nidcpower python supports channel expansion.")
+@pytest.mark.sequence_file("nidcpower.seq")
+def test_nidcpower(system_test_runner):
+    assert system_test_runner.run()
+
+
+@pytest.mark.sequence_file("nidcpower_legacy.seq")
+def test_nidcpower_legacy(system_test_runner):
+    assert system_test_runner.run()
 
 
 @nitsm.codemoduleapi.code_module
 def open_sessions_channel_expansion(tsm_context: SemiconductorModuleContext):
     resource_names = tsm_context.get_all_nidcpower_resource_strings()
     sessions = [
-        nidcpower.Session(resource_name, options=OPTIONS)
-        for resource_name in resource_names
+        nidcpower.Session(resource_name, options=OPTIONS) for resource_name in resource_names
     ]
     for resource_name, session in zip(resource_names, sessions):
         tsm_context.set_nidcpower_session(resource_name, session)
@@ -25,14 +36,12 @@ def open_sessions(tsm_context: SemiconductorModuleContext):
 
 
 @nitsm.codemoduleapi.code_module
-def close_sessions(tsm_context: SemiconductorModuleContext):
-    sessions = tsm_context.get_all_nidcpower_sessions()
-    for session in sessions:
-        session.close()
-
-
-@nitsm.codemoduleapi.code_module
-def measure(tsm_context: SemiconductorModuleContext, pins, expected_instrument_names, expected_channel_strings):
+def measure(
+    tsm_context: SemiconductorModuleContext,
+    pins,
+    expected_instrument_names,
+    expected_channel_strings,
+):
     pin_query, sessions, channel_strings = tsm_context.pins_to_nidcpower_sessions(pins)
 
     expected_instrument_channels = list(zip(expected_instrument_names, expected_channel_strings))
@@ -63,3 +72,10 @@ def _call_dcpower_methods(session, channel_string):
     session.initiate()
     session.wait_for_event(nidcpower.Event.SOURCE_COMPLETE)
     pin_session.measure(nidcpower.MeasurementTypes.VOLTAGE)
+
+
+@nitsm.codemoduleapi.code_module
+def close_sessions(tsm_context: SemiconductorModuleContext):
+    sessions = tsm_context.get_all_nidcpower_sessions()
+    for session in sessions:
+        session.close()
