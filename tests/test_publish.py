@@ -19,7 +19,7 @@ class TestSinglePinScalar:
 
     @pytest.fixture
     def pin_query_context(self, standalone_tsm_context):
-        pin_query_context, *_ = standalone_tsm_context.pin_to_nidigital_session("SystemPin1")
+        pin_query_context, *_ = standalone_tsm_context.pins_to_nidigital_session("SystemPin1")
         return pin_query_context
 
     def test_publish_float_scalar(self, pin_query_context, published_data_reader, num_sites):
@@ -42,7 +42,7 @@ class TestSinglePinScalar:
 class TestSinglePin1d:
     @pytest.fixture
     def pin_query_context(self, standalone_tsm_context):
-        pin_query_context, *_ = standalone_tsm_context.pin_to_nidigital_session("DUTPin1")
+        pin_query_context, *_ = standalone_tsm_context.pins_to_nidigital_session("DUTPin1")
         return pin_query_context
 
     def test_publish_float_1d(self, pin_query_context, published_data_reader):
