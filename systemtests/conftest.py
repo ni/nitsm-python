@@ -23,11 +23,22 @@ class SystemTestRunner:
             "release",
             "TestExec.exe",
         )
-        completed_process = subprocess.run(
-            [csharp_oi_path, "/runentrypoint", "Test UUTs", self._sequence_file_path, "/quit"],
-            timeout=300,
+        # subprocess.run with check=True will throw an exception if the return code is non-zero
+        # with stdout set to subprocess.PIPE, exit code and stdout will be included in the exception
+        subprocess.run(
+            [
+                csharp_oi_path,
+                "/outputtostdio",
+                "/runentrypoint",
+                "Test UUTs",
+                self._sequence_file_path,
+                "/quit",
+            ],
+            stdout=subprocess.PIPE,
+            timeout=60,
+            check=True,
         )
-        return completed_process.returncode
+        return True
 
 
 @pytest.fixture(scope="session")
