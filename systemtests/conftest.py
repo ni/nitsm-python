@@ -41,7 +41,7 @@ class SystemTestRunner:
         return True
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def teststand_login_override():
     system_tests_front_end_callbacks_path = os.path.join(
         os.path.dirname(__file__), "FrontEndCallbacks.seq"
@@ -59,7 +59,7 @@ def teststand_login_override():
 
 
 @pytest.fixture
-def system_test_runner(request, teststand_login_override):
+def system_test_runner(request):
     # get absolute path of the test program file which is assumed to be relative to the test module
     sequence_file_name = request.node.get_closest_marker("sequence_file").args[0]
     module_directory = os.path.dirname(request.module.__file__)
