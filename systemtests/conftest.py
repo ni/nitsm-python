@@ -25,7 +25,7 @@ class SystemTestRunner:
         )
         completed_process = subprocess.run(
             [csharp_oi_path, "/runentrypoint", "Test UUTs", self._sequence_file_path, "/quit"],
-            timeout=60,
+            timeout=300,
         )
         return completed_process.returncode
 
@@ -48,8 +48,7 @@ def teststand_login_override():
 
 
 @pytest.fixture
-@pytest.mark.usefixtures("teststand_login_override")
-def system_test_runner(request):
+def system_test_runner(request, teststand_login_override):
     # get absolute path of the test program file which is assumed to be relative to the test module
     sequence_file_name = request.node.get_closest_marker("sequence_file").args[0]
     module_directory = os.path.dirname(request.module.__file__)
