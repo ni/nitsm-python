@@ -13,7 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/ni/nitsm-python",
     package_dir={"": "src"},  # sets package root to the src directory
-    packages=setuptools.find_packages("src"),
+    packages=setuptools.find_packages("src", include=("nitsm",)),
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Operating System :: Microsoft :: Windows",
