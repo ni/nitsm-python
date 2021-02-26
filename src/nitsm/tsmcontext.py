@@ -358,9 +358,9 @@ class SemiconductorModuleContext:
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
-            session_id, pin_set_string, *_ = self._context.GetNIDigitalPatternSession_2(pins)
+            session_id, pin_set_string, _ = self._context.GetNIDigitalPatternSession_2(pins)
         else:
-            session_id, pin_set_string, *_ = self._context.GetNIDigitalPatternSession(pins)
+            session_id, pin_set_string, _ = self._context.GetNIDigitalPatternSession(pins)
         session = SemiconductorModuleContext._sessions[session_id]
         return pin_query_context, session, pin_set_string
 
@@ -390,9 +390,9 @@ class SemiconductorModuleContext:
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
-            session_ids, pin_set_strings, *_ = self._context.GetNIDigitalPatternSessions_3(pins)
+            session_ids, pin_set_strings, _ = self._context.GetNIDigitalPatternSessions_3(pins)
         else:
-            session_ids, pin_set_strings, *_ = self._context.GetNIDigitalPatternSessions_2(pins)
+            session_ids, pin_set_strings, _ = self._context.GetNIDigitalPatternSessions_2(pins)
         sessions = tuple(
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
         )
@@ -422,9 +422,9 @@ class SemiconductorModuleContext:
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
-            session_id, *_, site_list = self._context.GetNIDigitalPatternSession_2(pins)
+            session_id, _, site_list = self._context.GetNIDigitalPatternSession_2(pins)
         else:
-            session_id, *_, site_list = self._context.GetNIDigitalPatternSession(pins)
+            session_id, _, site_list = self._context.GetNIDigitalPatternSession(pins)
         session = SemiconductorModuleContext._sessions[session_id]
         return pin_query_context, session, site_list
 
@@ -451,9 +451,9 @@ class SemiconductorModuleContext:
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
-            session_ids, *_, site_lists = self._context.GetNIDigitalPatternSessions_3(pins)
+            session_ids, _, site_lists = self._context.GetNIDigitalPatternSessions_3(pins)
         else:
-            session_ids, *_, site_lists = self._context.GetNIDigitalPatternSessions_2(pins)
+            session_ids, _, site_lists = self._context.GetNIDigitalPatternSessions_2(pins)
         sessions = tuple(
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
         )
