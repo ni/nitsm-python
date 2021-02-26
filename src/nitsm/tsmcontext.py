@@ -7,6 +7,7 @@ import ctypes.util
 import sys
 import time
 import typing
+import warnings
 import pythoncom
 import nitsm.pinmapinterfaces
 import nitsm.pinquerycontexts
@@ -48,8 +49,8 @@ if typing.TYPE_CHECKING:
     _NIDmmSingleSessionQuery = typing.Tuple[_PinQueryContext, nidmm.Session]
     _NIDmmMultipleSessionQuery = typing.Tuple[_PinQueryContext, typing.Tuple[nidmm.Session, ...]]
 
-    _NIFgenSingleSessionQuery = typing.Tuple[_PinQueryContext, nifgen.Session, str]
-    _NIFgenMultipleSessionQuery = typing.Tuple[
+    _NIFGenSingleSessionQuery = typing.Tuple[_PinQueryContext, nifgen.Session, str]
+    _NIFGenMultipleSessionQuery = typing.Tuple[
         _PinQueryContext, typing.Tuple[nifgen.Session, ...], _StringTuple
     ]
 
@@ -486,6 +487,10 @@ class SemiconductorModuleContext:
             channel_strings: Returns a tuple of the NI-DCPower channel IDs in the Semiconductor
                 Module context.
         """
+        warnings.simplefilter('always', PendingDeprecationWarning)  # turn off filter
+        warnings.warn("Method will be removed in a future version of nitsm.", category=PendingDeprecationWarning)
+        warnings.simplefilter('default', PendingDeprecationWarning)  # reset filter
+
 
         return self._context.GetNIDCPowerInstrumentNames()
 
@@ -819,7 +824,7 @@ class SemiconductorModuleContext:
         session_ids = self._context.GetNIFGenSessions()
         return tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
 
-    def pins_to_nifgen_session(self, pins: "_PinsArg") -> "_NIFgenSingleSessionQuery":
+    def pins_to_nifgen_session(self, pins: "_PinsArg") -> "_NIFGenSingleSessionQuery":
         """
         Returns the NI-FGEN session and channel list required to access the pin(s). If more than one
         session is required, the method raises an exception.
@@ -847,7 +852,7 @@ class SemiconductorModuleContext:
         session = SemiconductorModuleContext._sessions[session_id]
         return pin_query_context, session, channel_list
 
-    def pins_to_nifgen_sessions(self, pins: "_PinsArg") -> "_NIFgenMultipleSessionQuery":
+    def pins_to_nifgen_sessions(self, pins: "_PinsArg") -> "_NIFGenMultipleSessionQuery":
         """
         Returns the NI-FGEN sessions and channel lists required to access the pin(s).
 
