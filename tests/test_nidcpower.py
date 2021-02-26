@@ -1,6 +1,6 @@
 import nidcpower
 import pytest
-from nitsm.codemoduleapi import SemiconductorModuleContext
+import pywintypes
 from nitsm.pinquerycontexts import PinQueryContext
 
 
@@ -14,7 +14,9 @@ def simulated_nidcpower_sessions(standalone_tsm_context):
     for instrument_name, channel_string, session in zip(
         instrument_names, channel_strings, sessions
     ):
-        standalone_tsm_context.set_nidcpower_session(instrument_name, channel_string, session)
+        standalone_tsm_context.set_nidcpower_session_with_channel_string(
+            instrument_name, channel_string, session
+        )
     yield sessions
     for session in sessions:
         session.close()
@@ -26,9 +28,7 @@ class TestNIDCPower:
     pin_map_dut_pins = ["DUTPin1", "DUTPin2", "DUTPin3"]
     pin_map_system_pins = ["SystemPin1"]
 
-    def test_get_all_nidcpower_instrument_names(
-        self, standalone_tsm_context: SemiconductorModuleContext
-    ):
+    def test_get_all_nidcpower_instrument_names(self, standalone_tsm_context):
         (
             instrument_names,
             channel_strings,
@@ -41,7 +41,13 @@ class TestNIDCPower:
             assert isinstance(channel_string, str)
             assert instrument_name in self.pin_map_instruments
 
-    def test_set_nidcpower_session(self, standalone_tsm_context: SemiconductorModuleContext):
+    def test_get_all_nidcpower_instrument_names_issues_deprecation_warning(
+        self, standalone_tsm_context
+    ):
+        with pytest.warns(DeprecationWarning):
+            standalone_tsm_context.get_all_nidcpower_instrument_names()
+
+    def test_set_nidcpower_session_with_channel_string(self, standalone_tsm_context):
         (
             instrument_names,
             channel_strings,
@@ -50,10 +56,20 @@ class TestNIDCPower:
             with nidcpower.Session(
                 instrument_name, channel_string, options={"Simulate": True}
             ) as session:
-                standalone_tsm_context.set_nidcpower_session(
+                standalone_tsm_context.set_nidcpower_session_with_channel_string(
                     instrument_name, channel_string, session
                 )
-                assert SemiconductorModuleContext._sessions[id(session)] is session
+                assert standalone_tsm_context._sessions[id(session)] is session
+
+    def test_set_nidcpower_session_with_channel_string_issues_deprecation_warning(
+        self, standalone_tsm_context
+    ):
+        # we only care that a warning is raised, so call method with bogus data and ignore exception
+        with pytest.warns(DeprecationWarning):
+            try:
+                standalone_tsm_context.set_nidcpower_session_with_channel_string("", "", None)
+            except pywintypes.com_error:
+                pass
 
     def test_get_all_nidcpower_sessions(self, standalone_tsm_context, simulated_nidcpower_sessions):
         queried_sessions = standalone_tsm_context.get_all_nidcpower_sessions()
@@ -124,7 +140,7 @@ def simulated_nidcpower_sessions_with_resource_strings(standalone_tsm_context):
         for resource_string in resource_strings
     ]
     for resource_string, session in zip(resource_strings, sessions):
-        standalone_tsm_context.set_nidcpower_session_with_resource_string(resource_string, session)
+        standalone_tsm_context.set_nidcpower_session(resource_string, session)
     yield sessions
     for session in sessions:
         session.close()
@@ -140,14 +156,12 @@ class TestNIDCPowerChannelGroups:
         for resource_string in resource_strings:
             assert isinstance(resource_string, str)
 
-    def test_set_nidcpower_session_with_resource_string(self, standalone_tsm_context):
+    def test_set_nidcpower_session(self, standalone_tsm_context):
         resource_strings = standalone_tsm_context.get_all_nidcpower_resource_strings()
         for resource_string in resource_strings:
             with nidcpower.Session(resource_string, options={"Simulate": True}) as session:
-                standalone_tsm_context.set_nidcpower_session_with_resource_string(
-                    resource_string, session
-                )
-                assert SemiconductorModuleContext._sessions[id(session)] is session
+                standalone_tsm_context.set_nidcpower_session(resource_string, session)
+                assert standalone_tsm_context._sessions[id(session)] is session
 
     def test_pins_to_nidcpower_session_multiple_pins(
         self, standalone_tsm_context, simulated_nidcpower_sessions_with_resource_strings
