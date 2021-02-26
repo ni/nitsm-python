@@ -23,6 +23,7 @@ def simulated_nidcpower_sessions(standalone_tsm_context):
 
 
 @pytest.mark.pin_map("nidcpower.pinmap")
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 class TestNIDCPower:
     pin_map_instruments = ["DCPower1", "DCPower2", "DCPower3", "DCPower4", "DCPower5"]
     pin_map_dut_pins = ["DUTPin1", "DUTPin2", "DUTPin3"]
@@ -44,8 +45,7 @@ class TestNIDCPower:
     def test_get_all_nidcpower_instrument_names_issues_deprecation_warning(
         self, standalone_tsm_context
     ):
-        with pytest.warns(DeprecationWarning):
-            standalone_tsm_context.get_all_nidcpower_instrument_names()
+        pytest.warns(DeprecationWarning, standalone_tsm_context.get_all_nidcpower_instrument_names)
 
     def test_set_nidcpower_session_with_channel_string(self, standalone_tsm_context):
         (
