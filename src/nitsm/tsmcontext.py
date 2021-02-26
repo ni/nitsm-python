@@ -7,12 +7,18 @@ import ctypes.util
 import sys
 import time
 import typing
+import warnings
 import pythoncom
 import nitsm.pinmapinterfaces
 import nitsm.pinquerycontexts
 import nitsm.enums
 
 __all__ = ["SemiconductorModuleContext"]
+
+# display warnings for deprecation and pending deprecation for this module
+# each warning will be displayed once per call site of warnings.warn
+warnings.filterwarnings("default", category=DeprecationWarning, module=__name__)
+warnings.filterwarnings("default", category=PendingDeprecationWarning, module=__name__)
 
 if typing.TYPE_CHECKING:
     import nidigital
@@ -48,8 +54,8 @@ if typing.TYPE_CHECKING:
     _NIDmmSingleSessionQuery = typing.Tuple[_PinQueryContext, nidmm.Session]
     _NIDmmMultipleSessionQuery = typing.Tuple[_PinQueryContext, typing.Tuple[nidmm.Session, ...]]
 
-    _NIFgenSingleSessionQuery = typing.Tuple[_PinQueryContext, nifgen.Session, str]
-    _NIFgenMultipleSessionQuery = typing.Tuple[
+    _NIFGenSingleSessionQuery = typing.Tuple[_PinQueryContext, nifgen.Session, str]
+    _NIFGenMultipleSessionQuery = typing.Tuple[
         _PinQueryContext, typing.Tuple[nifgen.Session, ...], _StringTuple
     ]
 
@@ -532,6 +538,12 @@ class SemiconductorModuleContext:
         instrument_names and channel_strings values always return the same number of elements.
         Instrument names repeat if the instrument has multiple channels.
 
+        Warnings:
+            This method has been deprecated and may be removed in a future release of nitsm. If
+            channel groups aren't already enabled in the pin map, enable them by clicking "Convert
+            DCPower Instruments" in the pin map editor and use get_all_nidcpower_resource_strings
+            instead.
+
         Returns:
             instrument_names: Returns a tuple of the NI-DCPower instrument names associated with the
                 channel IDs returned in channel_strings. Instrument names repeat if the instrument
@@ -540,6 +552,12 @@ class SemiconductorModuleContext:
                 Module context.
         """
 
+        warnings.warn(
+            "get_all_nidcpower_instrument_names has been deprecated and may be removed in a future "
+            "release of nitsm. Please update the pin map to use channel groups for NI DCPower then "
+            "replace all call sites of this method with get_all_nidcpower_resource_strings.",
+            category=DeprecationWarning,
+        )
         return self._context.GetNIDCPowerInstrumentNames()
 
     def get_all_nidcpower_resource_strings(self):
@@ -557,9 +575,14 @@ class SemiconductorModuleContext:
 
         return self._context.GetNIDCPowerResourceStrings()
 
-    def set_nidcpower_session(self, instrument_name, channel_string, session):
+    def set_nidcpower_session_with_channel_string(self, instrument_name, channel_string, session):
         """
         Associates an instrument session with an NI-DCPower instrument_name and channel_string.
+
+        Warnings:
+            This method has been deprecated and may be removed in a future release of nitsm. If
+            channel groups aren't already enabled in the pin map, enable them by clicking "Convert
+            DCPower Instruments" in the pin map editor and use set_nidcpower_session instead.
 
         Args:
             instrument_name: The instrument name in the pin map file for the corresponding session.
@@ -568,11 +591,17 @@ class SemiconductorModuleContext:
                 channel_string.
         """
 
+        warnings.warn(
+            "set_nidcpower_session_with_channel_string has been deprecated and may be removed in a "
+            "future release of nitsm. Please update the pin map to use channel groups for NI "
+            "DCPower then replace all call sites of this method with set_nidcpower_session.",
+            category=DeprecationWarning,
+        )
         session_id = id(session)
         SemiconductorModuleContext._sessions[session_id] = session
         return self._context.SetNIDCPowerSession(instrument_name, channel_string, session_id)
 
-    def set_nidcpower_session_with_resource_string(self, resource_string, session):
+    def set_nidcpower_session(self, resource_string, session):
         """
         Associates an NI-DCPower session with all resources of an NI-DCPower resource_string. This
         method supports only DC Power instruments defined with ChannelGroups in the pin map.
@@ -872,7 +901,7 @@ class SemiconductorModuleContext:
         session_ids = self._context.GetNIFGenSessions()
         return tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
 
-    def pins_to_nifgen_session(self, pins: "_PinsArg") -> "_NIFgenSingleSessionQuery":
+    def pins_to_nifgen_session(self, pins: "_PinsArg") -> "_NIFGenSingleSessionQuery":
         """
         Returns the NI-FGEN session and channel list required to access the pin(s). If more than one
         session is required, the method raises an exception.
@@ -900,7 +929,7 @@ class SemiconductorModuleContext:
         session = SemiconductorModuleContext._sessions[session_id]
         return pin_query_context, session, channel_list
 
-    def pins_to_nifgen_sessions(self, pins: "_PinsArg") -> "_NIFgenMultipleSessionQuery":
+    def pins_to_nifgen_sessions(self, pins: "_PinsArg") -> "_NIFGenMultipleSessionQuery":
         """
         Returns the NI-FGEN sessions and channel lists required to access the pin(s).
 
