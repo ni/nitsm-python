@@ -11,8 +11,8 @@ jobs:
     name: nitsm-python-test
 
   steps:
-  - script: pip install pytest-cov
-    displayName: 'Install pytest-cov'
+  - script: pip install -r requirements.txt
+    displayName: 'Install requirements'
 
   - script: pip install .
     displayName: 'Install nitsm-python'
