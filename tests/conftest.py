@@ -5,7 +5,6 @@ import win32com.client.selecttlb
 import pythoncom
 import nitsm.codemoduleapi
 
-
 _standalone_tsm_context_tlb = win32com.client.selecttlb.FindTlbsWithDescription(
     "NI TestStand Semiconductor Module Standalone Semiconductor Module Context"
 )[0]
