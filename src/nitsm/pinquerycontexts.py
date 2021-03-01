@@ -2,21 +2,28 @@
 Pin Query Contexts
 """
 
-import typing
 import itertools
+import typing
 
 __all__ = ["PinQueryContext"]
 
 if typing.TYPE_CHECKING:
     import nitsm.pinmapinterfaces
 
+    _PublishDataScalar = typing.Union[bool, int, float]
+    _PublishDataSequence = typing.Sequence[_PublishDataScalar]
+    _PublishDataJaggedSequence = typing.Sequence[_PublishDataSequence]
+    _PublishDataArg = typing.Union[
+        _PublishDataScalar, _PublishDataSequence, _PublishDataJaggedSequence
+    ]
+
 
 class PinQueryContext:
-    def __init__(self, tsm_context: "nitsm.pinmapinterfaces.ISemiconductorModuleContext", pins):
-        self._tsm_context = tsm_context
-        self._pins = pins
+    def __init__(self, tsm_context, pins):
+        self._tsm_context: nitsm.pinmapinterfaces.ISemiconductorModuleContext = tsm_context
+        self._pins: typing.Union[str, typing.Sequence[str]] = pins
 
-    def publish(self, data, published_data_id=""):
+    def publish(self, data: "_PublishDataArg", published_data_id=""):
         if isinstance(data, bool):
             return self._publish_bool_scalar(data, published_data_id)
         elif isinstance(data, (float, int)):
