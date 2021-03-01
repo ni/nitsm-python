@@ -2,3 +2,7 @@
 omit =
     */nitsm/pinmapinterfaces.py
     */nitsm/__init__.py
+
+exclude_lines =
+    pragma: no cover
+    if typing.TYPE_CHECKING:
