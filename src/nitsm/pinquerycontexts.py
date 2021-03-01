@@ -27,7 +27,7 @@ class PinQueryContext:
                 made for a single instrument channel. Pass a single value if the pin query refers
                 to a single channel on a single instrument. Pass a sequence of values if the pin query
                 refers to multiple channels on a single instrument or multiple instruments with a
-                single channel. Pass a list of lists of values if the pin query refers to multiple
+                single channel. Pass a two dimensional sequence of values if the pin query refers to multiple
                 channels on multiple instruments.
             published_data_id: The unique ID for distinguishing the measurement when you publish
                 multiple measurements for the same pins within the same code module. This ID must
