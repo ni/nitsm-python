@@ -9,10 +9,13 @@ __all__ = ["PinQueryContext"]
 
 if typing.TYPE_CHECKING:
     import nitsm.pinmapinterfaces
+
     _PublishDataScalar = typing.Union[bool, int, float]
     _PublishDataSequence = typing.Sequence[_PublishDataScalar]
     _PublishDataJaggedSequence = typing.Sequence[_PublishDataSequence]
-    _PublishDataArg = typing.Union[_PublishDataScalar, _PublishDataSequence, _PublishDataJaggedSequence]
+    _PublishDataArg = typing.Union[
+        _PublishDataScalar, _PublishDataSequence, _PublishDataJaggedSequence
+    ]
 
 
 class PinQueryContext:
