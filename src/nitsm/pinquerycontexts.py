@@ -25,7 +25,7 @@ class PinQueryContext:
             data: The multisite measurement data from one or more pins connected to one or more
                 instruments. Each value can be a bool, int or float and represents a measurement
                 made for a single instrument channel. Pass a single value if the pin query refers
-                to a single channel on a single instrument. Pass a list of values if the pin query
+                to a single channel on a single instrument. Pass a sequence of values if the pin query
                 refers to multiple channels on a single instrument or multiple instruments with a
                 single channel. Pass a list of lists of values if the pin query refers to multiple
                 channels on multiple instruments.
