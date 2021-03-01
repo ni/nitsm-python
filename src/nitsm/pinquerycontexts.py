@@ -18,19 +18,21 @@ class PinQueryContext:
 
     def publish(self, data, published_data_id=""):
         """
-        Publishes the measurement data for one or more pins to the Semiconductor Multi Test step for all sites in the
-        SemiconductorModuleContext.
+        Publishes the measurement data for one or more pins to the Semiconductor Multi Test step
+        for all sites in the SemiconductorModuleContext.
 
         Args:
-            data: The multisite measurement data from one or more pins connected to one or more instruments. Each value
-                can be a bool, int or float and represents a measurement made for a single instrument channel. Pass a
-                single value if the pin query refers to a single channel on a single instrument. Pass a list of values
-                if the pin query refers to multiple channels on a single instrument or multiple instruments with a
-                single channel. Pass a list of lists of values if the pin query refers to multiple channels on multiple
-                instruments.
-            published_data_id: The unique ID for distinguishing the measurement when you publish multiple measurements
-                for the same pins within the same code module. This ID must match one of the values in the Published
-                Data Id column on the Tests tab of the Semiconductor Multi Test step.
+            data: The multisite measurement data from one or more pins connected to one or more
+                instruments. Each value can be a bool, int or float and represents a measurement
+                made for a single instrument channel. Pass a single value if the pin query refers
+                to a single channel on a single instrument. Pass a list of values if the pin query
+                refers to multiple channels on a single instrument or multiple instruments with a
+                single channel. Pass a list of lists of values if the pin query refers to multiple
+                channels on multiple instruments.
+            published_data_id: The unique ID for distinguishing the measurement when you publish
+                multiple measurements for the same pins within the same code module. This ID must
+                match one of the values in the Published Data Id column on the Tests tab of the
+                Semiconductor Multi Test step.
         """
         if isinstance(data, bool):
             return self._publish_bool_scalar(data, published_data_id)
