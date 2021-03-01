@@ -16,10 +16,6 @@ class PinQueryContext:
         self._tsm_context = tsm_context
         self._pins = pins
 
-    @property
-    def pins(self):
-        return self._pins
-
     def publish(self, data, published_data_id=""):
         if isinstance(data, bool):
             return self._publish_bool_scalar(data, published_data_id)
