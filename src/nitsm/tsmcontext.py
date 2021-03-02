@@ -33,11 +33,10 @@ if typing.TYPE_CHECKING:
     _PinsArg = typing.Union[str, typing.Sequence[str]]  # argument that accepts 1 or more pins
     _StringTuple = typing.Tuple[str, ...]
 
-    _NIDigitalSingleSessionQuery = typing.Tuple[_PinQueryContext, nidigital.Session, str, str]
+    _NIDigitalSingleSessionQuery = typing.Tuple[_PinQueryContext, nidigital.Session, str]
     _NIDigitalMultipleSessionQuery = typing.Tuple[
         _PinQueryContext,
         typing.Tuple[nidigital.Session, ...],
-        _StringTuple,
         _StringTuple,
     ]
 
@@ -337,45 +336,46 @@ class SemiconductorModuleContext:
         session_ids = self._context.GetNIDigitalPatternSessions()
         return tuple(SemiconductorModuleContext._sessions[session_id] for session_id in session_ids)
 
-    def pins_to_nidigital_session(self, pins: "_PinsArg") -> "_NIDigitalSingleSessionQuery":
+    def pins_to_nidigital_session_for_ppmu(
+        self, pins: "_PinsArg"
+    ) -> "_NIDigitalSingleSessionQuery":
         """
-        Returns the NI-Digital Pattern session and pin_set_string required to access the pin(s), as
-        well as the site_list associated with the pin_set_string. If more than one session is
-        required to access the pin(s), the method raises an exception. Each group of NI-Digital
-        Pattern instruments in the pin map creates a single instrument session.
+        Returns the NI-Digital Pattern session and pin_set_string required to perform PPMU
+        operations on pin(s). If more than one session is required to access the pin(s), the method
+        raises an exception. Each group of NI-Digital Pattern instruments in the pin map creates a
+        single instrument session.
 
         Args:
             pins: The name of the pin(s) or pin group(s) to translate to session and pin_set_string.
 
         Returns:
             pin_query_context: An object that tracks the session and channels associated with this
-                pin query. Use this object to publish measurements, to publish pattern results and
-                to extract data from a set of measurements.
-            session: Returns the NI-Digital Pattern instrument session for the instrument(s)
-                connected to pin(s) for all sites in the Semiconductor Module context.
-            pin_set_string: Returns the pin set string for the instrument session required to access
-                the pins for all sites in the Semiconductor Module context. The pin set is specified
-                by site and pin e.g. "site0/A" as expected by the NI-Digital Pattern driver. If any
-                of the pin(s) are connected to the same instrument channel for multiple sites, the
-                channel appears only once in the string and is identified by one of the site/pin
-                combinations to which it is connected.
-            site_list: Returns a string that is a comma-separated list of sites (e.g. "site0,site1")
-                that correspond to the sites associated with the channels in the channel_list. This
-                site_list is needed as an input to certain NI-Digital Pattern driver calls.
+                pin query. Use this object to publish measurements and extract data from a set of
+                measurements.
+            session: Returns the NI-Digital Pattern instrument session for the instruments connected
+                to pin(s) for all sites in the Semiconductor Module context.
+            pin_set_string: Returns the pin set string for each instrument session required to
+                access the pin(s) for all sites in the Semiconductor Module context. The pin set is
+                specified by site and pin e.g. "site0/A" as expected by the NI-Digital Pattern
+                driver. If any of the pin(s) are connected to the same instrument channel for
+                multiple sites, the channel appears only once in the string and is identified by one
+                of the site/pin combinations to which it is connected.
         """
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
-            session_id, pin_set_string, site_list = self._context.GetNIDigitalPatternSession_2(pins)
+            session_id, pin_set_string, _ = self._context.GetNIDigitalPatternSession_2(pins)
         else:
-            session_id, pin_set_string, site_list = self._context.GetNIDigitalPatternSession(pins)
+            session_id, pin_set_string, _ = self._context.GetNIDigitalPatternSession(pins)
         session = SemiconductorModuleContext._sessions[session_id]
-        return pin_query_context, session, pin_set_string, site_list
+        return pin_query_context, session, pin_set_string
 
-    def pins_to_nidigital_sessions(self, pins: "_PinsArg") -> "_NIDigitalMultipleSessionQuery":
+    def pins_to_nidigital_sessions_for_ppmu(
+        self, pins: "_PinsArg"
+    ) -> "_NIDigitalMultipleSessionQuery":
         """
-        Returns the NI-Digital Pattern sessions and pin_set_strings required to access the pin(s),
-        as well as the site_lists associated with the pin_set_strings.
+        Returns the NI-Digital Pattern sessions and pin_set_strings required to perform PPMU
+        operations on pin(s).
 
         Args:
             pins: The name of the pin(s) or pin group(s) to translate to sessions and
@@ -383,8 +383,8 @@ class SemiconductorModuleContext:
 
         Returns:
             pin_query_context: An object that tracks the sessions and channels associated with this
-                pin query. Use this object to publish measurements, to publish pattern results and
-                to extract data from a set of measurements.
+                pin query. Use this object to publish measurements and extract data from a set of
+                measurements.
             sessions: Returns the NI-Digital Pattern instrument sessions for the instruments
                 connected to pin(s) for all sites in the Semiconductor Module context.
             pin_set_strings: Returns the pin set strings for each instrument session required to
@@ -393,24 +393,79 @@ class SemiconductorModuleContext:
                 driver. If any of the pin(s) are connected to the same instrument channel for
                 multiple sites, the channel appears only once in the string and is identified by one
                 of the site/pin combinations to which it is connected.
-            site_lists: Returns a tuple of comma-separated lists of sites (e.g. "site0,site1") that
-                correspond to the sites associated with the channels in the channel_lists. This
-                site_list is needed as an input to certain NI-Digital Pattern driver calls.
         """
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
-            session_ids, pin_set_strings, site_lists = self._context.GetNIDigitalPatternSessions_3(
-                pins
-            )
+            session_ids, pin_set_strings, _ = self._context.GetNIDigitalPatternSessions_3(pins)
         else:
-            session_ids, pin_set_strings, site_lists = self._context.GetNIDigitalPatternSessions_2(
-                pins
-            )
+            session_ids, pin_set_strings, _ = self._context.GetNIDigitalPatternSessions_2(pins)
         sessions = tuple(
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
         )
-        return pin_query_context, sessions, pin_set_strings, site_lists
+        return pin_query_context, sessions, pin_set_strings
+
+    def pins_to_nidigital_session_for_pattern(
+        self, pins: "_PinsArg"
+    ) -> "_NIDigitalSingleSessionQuery":
+        """
+        Returns the NI-Digital Pattern session and site_list required to perform pattern operations
+        for patterns that use the pin(s). If more than one session is required to access the pin(s),
+        the method raises an exception. Each group of NI-Digital Pattern instruments in the pin map
+        creates a single instrument session.
+
+        Args:
+            pins: The name of the pin(s) or pin group(s) to translate to session and site_list.
+
+        Returns:
+            pin_query_context: An object that tracks the session and channels associated with this
+                pin query. Use this object to publish measurements and extract data from a set of
+                measurements.
+            session: Returns the NI-Digital Pattern instrument session for the instruments
+                connected to pin(s) for all sites in the Semiconductor Module context.
+            site_list: Returns a string that is a comma-separated list of sites (e.g. "site0,site1")
+                that correspond to the sites in the Semiconductor Module context. This site_list is
+                needed as an input to certain NI-Digital Pattern driver calls.
+        """
+
+        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
+        if isinstance(pins, str):
+            session_id, _, site_list = self._context.GetNIDigitalPatternSession_2(pins)
+        else:
+            session_id, _, site_list = self._context.GetNIDigitalPatternSession(pins)
+        session = SemiconductorModuleContext._sessions[session_id]
+        return pin_query_context, session, site_list
+
+    def pins_to_nidigital_sessions_for_pattern(
+        self, pins: "_PinsArg"
+    ) -> "_NIDigitalMultipleSessionQuery":
+        """
+        Returns the NI-Digital Pattern sessions and site_lists required to perform pattern
+        operations for patterns that use the pin(s).
+
+        Args:
+            pins: The name of the pin(s) or pin group(s) to translate to sessions and site_lists.
+
+        Returns:
+            pin_query_context: An object that tracks the sessions and channels associated with this
+                pin query. Use this object to publish measurements and extract data from a set of
+                measurements.
+            sessions: Returns the NI-Digital Pattern instrument sessions for the instruments
+                connected to pin(s) for all sites in the Semiconductor Module context.
+            site_lists: Returns a tuple of comma-separated lists of sites (e.g. "site0,site1") that
+                correspond to the sites in the Semiconductor Module context. This site_list is
+                needed as an input to certain NI-Digital Pattern driver calls.
+        """
+
+        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
+        if isinstance(pins, str):
+            session_ids, _, site_lists = self._context.GetNIDigitalPatternSessions_3(pins)
+        else:
+            session_ids, _, site_lists = self._context.GetNIDigitalPatternSessions_2(pins)
+        sessions = tuple(
+            SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
+        )
+        return pin_query_context, sessions, site_lists
 
     @property
     def pin_map_file_path(self):
