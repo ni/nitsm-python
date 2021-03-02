@@ -424,8 +424,8 @@ class SemiconductorModuleContext:
             session: Returns the NI-Digital Pattern instrument session for the instruments
                 connected to pin(s) for all sites in the Semiconductor Module context.
             site_list: Returns a string that is a comma-separated list of sites (e.g. "site0,site1")
-                that correspond to the sites associated with the channels in the channel_list. This
-                site_list is needed as an input to certain NI-Digital Pattern driver calls.
+                that correspond to the sites in the Semiconductor Module context. This site_list is
+                needed as an input to certain NI-Digital Pattern driver calls.
         """
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
@@ -453,8 +453,8 @@ class SemiconductorModuleContext:
             sessions: Returns the NI-Digital Pattern instrument sessions for the instruments
                 connected to pin(s) for all sites in the Semiconductor Module context.
             site_lists: Returns a tuple of comma-separated lists of sites (e.g. "site0,site1") that
-                correspond to the sites associated with the channels in the channel_lists. This
-                site_list is needed as an input to certain NI-Digital Pattern driver calls.
+                correspond to the sites in the Semiconductor Module context. This site_list is
+                needed as an input to certain NI-Digital Pattern driver calls.
         """
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
