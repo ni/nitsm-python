@@ -24,6 +24,23 @@ class PinQueryContext:
         self._pins: typing.Union[str, typing.Sequence[str]] = pins
 
     def publish(self, data: "_PublishDataArg", published_data_id=""):
+        """
+        Publishes the measurement data for one or more pins to the Semiconductor Multi Test step
+        for all sites in the PinQueryContext.
+
+        Args:
+            data: The measurement data from one or more pins connected to one or more instruments.
+                The values can be bools, ints, or floats, and each value represents a measurement
+                made for a single instrument channel. Pass a single value if the pin query refers
+                to a single channel on a single instrument. Pass a sequence of values if the pin
+                query refers to multiple channels on a single instrument or multiple instruments
+                with a single channel. Pass a two dimensional sequence of values if the pin query
+                refers to multiple channels on multiple instruments.
+            published_data_id: The unique ID for distinguishing the measurement when you publish
+                multiple measurements for the same pins within the same code module. This ID must
+                match one of the values in the Published Data Id column on the Tests tab of the
+                Semiconductor Multi Test step.
+        """
         if isinstance(data, bool):
             return self._publish_bool_scalar(data, published_data_id)
         elif isinstance(data, (float, int)):
