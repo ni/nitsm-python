@@ -19,11 +19,11 @@ class PinQueryContext:
     def publish(self, data, published_data_id=""):
         """
         Publishes the measurement data for one or more pins to the Semiconductor Multi Test step
-        for all sites in the SemiconductorModuleContext.
+        for all sites in the PinQueryContext.
 
         Args:
-            data: The multisite measurement data from one or more pins connected to one or more
-                instruments. Each value can be a bool, int or float and represents a measurement
+            data: The measurement data from one or more pins connected to one or more instruments.
+                The values can be bools, ints, or floats, and each value represents a measurement
                 made for a single instrument channel. Pass a single value if the pin query refers
                 to a single channel on a single instrument. Pass a sequence of values if the pin
                 query refers to multiple channels on a single instrument or multiple instruments
