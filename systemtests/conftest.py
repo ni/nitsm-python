@@ -35,7 +35,7 @@ class SystemTestRunner:
                 "/quit",
             ],
             stdout=subprocess.PIPE,
-            timeout=60,
+            timeout=180,
             check=True,
         )
         return True
