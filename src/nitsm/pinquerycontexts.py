@@ -2,25 +2,45 @@
 Pin Query Contexts
 """
 
-import typing
 import itertools
+import typing
 
 __all__ = ["PinQueryContext"]
 
 if typing.TYPE_CHECKING:
     import nitsm.pinmapinterfaces
 
+    _PublishDataScalar = typing.Union[bool, int, float]
+    _PublishDataSequence = typing.Sequence[_PublishDataScalar]
+    _PublishDataJaggedSequence = typing.Sequence[_PublishDataSequence]
+    _PublishDataArg = typing.Union[
+        _PublishDataScalar, _PublishDataSequence, _PublishDataJaggedSequence
+    ]
+
 
 class PinQueryContext:
-    def __init__(self, tsm_context: "nitsm.pinmapinterfaces.ISemiconductorModuleContext", pins):
-        self._tsm_context = tsm_context
-        self._pins = pins
+    def __init__(self, tsm_context, pins):
+        self._tsm_context: nitsm.pinmapinterfaces.ISemiconductorModuleContext = tsm_context
+        self._pins: typing.Union[str, typing.Sequence[str]] = pins
 
-    @property
-    def pins(self):
-        return self._pins
+    def publish(self, data: "_PublishDataArg", published_data_id=""):
+        """
+        Publishes the measurement data for one or more pins to the Semiconductor Multi Test step
+        for all sites in the PinQueryContext.
 
-    def publish(self, data, published_data_id=""):
+        Args:
+            data: The measurement data from one or more pins connected to one or more instruments.
+                The values can be bools, ints, or floats, and each value represents a measurement
+                made for a single instrument channel. Pass a single value if the pin query refers
+                to a single channel on a single instrument. Pass a sequence of values if the pin
+                query refers to multiple channels on a single instrument or multiple instruments
+                with a single channel. Pass a two dimensional sequence of values if the pin query
+                refers to multiple channels on multiple instruments.
+            published_data_id: The unique ID for distinguishing the measurement when you publish
+                multiple measurements for the same pins within the same code module. This ID must
+                match one of the values in the Published Data Id column on the Tests tab of the
+                Semiconductor Multi Test step.
+        """
         if isinstance(data, bool):
             return self._publish_bool_scalar(data, published_data_id)
         elif isinstance(data, (float, int)):
