@@ -2,7 +2,7 @@
 <PinMap schemaVersion="1.1" xmlns="http://www.ni.com/TestStand/SemiconductorModule/PinMap.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<Instruments>
 		<NIFGenInstrument name="FGEN1_5433 (2CH)" numberOfChannels="2" />
-		<NIFGenInstrument name="FGEN2_5433 (2CH)" numberOfChannels="4" />
+		<NIFGenInstrument name="FGEN2_5433 (2CH)" numberOfChannels="2" />
 	</Instruments>
 	<Pins>
 		<DUTPin name="DUTPin1" />
@@ -14,9 +14,9 @@
 		<Site siteNumber="1" />
 	</Sites>
 	<Connections>
-		<Connection pin="DUTPin1" siteNumber="1" instrument="FGEN2_5433 (2CH)" channel="1" />
-		<Connection pin="DUTPin1" siteNumber="0" instrument="FGEN1_5433 (2CH)" channel="1" />
-		<Connection pin="DUTPin2" siteNumber="0" instrument="FGEN2_5433 (2CH)" channel="2" />
-		<Connection pin="DUTPin2" siteNumber="1" instrument="FGEN2_5433 (2CH)" channel="3" />
+		<Connection pin="DUTPin1" siteNumber="1" instrument="FGEN2_5433 (2CH)" channel="0" />
+		<Connection pin="DUTPin1" siteNumber="0" instrument="FGEN1_5433 (2CH)" channel="0" />
+		<Connection pin="DUTPin2" siteNumber="0" instrument="FGEN1_5433 (2CH)" channel="1" />
+		<Connection pin="DUTPin2" siteNumber="1" instrument="FGEN2_5433 (2CH)" channel="1" />
 	</Connections>
 </PinMap>

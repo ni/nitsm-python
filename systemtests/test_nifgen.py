@@ -33,7 +33,8 @@ def measure(
     for session, channel_list in zip(sessions, channel_lists):
         # call some methods on the session to ensure no errors
         session.output_mode = nifgen.OutputMode.FUNC
-        session.configure_standard_waveform(nifgen.Waveform.DC, 0, 0, 1)
+        session.channels[channel_list].configure_standard_waveform(nifgen.Waveform.DC, 0, 0, 1)
+        session.channels[channel_list].output_enabled = True
         session.initiate()
         session.abort()
 
