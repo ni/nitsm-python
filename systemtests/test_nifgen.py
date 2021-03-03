@@ -1,3 +1,4 @@
+import re
 import pytest
 import nifgen
 import nitsm.codemoduleapi
@@ -13,8 +14,8 @@ def test_nifgen(system_test_runner):
 def open_sessions(tsm_context: SemiconductorModuleContext):
     instrument_names = tsm_context.get_all_nifgen_instrument_names()
     for instrument_name in instrument_names:
-        # Cannot set simulated session with instrument name
-        session = nifgen.Session("", options={"Simulate": True})
+        name, model = instrument_name.split("_")
+        session = nifgen.Session(name, options={"Simulate": True, "DriverSetup": {"Model": model}})
         tsm_context.set_nifgen_session(instrument_name, session)
 
 
@@ -37,12 +38,16 @@ def measure(
         session.abort()
 
         # check instrument channel we received is in the set of instrument channels we expected
-        actual_instrument_channel = (session.io_resource_descriptor, channel_list)
-        valid_channels.append(actual_instrument_channel in expected_instrument_channels)
+        resource_name = re.search(r"resource_name='(\w*)'", repr(session)).group(1)
+        actual_instrument_channel = (resource_name, channel_list)
+        valid_channel = actual_instrument_channel in expected_instrument_channels
+        valid_channels.append([valid_channel] * len(channel_list.split(", ")))
         expected_instrument_channels -= {actual_instrument_channel}
 
     pin_query.publish(valid_channels)
-    num_missing_channels = [len(expected_instrument_channels)] * len(sessions)
+    num_missing_channels = [
+        [len(expected_instrument_channels)] * len(row) for row in valid_channels
+    ]
     pin_query.publish(num_missing_channels, "NumMissing")
 
 
