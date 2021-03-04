@@ -110,7 +110,7 @@ class SemiconductorModuleContext:
 
     def get_pin_names(
         self, instrument_type_id: "_InstrTypeIdArg", capability: "_CapabilityArg"
-    ) -> _Tuple[_StringTuple, _StringTuple]:
+    ) -> _Tuple["_StringTuple", "_StringTuple"]:
         """
         Returns all DUT and system pins available in the Semiconductor Module context that are
         connected to an instrument of the type you specify in the instrument_type_id. This method
@@ -303,7 +303,7 @@ class SemiconductorModuleContext:
 
     # NI-Digital
 
-    def get_all_nidigital_instrument_names(self) -> _StringTuple:
+    def get_all_nidigital_instrument_names(self) -> "_StringTuple":
         """
         Returns a tuple of instrument names and comma-separated lists of instrument names that
         belong to the same group for all NI-Digital Pattern instruments in the Semiconductor Module
@@ -475,7 +475,7 @@ class SemiconductorModuleContext:
         return self._context.PinMapPath
 
     @property
-    def nidigital_project_specifications_file_paths(self) -> _StringTuple:
+    def nidigital_project_specifications_file_paths(self) -> "_StringTuple":
         """
         The absolute paths to the Specifications files in the Digital Pattern Project associated
         with this Semiconductor Module context.
@@ -484,7 +484,7 @@ class SemiconductorModuleContext:
         return self._context.GetDigitalPatternProjectSpecificationsFilePaths()
 
     @property
-    def nidigital_project_levels_file_paths(self) -> _StringTuple:
+    def nidigital_project_levels_file_paths(self) -> "_StringTuple":
         """
         The absolute paths to the Levels file in the Digital Pattern Project associated with this
         Semiconductor Module context.
@@ -493,7 +493,7 @@ class SemiconductorModuleContext:
         return self._context.GetDigitalPatternProjectLevelsFilePaths()
 
     @property
-    def nidigital_project_timing_file_paths(self) -> _StringTuple:
+    def nidigital_project_timing_file_paths(self) -> "_StringTuple":
         """
         The absolute paths to the Timing files in the Digital Pattern Project associated with this
         Semiconductor Module context.
@@ -502,7 +502,7 @@ class SemiconductorModuleContext:
         return self._context.GetDigitalPatternProjectTimingFilePaths()
 
     @property
-    def nidigital_project_pattern_file_paths(self) -> _StringTuple:
+    def nidigital_project_pattern_file_paths(self) -> "_StringTuple":
         """
         The absolute paths to the Pattern files in the Digital Pattern Project associated with this
         Semiconductor Module context.
@@ -511,7 +511,7 @@ class SemiconductorModuleContext:
         return self._context.GetDigitalPatternProjectPatternFilePaths()
 
     @property
-    def nidigital_project_source_waveform_file_paths(self) -> _StringTuple:
+    def nidigital_project_source_waveform_file_paths(self) -> "_StringTuple":
         """
         The absolute paths to the Source Waveform files in the Digital Pattern Project associated
         with this Semiconductor Module context.
@@ -520,7 +520,7 @@ class SemiconductorModuleContext:
         return self._context.GetDigitalPatternProjectSourceWaveformFilePaths()
 
     @property
-    def nidigital_project_capture_waveform_file_paths(self) -> _StringTuple:
+    def nidigital_project_capture_waveform_file_paths(self) -> "_StringTuple":
         """
         The absolute paths to the Capture Waveform files in the Digital Pattern Project associated
         with this Semiconductor Module context.
@@ -530,7 +530,7 @@ class SemiconductorModuleContext:
 
     # NI-DCPower
 
-    def get_all_nidcpower_instrument_names(self) -> _Tuple[_StringTuple, _StringTuple]:
+    def get_all_nidcpower_instrument_names(self) -> _Tuple["_StringTuple", "_StringTuple"]:
         """
         Returns the channel IDs and instrument names associated with each NI-DCPower instrument
         channel in the Semiconductor Module context. You can use instrument names and channel IDs to
@@ -561,7 +561,7 @@ class SemiconductorModuleContext:
         )
         return self._context.GetNIDCPowerInstrumentNames()
 
-    def get_all_nidcpower_resource_strings(self) -> _StringTuple:
+    def get_all_nidcpower_resource_strings(self) -> "_StringTuple":
         """
         Returns the resource strings associated with each channel group in the Semiconductor Module
         context. A resource string is a comma-separated list of NI-DCPower resources, where each
@@ -694,7 +694,7 @@ class SemiconductorModuleContext:
 
     # NI-DAQmx
 
-    def get_all_nidaqmx_task_names(self, task_type: str) -> _Tuple[_StringTuple, _StringTuple]:
+    def get_all_nidaqmx_task_names(self, task_type: str) -> _Tuple["_StringTuple", "_StringTuple"]:
         """
         Returns a tuple of all NI-DAQmx task names and channel lists in the Semiconductor Module
         context. You can use the task names to create DAQmx tasks.
@@ -797,7 +797,7 @@ class SemiconductorModuleContext:
 
     # NI-DMM
 
-    def get_all_nidmm_instrument_names(self) -> _StringTuple:
+    def get_all_nidmm_instrument_names(self) -> "_StringTuple":
         """
         Returns a tuple of all NI-DMM instrument names in the Semiconductor Module context. You can
         use instrument names to open driver sessions.
@@ -874,7 +874,7 @@ class SemiconductorModuleContext:
 
     # NI-FGEN
 
-    def get_all_nifgen_instrument_names(self) -> _StringTuple:
+    def get_all_nifgen_instrument_names(self) -> "_StringTuple":
         """
         Returns a tuple of all NI-FGEN instrument names in the Semiconductor Module context. You can
         use the instrument names to open driver sessions.
@@ -962,7 +962,7 @@ class SemiconductorModuleContext:
 
     # NI-SCOPE
 
-    def get_all_niscope_instrument_names(self) -> _StringTuple:
+    def get_all_niscope_instrument_names(self) -> "_StringTuple":
         """
         Returns a tuple of instrument names and comma-separated lists of instrument names that
         belong to the same group for all NI-SCOPE instruments in the Semiconductor Module context.
@@ -1053,7 +1053,7 @@ class SemiconductorModuleContext:
 
     # Relay Driver
 
-    def get_relay_driver_module_names(self) -> _StringTuple:
+    def get_relay_driver_module_names(self) -> "_StringTuple":
         """
         Returns a tuple of all relay driver module names in the Semiconductor Module context. You
         can use the relay driver module names to open NI-SWITCH driver sessions for the relay driver
@@ -1062,7 +1062,7 @@ class SemiconductorModuleContext:
 
         return self._context.GetNIRelayDriverModuleNames()
 
-    def get_relay_names(self) -> _Tuple[_StringTuple, _StringTuple]:
+    def get_relay_names(self) -> _Tuple["_StringTuple", "_StringTuple"]:
         """
         Returns all site and system relays available in the Semiconductor Module context.
 
@@ -1257,7 +1257,7 @@ class SemiconductorModuleContext:
 
     def get_custom_instrument_names(
         self, instrument_type_id: "_InstrTypeIdArg"
-    ) -> _Tuple[_StringTuple, _StringTuple, _StringTuple]:
+    ) -> _Tuple["_StringTuple", "_StringTuple", "_StringTuple"]:
         """
         Returns the channel_group_ids and associated instrument_names and channel_lists of all
         instruments of type instrument_type_id defined in the Semiconductor Module context. You can
@@ -1323,7 +1323,7 @@ class SemiconductorModuleContext:
 
     def get_all_custom_sessions(
         self, instrument_type_id: "_InstrTypeIdArg"
-    ) -> _Tuple[_Any, _StringTuple, _StringTuple]:
+    ) -> _Tuple[_Any, "_StringTuple", "_StringTuple"]:
         """
         Returns all set sessions in the Semiconductor Module context that belong to instruments of
         type instrument_type_id.
