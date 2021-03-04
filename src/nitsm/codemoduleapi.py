@@ -1,6 +1,4 @@
 import functools
-from typing import Callable as _Callable
-from typing import Any as _Any
 from .tsmcontext import SemiconductorModuleContext
 from .enums import Capability, InstrumentTypeIdConstants
 
