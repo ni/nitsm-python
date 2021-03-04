@@ -7,7 +7,7 @@ from .enums import Capability, InstrumentTypeIdConstants
 __all__ = ["SemiconductorModuleContext", "Capability", "InstrumentTypeIdConstants"]
 
 
-def code_module(func) -> _Callable[[SemiconductorModuleContext, ...], _Any]:
+def code_module(func):
     """
     Converts the Semiconductor Module context passed from TestStand into a native Python object. The
     Semiconductor Module context must be the first argument to the function.
