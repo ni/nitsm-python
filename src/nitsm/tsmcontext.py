@@ -190,6 +190,17 @@ class SemiconductorModuleContext:
             capability = capability.value
         return self._context.FilterPinsByInstrumentType(pins, instrument_type_id, capability)
 
+    def get_pins_in_pin_group(self, pin_group):
+        """
+        Returns a tuple of pins contained in the pin group you specify in the pin_group.
+
+        Args:
+            pin_group: A pin group. The pin group must be included in the Semiconductor Module
+                context.
+        """
+
+        return self.get_pins_in_pin_groups([pin_group])
+
     def get_pins_in_pin_groups(self, pin_groups: "_PinsArg") -> _Tuple[str, ...]:
         """
         Returns a tuple of pins contained in the pin group(s) you specify in the pin_group(s).
