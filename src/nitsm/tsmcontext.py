@@ -146,7 +146,7 @@ class SemiconductorModuleContext:
             instrument_type_id = instrument_type_id.value
         if isinstance(capability, nitsm.enums.Capability):
             capability = capability.value
-        return self._context.GetPinNames(instrument_type_id, capability)
+        return self._context.GetPinNames(instrument_type_id, capability, [], [])
 
     def filter_pins_by_instrument_type(
         self,
@@ -374,9 +374,13 @@ class SemiconductorModuleContext:
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
-            session_id, pin_set_string, _ = self._context.GetNIDigitalPatternSession_2(pins)
+            session_id, pin_set_string, _ = self._context.GetNIDigitalPatternSession_2(
+                pins, 0, "", ""
+            )
         else:
-            session_id, pin_set_string, _ = self._context.GetNIDigitalPatternSession(pins)
+            session_id, pin_set_string, _ = self._context.GetNIDigitalPatternSession(
+                pins, 0, "", ""
+            )
         session = SemiconductorModuleContext._sessions[session_id]
         return pin_query_context, session, pin_set_string
 
@@ -407,9 +411,13 @@ class SemiconductorModuleContext:
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
-            session_ids, pin_set_strings, _ = self._context.GetNIDigitalPatternSessions_3(pins)
+            session_ids, pin_set_strings, _ = self._context.GetNIDigitalPatternSessions_3(
+                pins, [], [], []
+            )
         else:
-            session_ids, pin_set_strings, _ = self._context.GetNIDigitalPatternSessions_2(pins)
+            session_ids, pin_set_strings, _ = self._context.GetNIDigitalPatternSessions_2(
+                pins, [], [], []
+            )
         sessions = tuple(
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
         )
@@ -440,9 +448,9 @@ class SemiconductorModuleContext:
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
-            session_id, _, site_list = self._context.GetNIDigitalPatternSession_2(pins)
+            session_id, _, site_list = self._context.GetNIDigitalPatternSession_2(pins, 0, "", "")
         else:
-            session_id, _, site_list = self._context.GetNIDigitalPatternSession(pins)
+            session_id, _, site_list = self._context.GetNIDigitalPatternSession(pins, 0, "", "")
         session = SemiconductorModuleContext._sessions[session_id]
         return pin_query_context, session, site_list
 
@@ -469,9 +477,13 @@ class SemiconductorModuleContext:
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
-            session_ids, _, site_lists = self._context.GetNIDigitalPatternSessions_3(pins)
+            session_ids, _, site_lists = self._context.GetNIDigitalPatternSessions_3(
+                pins, [], [], []
+            )
         else:
-            session_ids, _, site_lists = self._context.GetNIDigitalPatternSessions_2(pins)
+            session_ids, _, site_lists = self._context.GetNIDigitalPatternSessions_2(
+                pins, [], [], []
+            )
         sessions = tuple(
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
         )
@@ -570,7 +582,7 @@ class SemiconductorModuleContext:
             "replace all call sites of this method with get_all_nidcpower_resource_strings.",
             category=DeprecationWarning,
         )
-        return self._context.GetNIDCPowerInstrumentNames()
+        return self._context.GetNIDCPowerInstrumentNames([])
 
     def get_all_nidcpower_resource_strings(self) -> "_StringTuple":
         """
@@ -667,9 +679,9 @@ class SemiconductorModuleContext:
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
-            session_id, channel_string = self._context.GetNIDCPowerSession(pins)
+            session_id, channel_string = self._context.GetNIDCPowerSession(pins, 0, "")
         else:
-            session_id, channel_string = self._context.GetNIDCPowerSession_2(pins)
+            session_id, channel_string = self._context.GetNIDCPowerSession_2(pins, 0, "")
         session = SemiconductorModuleContext._sessions[session_id]
         return pin_query_context, session, channel_string
 
@@ -695,9 +707,9 @@ class SemiconductorModuleContext:
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
-            session_ids, channel_strings = self._context.GetNIDCPowerSessions_2(pins)
+            session_ids, channel_strings = self._context.GetNIDCPowerSessions_2(pins, [], [])
         else:
-            session_ids, channel_strings = self._context.GetNIDCPowerSessions_3(pins)
+            session_ids, channel_strings = self._context.GetNIDCPowerSessions_3(pins, [], [])
         sessions = tuple(
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
         )
@@ -720,7 +732,7 @@ class SemiconductorModuleContext:
                 in the Semiconductor Module context.
         """
 
-        return self._context.GetNIDAQmxTaskNames(task_type)
+        return self._context.GetNIDAQmxTaskNames(task_type, [])
 
     def set_nidaqmx_task(self, task_name: str, task: "nidaqmx.Task") -> None:
         """
@@ -771,9 +783,9 @@ class SemiconductorModuleContext:
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
-            task_id, channel_list = self._context.GetNIDAQmxTask(pins)
+            task_id, channel_list = self._context.GetNIDAQmxTask(pins, 0, "")
         else:
-            task_id, channel_list = self._context.GetNIDAQmxTask_2(pins)
+            task_id, channel_list = self._context.GetNIDAQmxTask_2(pins, 0, "")
         task = SemiconductorModuleContext._sessions[task_id]
         return pin_query_context, task, channel_list
 
@@ -800,9 +812,9 @@ class SemiconductorModuleContext:
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
-            task_ids, channel_lists = self._context.GetNIDAQmxTasks_2(pins)
+            task_ids, channel_lists = self._context.GetNIDAQmxTasks_2(pins, [], [])
         else:
-            task_ids, channel_lists = self._context.GetNIDAQmxTasks_3(pins)
+            task_ids, channel_lists = self._context.GetNIDAQmxTasks_3(pins, [], [])
         tasks = tuple(SemiconductorModuleContext._sessions[task_id] for task_id in task_ids)
         return pin_query_context, tasks, channel_lists
 
@@ -937,9 +949,9 @@ class SemiconductorModuleContext:
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
-            session_id, channel_list = self._context.GetNIFGenSession(pins)
+            session_id, channel_list = self._context.GetNIFGenSession(pins, 0, "")
         else:
-            session_id, channel_list = self._context.GetNIFGenSession_2(pins)
+            session_id, channel_list = self._context.GetNIFGenSession_2(pins, 0, "")
         session = SemiconductorModuleContext._sessions[session_id]
         return pin_query_context, session, channel_list
 
@@ -963,9 +975,9 @@ class SemiconductorModuleContext:
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
-            session_ids, channel_lists = self._context.GetNIFGenSessions_2(pins)
+            session_ids, channel_lists = self._context.GetNIFGenSessions_2(pins, [], [])
         else:
-            session_ids, channel_lists = self._context.GetNIFGenSessions_3(pins)
+            session_ids, channel_lists = self._context.GetNIFGenSessions_3(pins, [], [])
         sessions = tuple(
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
         )
@@ -1028,9 +1040,9 @@ class SemiconductorModuleContext:
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
-            session_id, channel_list = self._context.GetNIScopeSession(pins)
+            session_id, channel_list = self._context.GetNIScopeSession(pins, 0, "")
         else:
-            session_id, channel_list = self._context.GetNIScopeSession_2(pins)
+            session_id, channel_list = self._context.GetNIScopeSession_2(pins, 0, "")
         session = SemiconductorModuleContext._sessions[session_id]
         return pin_query_context, session, channel_list
 
@@ -1054,9 +1066,9 @@ class SemiconductorModuleContext:
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
-            session_ids, channel_lists = self._context.GetNIScopeSessions_2(pins)
+            session_ids, channel_lists = self._context.GetNIScopeSessions_2(pins, [], [])
         else:
-            session_ids, channel_lists = self._context.GetNIScopeSessions_3(pins)
+            session_ids, channel_lists = self._context.GetNIScopeSessions_3(pins, [], [])
         sessions = tuple(
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
         )
@@ -1084,7 +1096,7 @@ class SemiconductorModuleContext:
                 Semiconductor Module context.
         """
 
-        return self._context.GetRelayNames()
+        return self._context.GetRelayNames([], [])
 
     def set_relay_driver_niswitch_session(
         self, relay_driver_module_name: str, niswitch_session: "niswitch.Session"
@@ -1133,9 +1145,11 @@ class SemiconductorModuleContext:
         """
 
         if isinstance(relays, str):
-            session_id, niswitch_relay_names = self._context.GetNIRelayDriverSession(relays)
+            session_id, niswitch_relay_names = self._context.GetNIRelayDriverSession(relays, 0, "")
         else:
-            session_id, niswitch_relay_names = self._context.GetNIRelayDriverSession_2(relays)
+            session_id, niswitch_relay_names = self._context.GetNIRelayDriverSession_2(
+                relays, 0, ""
+            )
         niswitch_session = SemiconductorModuleContext._sessions[session_id]
         return niswitch_session, niswitch_relay_names
 
@@ -1159,16 +1173,20 @@ class SemiconductorModuleContext:
         """
 
         if isinstance(relays, str):
-            session_ids, niswitch_relay_names = self._context.GetNIRelayDriverSessions_2(relays)
+            session_ids, niswitch_relay_names = self._context.GetNIRelayDriverSessions_2(
+                relays, [], []
+            )
         else:
-            session_ids, niswitch_relay_names = self._context.GetNIRelayDriverSessions_3(relays)
+            session_ids, niswitch_relay_names = self._context.GetNIRelayDriverSessions_3(
+                relays, [], []
+            )
         niswitch_sessions = tuple(
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
         )
         return niswitch_sessions, niswitch_relay_names
 
     @staticmethod
-    def __apply_relay_action(
+    def _apply_relay_action(
         session_ids_for_open, relay_names_to_open, session_ids_for_close, relay_names_to_close
     ):
         from niswitch.enums import RelayAction
@@ -1185,7 +1203,7 @@ class SemiconductorModuleContext:
             session_to_close.relay_control(relay_name_to_close, RelayAction.CLOSE)
         return None
 
-    def __relay_wait(self, wait_seconds):
+    def _relay_wait(self, wait_seconds):
         if wait_seconds == 0.0:
             return None
         elif wait_seconds > 0.0:
@@ -1209,18 +1227,20 @@ class SemiconductorModuleContext:
             relay_names_to_open,
             session_ids_for_close,
             relay_names_to_close,
-        ) = self._context.GetRelayDriverSessionsFromRelayConfiguration(relay_configuration)
-        self.__apply_relay_action(
+        ) = self._context.GetRelayDriverSessionsFromRelayConfiguration(
+            relay_configuration, [], [], [], []
+        )
+        self._apply_relay_action(
             session_ids_for_open, relay_names_to_open, session_ids_for_close, relay_names_to_close
         )
-        self.__relay_wait(wait_seconds)
+        self._relay_wait(wait_seconds)
         return None
 
     def _control_relays_single_action(self, relays, relay_action, wait_seconds=0.0):
         niswitch_sessions, relay_names = self.relays_to_relay_driver_niswitch_sessions(relays)
         for niswitch_session, niswitch_relay_name in zip(niswitch_sessions, relay_names):
             niswitch_session.relay_control(niswitch_relay_name, relay_action)
-        self.__relay_wait(wait_seconds)
+        self._relay_wait(wait_seconds)
         return None
 
     def _control_relays_multiple_action(self, relays, relay_actions, wait_seconds=0.0):
@@ -1233,14 +1253,16 @@ class SemiconductorModuleContext:
                 relay_names_to_open,
                 session_ids_for_close,
                 relay_names_to_close,
-            ) = self._context.GetRelayDriverSessionsFromRelays(relays, relay_actions)
-            self.__apply_relay_action(
+            ) = self._context.GetRelayDriverSessionsFromRelays(
+                relays, relay_actions, [], [], [], []
+            )
+            self._apply_relay_action(
                 session_ids_for_open,
                 relay_names_to_open,
                 session_ids_for_close,
                 relay_names_to_close,
             )
-            self.__relay_wait(wait_seconds)
+            self._relay_wait(wait_seconds)
         return None
 
     def control_relays(
@@ -1297,7 +1319,7 @@ class SemiconductorModuleContext:
                 channel list is a comma-separated list of channels.
         """
 
-        return self._context.GetAllInstrumentDefinitions(instrument_type_id)
+        return self._context.GetAllInstrumentDefinitions(instrument_type_id, [], [], [])
 
     def set_custom_session(
         self,
@@ -1358,7 +1380,7 @@ class SemiconductorModuleContext:
         """
 
         session_ids, channel_group_ids, channel_lists = self._context.GetAllSessionData(
-            instrument_type_id
+            instrument_type_id, [], [], []
         )
         session_data = tuple(
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
@@ -1401,11 +1423,11 @@ class SemiconductorModuleContext:
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
             session_id, channel_group_id, channel_list = self._context.GetSessionData_2(
-                instrument_type_id, [pins]
+                instrument_type_id, [pins], 0, "", ""
             )
         else:
             session_id, channel_group_id, channel_list = self._context.GetSessionData_2(
-                instrument_type_id, pins
+                instrument_type_id, pins, 0, "", ""
             )
         session_data = SemiconductorModuleContext._sessions[session_id]
         return pin_query_context, session_data, channel_group_id, channel_list
@@ -1446,11 +1468,11 @@ class SemiconductorModuleContext:
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
             session_ids, channel_group_ids, channel_lists = self._context.GetSessionData(
-                instrument_type_id, [pins]
+                instrument_type_id, [pins], [], [], []
             )
         else:
             session_ids, channel_group_ids, channel_lists = self._context.GetSessionData(
-                instrument_type_id, pins
+                instrument_type_id, pins, [], [], []
             )
         session_data = tuple(
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
