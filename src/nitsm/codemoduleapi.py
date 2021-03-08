@@ -6,6 +6,11 @@ __all__ = ["SemiconductorModuleContext", "Capability", "InstrumentTypeIdConstant
 
 
 def code_module(func):
+    """
+    Converts the Semiconductor Module context passed from TestStand into a native Python object. The
+    Semiconductor Module context must be the first argument to the function.
+    """
+
     @functools.wraps(func)
     def decorator(tsm_context, *args, **kwargs):
         tsm_context = SemiconductorModuleContext(tsm_context)
