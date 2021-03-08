@@ -19,5 +19,5 @@ setuptools.setup(
         "Operating System :: Microsoft :: Windows",
     ],
     python_requires=">=3.6",
-    install_requires=["pywin32>=228;platform_system=='Windows'"]
+    install_requires=["pywin32>=228;platform_system=='Windows'"],
 )
