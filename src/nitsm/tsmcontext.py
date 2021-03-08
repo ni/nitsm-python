@@ -364,9 +364,13 @@ class SemiconductorModuleContext:
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
-            session_id, pin_set_string, _ = self._context.GetNIDigitalPatternSession_2(pins, 0, "", "")
+            session_id, pin_set_string, _ = self._context.GetNIDigitalPatternSession_2(
+                pins, 0, "", ""
+            )
         else:
-            session_id, pin_set_string, _ = self._context.GetNIDigitalPatternSession(pins, 0, "", "")
+            session_id, pin_set_string, _ = self._context.GetNIDigitalPatternSession(
+                pins, 0, "", ""
+            )
         session = SemiconductorModuleContext._sessions[session_id]
         return pin_query_context, session, pin_set_string
 
@@ -397,9 +401,13 @@ class SemiconductorModuleContext:
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
-            session_ids, pin_set_strings, _ = self._context.GetNIDigitalPatternSessions_3(pins, [], [], [])
+            session_ids, pin_set_strings, _ = self._context.GetNIDigitalPatternSessions_3(
+                pins, [], [], []
+            )
         else:
-            session_ids, pin_set_strings, _ = self._context.GetNIDigitalPatternSessions_2(pins, [], [], [])
+            session_ids, pin_set_strings, _ = self._context.GetNIDigitalPatternSessions_2(
+                pins, [], [], []
+            )
         sessions = tuple(
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
         )
@@ -459,9 +467,13 @@ class SemiconductorModuleContext:
 
         pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
-            session_ids, _, site_lists = self._context.GetNIDigitalPatternSessions_3(pins, [], [], [])
+            session_ids, _, site_lists = self._context.GetNIDigitalPatternSessions_3(
+                pins, [], [], []
+            )
         else:
-            session_ids, _, site_lists = self._context.GetNIDigitalPatternSessions_2(pins, [], [], [])
+            session_ids, _, site_lists = self._context.GetNIDigitalPatternSessions_2(
+                pins, [], [], []
+            )
         sessions = tuple(
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
         )
@@ -1121,7 +1133,9 @@ class SemiconductorModuleContext:
         if isinstance(relays, str):
             session_id, niswitch_relay_names = self._context.GetNIRelayDriverSession(relays, 0, "")
         else:
-            session_id, niswitch_relay_names = self._context.GetNIRelayDriverSession_2(relays, 0, "")
+            session_id, niswitch_relay_names = self._context.GetNIRelayDriverSession_2(
+                relays, 0, ""
+            )
         niswitch_session = SemiconductorModuleContext._sessions[session_id]
         return niswitch_session, niswitch_relay_names
 
@@ -1145,9 +1159,13 @@ class SemiconductorModuleContext:
         """
 
         if isinstance(relays, str):
-            session_ids, niswitch_relay_names = self._context.GetNIRelayDriverSessions_2(relays, [], [])
+            session_ids, niswitch_relay_names = self._context.GetNIRelayDriverSessions_2(
+                relays, [], []
+            )
         else:
-            session_ids, niswitch_relay_names = self._context.GetNIRelayDriverSessions_3(relays, [], [])
+            session_ids, niswitch_relay_names = self._context.GetNIRelayDriverSessions_3(
+                relays, [], []
+            )
         niswitch_sessions = tuple(
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
         )
@@ -1195,7 +1213,9 @@ class SemiconductorModuleContext:
             relay_names_to_open,
             session_ids_for_close,
             relay_names_to_close,
-        ) = self._context.GetRelayDriverSessionsFromRelayConfiguration(relay_configuration, [], [], [], [])
+        ) = self._context.GetRelayDriverSessionsFromRelayConfiguration(
+            relay_configuration, [], [], [], []
+        )
         self._apply_relay_action(
             session_ids_for_open, relay_names_to_open, session_ids_for_close, relay_names_to_close
         )
@@ -1219,7 +1239,9 @@ class SemiconductorModuleContext:
                 relay_names_to_open,
                 session_ids_for_close,
                 relay_names_to_close,
-            ) = self._context.GetRelayDriverSessionsFromRelays(relays, relay_actions, [], [], [], [])
+            ) = self._context.GetRelayDriverSessionsFromRelays(
+                relays, relay_actions, [], [], [], []
+            )
             self._apply_relay_action(
                 session_ids_for_open,
                 relay_names_to_open,
