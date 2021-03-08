@@ -153,7 +153,7 @@ class SemiconductorModuleContext:
         pins: _Sequence[str],
         instrument_type_id: "_InstrTypeIdArg",
         capability: "_CapabilityArg",
-    ) -> _StringTuple:
+    ) -> "_StringTuple":
         """
         Filters pins by instrument_type_id. Pass a list of all pins or pin groups to return the pins
         connected to instruments of the type you specify in the instrument_type_id. If no pins are
@@ -201,7 +201,7 @@ class SemiconductorModuleContext:
 
         return self.get_pins_in_pin_groups([pin_group])
 
-    def get_pins_in_pin_groups(self, pin_groups: "_PinsArg") -> _StringTuple:
+    def get_pins_in_pin_groups(self, pin_groups: "_PinsArg") -> "_StringTuple":
         """
         Returns a tuple of pins contained in the pin group(s) you specify in the pin_group(s).
 
