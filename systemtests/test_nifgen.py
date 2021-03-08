@@ -1,4 +1,3 @@
-import re
 import pytest
 import nifgen
 import nitsm.codemoduleapi
@@ -26,6 +25,8 @@ def measure(
     expected_instrument_names,
     expected_channel_lists,
 ):
+    from utils import get_resource_name_from_session
+
     pin_query, sessions, channel_lists = tsm_context.pins_to_nifgen_sessions(pins)
     expected_instrument_channels = set(zip(expected_instrument_names, expected_channel_lists))
     valid_channels = []
@@ -39,7 +40,7 @@ def measure(
         session.abort()
 
         # check instrument channel we received is in the set of instrument channels we expected
-        resource_name = re.search(r"resource_name='(\w*)'", repr(session)).group(1)
+        resource_name = get_resource_name_from_session(session)
         actual_instrument_channel = (resource_name, channel_list)
         valid_channel = actual_instrument_channel in expected_instrument_channels
         valid_channels.append([valid_channel] * len(channel_list.split(", ")))

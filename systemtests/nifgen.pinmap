@@ -14,9 +14,9 @@
 		<Site siteNumber="1" />
 	</Sites>
 	<Connections>
-		<Connection pin="DUTPin1" siteNumber="1" instrument="FGEN2_5433 (2CH)" channel="0" />
+		<Connection pin="DUTPin1" siteNumber="1" instrument="FGEN2_5433 (2CH)" channel="1" />
 		<Connection pin="DUTPin1" siteNumber="0" instrument="FGEN1_5433 (2CH)" channel="0" />
 		<Connection pin="DUTPin2" siteNumber="0" instrument="FGEN1_5433 (2CH)" channel="1" />
-		<Connection pin="DUTPin2" siteNumber="1" instrument="FGEN2_5433 (2CH)" channel="1" />
+		<Connection pin="DUTPin2" siteNumber="1" instrument="FGEN2_5433 (2CH)" channel="0" />
 	</Connections>
 </PinMap>
