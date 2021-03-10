@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<PinMap schemaVersion="1.2" xmlns="http://www.ni.com/TestStand/SemiconductorModule/PinMap.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Four site example pin map -->
+	<Instruments>
+		<NIDCPowerInstrument name="SMU_4143_C1_S02" numberOfChannels="4" />
+		<NIDCPowerInstrument name="SMU_4143_C1_S03" numberOfChannels="4" />
+		<NIDigitalPatternInstrument name="HSD_6570_C1_S04" numberOfChannels="32" />
+		<NIDigitalPatternInstrument name="HSD_6570_C1_S06" numberOfChannels="32" />
+	</Instruments>
+	<Pins>
+		<DUTPin name="Vcc" />
+		<DUTPin name="A" />
+		<DUTPin name="B" />
+		<DUTPin name="C" />
+		<DUTPin name="D" />
+	</Pins>
+	<PinGroups>
+		<PinGroup name="DigitalPins">
+			<PinReference pin="A" />
+			<PinReference pin="B" />
+			<PinReference pin="C" />
+			<PinReference pin="D" />
+		</PinGroup>
+		<PinGroup name="PowerSupplyPins">
+			<PinReference pin="Vcc" />
+		</PinGroup>
+		<PinGroup name="AllPins">
+			<PinReference pin="PowerSupplyPins" />
+			<PinReference pin="DigitalPins" />
+		</PinGroup>
+	</PinGroups>
+	<Sites>
+		<Site siteNumber="0" />
+		<Site siteNumber="1" />
+		<Site siteNumber="2" />
+		<Site siteNumber="3" />
+	</Sites>
+	<Connections>
+		<Connection pin="A" siteNumber="0" instrument="HSD_6570_C1_S04" channel="0" />
+		<Connection pin="A" siteNumber="1" instrument="HSD_6570_C1_S04" channel="8" />
+		<Connection pin="A" siteNumber="2" instrument="HSD_6570_C1_S06" channel="0" />
+		<Connection pin="A" siteNumber="3" instrument="HSD_6570_C1_S06" channel="8" />
+		<Connection pin="B" siteNumber="0" instrument="HSD_6570_C1_S04" channel="1" />
+		<Connection pin="B" siteNumber="1" instrument="HSD_6570_C1_S04" channel="9" />
+		<Connection pin="B" siteNumber="2" instrument="HSD_6570_C1_S06" channel="1" />
+		<Connection pin="B" siteNumber="3" instrument="HSD_6570_C1_S06" channel="9" />
+		<Connection pin="C" siteNumber="0" instrument="HSD_6570_C1_S04" channel="2" />
+		<Connection pin="C" siteNumber="1" instrument="HSD_6570_C1_S04" channel="10" />
+		<Connection pin="C" siteNumber="2" instrument="HSD_6570_C1_S06" channel="2" />
+		<Connection pin="C" siteNumber="3" instrument="HSD_6570_C1_S06" channel="10" />
+		<Connection pin="D" siteNumber="0" instrument="HSD_6570_C1_S04" channel="3" />
+		<Connection pin="D" siteNumber="1" instrument="HSD_6570_C1_S04" channel="11" />
+		<Connection pin="D" siteNumber="2" instrument="HSD_6570_C1_S06" channel="3" />
+		<Connection pin="D" siteNumber="3" instrument="HSD_6570_C1_S06" channel="11" />
+		<Connection pin="Vcc" siteNumber="0" instrument="SMU_4143_C1_S02" channel="0" />
+		<Connection pin="Vcc" siteNumber="1" instrument="SMU_4143_C1_S02" channel="1" />
+		<Connection pin="Vcc" siteNumber="2" instrument="SMU_4143_C1_S03" channel="0" />
+		<Connection pin="Vcc" siteNumber="3" instrument="SMU_4143_C1_S03" channel="1" />
+	</Connections>
+</PinMap>
