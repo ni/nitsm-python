@@ -11,8 +11,11 @@ jobs:
     name: nitsm-python-test
 
   steps:
-  - script: pip install -r requirements.txt
-    displayName: 'Install requirements'
+  - script: |
+      python -m venv venv
+      venv\Scripts\activate.bat
+      pip install -r requirements.txt
+    displayName: 'Provision virtual environment'
 
   - script: pip install .
     displayName: 'Install nitsm-python'
