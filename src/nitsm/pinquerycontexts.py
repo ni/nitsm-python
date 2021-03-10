@@ -48,6 +48,19 @@ class PinQueryContext:
         else:
             return self._publish_sequence(data, published_data_id)
 
+    def publish_pattern_result(self, data: "_PublishDataArg", published_data_id=""):
+        if isinstance(data[0], tuple):
+            max_length = max(map(len, data))
+            data = data.__class__(
+                (
+                    sub_seq + sub_seq.__class__(itertools.repeat(0, max_length - len(sub_seq)))
+                    for sub_seq in data
+                )
+            )
+            return self._tsm_context.PublishPatternResults(self._pins, published_data_id, data)
+        else:
+            return self._tsm_context.PublishPatternResults_2(self._pins, published_data_id, data)
+
     def _publish_float_scalar(self, data, published_data_id):
         return self._publish_float_1d([data], published_data_id)
 
