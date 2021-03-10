@@ -11,13 +11,24 @@ jobs:
     name: nitsm-python-test
 
   steps:
-  - script: pip install -r requirements.txt
-    displayName: 'Install requirements'
+  - script: |
+      python -m pip install --upgrade pip
+    displayName: 'Upgrade pip'
 
-  - script: pip install .
-    displayName: 'Install nitsm-python'
+  - script: |
+      pip install --upgrade -r requirements.txt
+    displayName: 'Install or upgrade required packages'
 
-  - script: pytest tests systemtests --junitxml=test-results.xml --cov=nitsm --cov-report=xml
+  - script: |
+      pip uninstall -y nitsm
+    displayName: 'Uninstall previous version of nitsm if present'
+
+  - script: |
+      pip install --no-cache .
+    displayName: 'Install nitsm'
+
+  - script: |
+      pytest tests systemtests --junitxml=test-results.xml --cov=nitsm --cov-report=xml
     displayName: 'Run python unit tests'
 
   - task: PublishTestResults@2
