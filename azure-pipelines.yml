@@ -14,13 +14,17 @@ jobs:
   - script: |
       python -m venv venv
       call venv\Scripts\activate.bat
-      pip install -r requirements.txt
+      pip install -r requirements.txt --no-cache
     displayName: 'Provision virtual environment'
 
-  - script: pip install .
+  - script: |
+      call venv\Scripts\activate.bat
+      pip install .
     displayName: 'Install nitsm-python'
 
-  - script: pytest tests systemtests --junitxml=test-results.xml --cov=nitsm --cov-report=xml
+  - script: |
+      call venv\Scripts\activate.bat
+      pytest tests systemtests --junitxml=test-results.xml --cov=nitsm --cov-report=xml
     displayName: 'Run python unit tests'
 
   - task: PublishTestResults@2
