@@ -23,7 +23,7 @@ jobs:
   - script: |
       pip install --upgrade virtualenv
     displayName: 'Install virtualenv'
-s
+
   - script: |
       virtualenv venv
     displayName: 'Create virtual environment'
