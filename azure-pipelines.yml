@@ -13,7 +13,7 @@ jobs:
   steps:
   - script: |
       python -m venv venv
-      venv\Scripts\activate.bat
+      call venv\Scripts\activate.bat
       pip install -r requirements.txt
     displayName: 'Provision virtual environment'
 
