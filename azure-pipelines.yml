@@ -15,10 +15,18 @@ jobs:
       python -m pip install --upgrade pip
     displayName: 'Upgrade pip'
 
+  # if uninstall.txt is empty, pip will exit with an error
+  # uninstall with requirements file first as assurance required packages are removed from global
+  - script: |
+      pip uninstall -r requirements.txt
+    displayName: 'Uninstall requirements from global packages'
+
+  # then, attempt to remove any remaining global packages and continue on error
   - script: |
       pip freeze > uninstall.txt
-      pip uninstall -r uninstall.txt -y
-    displayName: 'Uninstall all global packages'
+      pip uninstall -r uninstall.txt
+    continueOnError: true
+    displayName: 'Uninstall remaining global packages'
 
   - script: |
       pip install --upgrade virtualenv
@@ -36,7 +44,7 @@ jobs:
   - script: |
       call venv\Scripts\activate.bat
       pip install . --no-cache
-    displayName: 'Install nitsm-python to virtual environment'
+    displayName: 'Install nitsm to virtual environment'
 
   - script: |
       call venv\Scripts\activate.bat
