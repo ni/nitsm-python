@@ -15,3 +15,8 @@ def test_nidcpower(system_test_runner):
 @pytest.mark.sequence_file("nidcpower_legacy.seq")
 def test_nidcpower_legacy(system_test_runner):
     assert system_test_runner.run()
+
+
+@pytest.mark.sequence_file("nifgen.seq")
+def test_nifgen(system_test_runner):
+    assert system_test_runner.run()

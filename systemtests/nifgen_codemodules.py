@@ -1,12 +1,7 @@
-import pytest
 import nifgen
 import nitsm.codemoduleapi
 from nitsm.codemoduleapi import SemiconductorModuleContext
-
-
-@pytest.mark.sequence_file("nifgen.seq")
-def test_nifgen(system_test_runner):
-    assert system_test_runner.run()
+from sessionutils import get_resource_name_from_session
 
 
 @nitsm.codemoduleapi.code_module
@@ -25,8 +20,6 @@ def measure(
     expected_instrument_names,
     expected_channel_lists,
 ):
-    from utils import get_resource_name_from_session
-
     pin_query, sessions, channel_lists = tsm_context.pins_to_nifgen_sessions(pins)
     expected_instrument_channels = set(zip(expected_instrument_names, expected_channel_lists))
     valid_channels = []
