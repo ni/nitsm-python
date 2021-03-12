@@ -109,7 +109,9 @@ class SemiconductorModuleContext:
     # General and Advanced
 
     def get_pin_names(
-        self, instrument_type_id: "_InstrTypeIdArg", capability: "_CapabilityArg"
+        self,
+        instrument_type_id: "_InstrTypeIdArg" = nitsm.enums.InstrumentTypeIdConstants.ANY,
+        capability: "_CapabilityArg" = nitsm.enums.Capability.ALL,
     ) -> _Tuple["_StringTuple", "_StringTuple"]:
         """
         Returns all DUT and system pins available in the Semiconductor Module context that are
