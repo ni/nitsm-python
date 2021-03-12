@@ -1,14 +1,8 @@
-import pytest
 import nidmm
 import nitsm.codemoduleapi
 from nitsm.codemoduleapi import SemiconductorModuleContext
 
 OPTIONS = {"Simulate": True, "DriverSetup": {"Model": "4071", "BoardType": "PXI"}}
-
-
-@pytest.mark.sequence_file("nidmm.seq")
-def test_nidmm(system_test_runner):
-    assert system_test_runner.run()
 
 
 @nitsm.codemoduleapi.code_module

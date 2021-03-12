@@ -8,26 +8,27 @@ _teststand_public_path = os.environ["TestStandPublic64"]
 
 
 class SystemTestRunner:
+    _csharp_oi_path = os.path.join(
+        _teststand_public_path,
+        "UserInterfaces",
+        "Simple",
+        "CSharp",
+        "Source Code",
+        "bin",
+        "x64",
+        "release",
+        "TestExec.exe",
+    )
+
     def __init__(self, sequence_file_path):
         self._sequence_file_path = sequence_file_path
 
     def run(self):
-        csharp_oi_path = os.path.join(
-            _teststand_public_path,
-            "UserInterfaces",
-            "Simple",
-            "CSharp",
-            "Source Code",
-            "bin",
-            "x64",
-            "release",
-            "TestExec.exe",
-        )
         # subprocess.run with check=True will throw an exception if the return code is non-zero
         # with stdout set to subprocess.PIPE, exit code and stdout will be included in the exception
         subprocess.run(
             [
-                csharp_oi_path,
+                self._csharp_oi_path,
                 "/outputtostdio",
                 "/runentrypoint",
                 "Test UUTs",
