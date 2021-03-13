@@ -6,7 +6,7 @@ import ctypes
 import ctypes.util
 import sys
 import time
-from typing import TYPE_CHECKING as _TYPE_CHECKING
+import typing
 from typing import Any as _Any
 from typing import Tuple as _Tuple
 from typing import Union as _Union
@@ -24,7 +24,7 @@ __all__ = ["SemiconductorModuleContext"]
 warnings.filterwarnings("default", category=DeprecationWarning, module=__name__)
 warnings.filterwarnings("default", category=PendingDeprecationWarning, module=__name__)
 
-if _TYPE_CHECKING:
+if typing.TYPE_CHECKING:
     import nidigital
     import nidcpower
     import nidaqmx
