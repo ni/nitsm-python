@@ -19,13 +19,10 @@ jobs:
       pip install --upgrade -r requirements.txt
     displayName: 'Install or upgrade required packages'
 
+  # installing from local automatically builds and re-installs the package without using any cached versions
   - script: |
-      pip uninstall -y nitsm
-    displayName: 'Uninstall previous version of nitsm if present'
-
-  - script: |
-      pip install --no-cache .
-    displayName: 'Install nitsm'
+      pip install .
+    displayName: 'Install/reinstall nitsm'
 
   - script: |
       pytest tests systemtests --junitxml=test-results.xml --cov=nitsm --cov-report=xml
