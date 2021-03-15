@@ -6,7 +6,12 @@ from nitsm.pinquerycontexts import PinQueryContext
 @pytest.fixture
 def simulated_nifgen_sessions(standalone_tsm_context):
     instrument_names = standalone_tsm_context.get_all_nifgen_instrument_names()
-    sessions = [nifgen.Session("", options={"Simulate": True, "driver_setup": {"Model": "5442", "BoardType": "PXIe"}}) for _ in instrument_names]
+    sessions = [
+        nifgen.Session(
+            "", options={"Simulate": True, "driver_setup": {"Model": "5442", "BoardType": "PXIe"}}
+        )
+        for _ in instrument_names
+    ]
     for instrument_name, session in zip(instrument_names, sessions):
         standalone_tsm_context.set_nifgen_session(instrument_name, session)
     yield sessions
