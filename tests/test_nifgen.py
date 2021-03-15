@@ -36,7 +36,7 @@ class TestNIFGen:
     def test_set_nifgen_session(self, standalone_tsm_context):
         instrument_names = standalone_tsm_context.get_all_nifgen_instrument_names()
         for instrument_name in instrument_names:
-            with nifgen.Session("", options={"Simulate": True}) as session:
+            with nifgen.Session("", options={"Simulate": True, "driver_setup": {"Model": "5442", "BoardType": "PXIe"}}) as session:
                 standalone_tsm_context.set_nifgen_session(instrument_name, session)
                 assert standalone_tsm_context._sessions[id(session)] is session
 
