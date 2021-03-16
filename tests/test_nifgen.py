@@ -2,16 +2,13 @@ import nifgen
 import pytest
 from nitsm.pinquerycontexts import PinQueryContext
 
+OPTIONS = {"Simulate": True, "DriverSetup": {"Model": "5442", "BoardType": "PXIe"}}
+
 
 @pytest.fixture
 def simulated_nifgen_sessions(standalone_tsm_context):
     instrument_names = standalone_tsm_context.get_all_nifgen_instrument_names()
-    sessions = [
-        nifgen.Session(
-            "", options={"Simulate": True, "driver_setup": {"Model": "5442", "BoardType": "PXIe"}}
-        )
-        for _ in instrument_names
-    ]
+    sessions = [nifgen.Session("", options=OPTIONS) for _ in instrument_names]
     for instrument_name, session in zip(instrument_names, sessions):
         standalone_tsm_context.set_nifgen_session(instrument_name, session)
     yield sessions
@@ -36,10 +33,7 @@ class TestNIFGen:
     def test_set_nifgen_session(self, standalone_tsm_context):
         instrument_names = standalone_tsm_context.get_all_nifgen_instrument_names()
         for instrument_name in instrument_names:
-            with nifgen.Session(
-                "",
-                options={"Simulate": True, "driver_setup": {"Model": "5442", "BoardType": "PXIe"}},
-            ) as session:
+            with nifgen.Session("", options=OPTIONS) as session:
                 standalone_tsm_context.set_nifgen_session(instrument_name, session)
                 assert standalone_tsm_context._sessions[id(session)] is session
 
