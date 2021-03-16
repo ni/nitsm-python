@@ -28,5 +28,6 @@ testpaths = [
 ]
 markers = [
     "pin_map",
-    "sequence_file"
+    "sequence_file",
+    "offline_mode"
 ]
