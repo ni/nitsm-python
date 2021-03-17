@@ -1,5 +1,7 @@
 [![Build Status](https://ni.visualstudio.com/Users/_apis/build/status/nitsm-python?branchName=main)](https://ni.visualstudio.com/Users/_build/latest?definitionId=5837&branchName=main)
 # nitsm-python
+## Known Limitations
+* Instrument alarms are currently not supported
 ## Tests
 Before you can run tests you must install the following:
 * [TestStand 20.0+](https://www.ni.com/en-us/support/downloads/software-products/download.teststand.html)
