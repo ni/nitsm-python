@@ -13,15 +13,15 @@ def simulated_nidigital_sessions(standalone_tsm_context: SemiconductorModuleCont
 @pytest.mark.pin_map("publish.pinmap")
 @pytest.mark.usefixtures("simulated_nidigital_sessions")
 class TestSinglePinScalar:
+    _PIN = "SystemPin1"
+
     @pytest.fixture
     def num_sites(self):
         return 2  # defined in publish.pinmap
 
     @pytest.fixture
     def pin_query_context(self, standalone_tsm_context):
-        pin_query_context, *_ = standalone_tsm_context.pins_to_nidigital_session_for_ppmu(
-            "SystemPin1"
-        )
+        pin_query_context, *_ = standalone_tsm_context.pins_to_nidigital_session_for_ppmu(self._PIN)
         return pin_query_context
 
     def test_publish_float_scalar(self, pin_query_context, published_data_reader, num_sites):
@@ -42,9 +42,11 @@ class TestSinglePinScalar:
 @pytest.mark.pin_map("publish.pinmap")
 @pytest.mark.usefixtures("simulated_nidigital_sessions")
 class TestSinglePin1d:
+    _PIN = "DUTPin1"
+
     @pytest.fixture
     def pin_query_context(self, standalone_tsm_context):
-        pin_query_context, *_ = standalone_tsm_context.pins_to_nidigital_session_for_ppmu("DUTPin1")
+        pin_query_context, *_ = standalone_tsm_context.pins_to_nidigital_session_for_ppmu(self._PIN)
         return pin_query_context
 
     def test_publish_float_1d(self, pin_query_context, published_data_reader):
@@ -63,14 +65,29 @@ class TestSinglePin1d:
         for published_data_point, test_data_point in zip(published_data, test_data):
             assert published_data_point.boolean_value == test_data_point
 
+    def test_publish_pattern(self, standalone_tsm_context, published_data_reader):
+        (
+            pin_query_context,
+            session,
+            site_list,
+        ) = standalone_tsm_context.pins_to_nidigital_session_for_pattern(self._PIN)
+        test_data = [True] * len(site_list.split(","))
+        pin_query_context.publish_pattern_results(test_data)
+        published_data = published_data_reader.get_and_clear_published_data()
+        assert len(published_data) == len(test_data)
+        for published_data_point, test_data_point in zip(published_data, test_data):
+            assert published_data_point.boolean_value == test_data_point
+
 
 @pytest.mark.pin_map("publish.pinmap")
 @pytest.mark.usefixtures("simulated_nidigital_sessions")
 class TestSinglePin2d:
+    _PIN = "DUTPin3"
+
     @pytest.fixture
     def pin_query_context(self, standalone_tsm_context):
         pin_query_context, *_ = standalone_tsm_context.pins_to_nidigital_sessions_for_ppmu(
-            "DUTPin3"
+            self._PIN
         )
         return pin_query_context
 
@@ -94,14 +111,30 @@ class TestSinglePin2d:
         for published_data_point, test_data_point in zip(published_data, flattened_test_data):
             assert published_data_point.boolean_value == test_data_point
 
+    def test_publish_pattern(self, standalone_tsm_context, published_data_reader):
+        (
+            pin_query_context,
+            sessions,
+            site_lists,
+        ) = standalone_tsm_context.pins_to_nidigital_sessions_for_pattern(self._PIN)
+        test_data = [[True] * len(site_list.split(",")) for site_list in site_lists]
+        pin_query_context.publish_pattern_results(test_data)
+        published_data = published_data_reader.get_and_clear_published_data()
+        flattened_test_data = [data_point for row in test_data for data_point in row]
+        assert len(published_data) == len(test_data)
+        for published_data_point, test_data_point in zip(published_data, flattened_test_data):
+            assert published_data_point.boolean_value == test_data_point
+
 
 @pytest.mark.pin_map("publish.pinmap")
 @pytest.mark.usefixtures("simulated_nidigital_sessions")
 class TestMultiplePins1d:
+    _PINS = ["DUTPin1", "DUTPin2"]
+
     @pytest.fixture
     def pin_query_context(self, standalone_tsm_context):
         pin_query_context, *_ = standalone_tsm_context.pins_to_nidigital_session_for_ppmu(
-            ["DUTPin1", "DUTPin2"]
+            self._PINS
         )
         return pin_query_context
 
@@ -121,14 +154,29 @@ class TestMultiplePins1d:
         for published_data_point, test_data_point in zip(published_data, test_data):
             assert published_data_point.boolean_value == test_data_point
 
+    def test_publish_pattern(self, standalone_tsm_context, published_data_reader):
+        (
+            pin_query_context,
+            session,
+            site_list,
+        ) = standalone_tsm_context.pins_to_nidigital_session_for_pattern(self._PINS)
+        test_data = [True] * len(site_list.split(","))
+        pin_query_context.publish_pattern_results(test_data)
+        published_data = published_data_reader.get_and_clear_published_data()
+        assert len(published_data) == len(test_data)
+        for published_data_point, test_data_point in zip(published_data, test_data):
+            assert published_data_point.boolean_value == test_data_point
+
 
 @pytest.mark.pin_map("publish.pinmap")
 @pytest.mark.usefixtures("simulated_nidigital_sessions")
 class TestMultiplePins2d:
+    _PINS = ["DUTPin2", "DUTPin3"]
+
     @pytest.fixture
     def pin_query_context(self, standalone_tsm_context):
         pin_query_context, *_ = standalone_tsm_context.pins_to_nidigital_sessions_for_ppmu(
-            ["DUTPin2", "DUTPin3"]
+            self._PINS
         )
         return pin_query_context
 
@@ -149,5 +197,19 @@ class TestMultiplePins2d:
         published_data = published_data_reader.get_and_clear_published_data()
         flattened_test_data = [data_point for row in test_data for data_point in row]
         assert len(published_data) == len(flattened_test_data)
+        for published_data_point, test_data_point in zip(published_data, flattened_test_data):
+            assert published_data_point.boolean_value == test_data_point
+
+    def test_publish_pattern(self, standalone_tsm_context, published_data_reader):
+        (
+            pin_query_context,
+            sessions,
+            site_lists,
+        ) = standalone_tsm_context.pins_to_nidigital_sessions_for_pattern(self._PINS)
+        test_data = [[True] * len(site_list.split(",")) for site_list in site_lists]
+        pin_query_context.publish_pattern_results(test_data)
+        published_data = published_data_reader.get_and_clear_published_data()
+        flattened_test_data = [data_point for row in test_data for data_point in row]
+        assert len(published_data) == len(test_data)
         for published_data_point, test_data_point in zip(published_data, flattened_test_data):
             assert published_data_point.boolean_value == test_data_point

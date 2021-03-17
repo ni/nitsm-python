@@ -16,6 +16,22 @@ if typing.TYPE_CHECKING:
     _PublishDataArg = typing.Union[
         _PublishDataScalar, _PublishDataSequence, _PublishDataJaggedSequence
     ]
+    _PublishPatternArg = typing.Union[typing.Sequence[bool], typing.Sequence[typing.Sequence[bool]]]
+
+
+def _pad_jagged_sequence(seq):
+    """
+    Pads a 2D jagged sequence with the default value of the element type to make it rectangular.
+    The type of each sequence (tuple, list, etc) is maintained.
+    """
+
+    columns = max(map(len, seq))  # gets length of the longest row
+    return type(seq)(
+        (
+            sub_seq + type(sub_seq)(itertools.repeat(type(sub_seq[0])(), columns - len(sub_seq)))
+            for sub_seq in seq
+        )
+    )
 
 
 class PinQueryContext:
@@ -41,25 +57,13 @@ class PinQueryContext:
                 match one of the values in the Published Data Id column on the Tests tab of the
                 Semiconductor Multi Test step.
         """
+
         if isinstance(data, bool):
             return self._publish_bool_scalar(data, published_data_id)
         elif isinstance(data, (float, int)):
             return self._publish_float_scalar(data, published_data_id)
         else:
             return self._publish_sequence(data, published_data_id)
-
-    def publish_pattern_result(self, data: "_PublishDataArg", published_data_id=""):
-        if isinstance(data[0], tuple):
-            max_length = max(map(len, data))
-            data = data.__class__(
-                (
-                    sub_seq + sub_seq.__class__(itertools.repeat(0, max_length - len(sub_seq)))
-                    for sub_seq in data
-                )
-            )
-            return self._tsm_context.PublishPatternResults(self._pins, published_data_id, data)
-        else:
-            return self._tsm_context.PublishPatternResults_2(self._pins, published_data_id, data)
 
     def _publish_float_scalar(self, data, published_data_id):
         return self._publish_float_1d([data], published_data_id)
@@ -88,14 +92,7 @@ class PinQueryContext:
             return self._tsm_context.Publish_6(self._pins, published_data_id, data)
 
     def _publish_sequence_2d(self, data, published_data_id):
-        # pad jagged sequences with 0s to make 2d sequence rectangular
-        max_length = max(map(len, data))
-        data = data.__class__(
-            (
-                sub_seq + sub_seq.__class__(itertools.repeat(0, max_length - len(sub_seq)))
-                for sub_seq in data
-            )
-        )
+        data = _pad_jagged_sequence(data)  # make 2d sequence rectangular
         if isinstance(data[0][0], bool):
             return self._publish_bool_2d(data, published_data_id)
         else:
@@ -112,3 +109,42 @@ class PinQueryContext:
             return self._tsm_context.Publish_7(self._pins, published_data_id, data)
         else:
             return self._tsm_context.Publish_8(self._pins, published_data_id, data)
+
+    def publish_pattern_results(
+        self, instrument_site_pattern_results: "_PublishPatternArg", published_data_id=""
+    ):
+        """
+        Publishes results from NI-Digital pattern burst to the Semiconductor Multi Test step for all
+        sites in the Semiconductor Module context. Leave the Pin column blank for the test on the
+        Semiconductor Multi Test step when publishing pattern results with this method.
+
+        Args:
+            instrument_site_pattern_results:
+                The pattern result data from multiple pins connected to one or more NI-Digital
+                Pattern instruments. Provide a 1D sequence to publish pattern results from a single
+                NI-Digital Pattern instrument. Provide a 2D sequence to publish pattern results from
+                multiple NI-Digital Pattern instruments. Each element in the burst results
+                sequence(s) contains pattern results for the sites of a single instrument session.
+                For multiple sessions, the size of the results sequence must be the same size as the
+                session data output from the pin query method.
+            published_data_id:
+                The unique ID for identifying the results. This ID must match one of the values in
+                the Published Data Id column on the Tests tab of the Semiconductor Multi Test step.
+        """
+
+        # convert pins to a list of pins if it isn't already
+        if isinstance(self._pins, str):
+            pins = [self._pins]
+        else:
+            pins = self._pins
+
+        # dispatch to appropriate method based on the dimensions of the pattern results
+        if isinstance(instrument_site_pattern_results[0], bool):
+            return self._tsm_context.PublishPatternResults_2(
+                pins, published_data_id, instrument_site_pattern_results
+            )
+        else:  # assumed to be 2D sequence
+            instrument_site_pattern_results = _pad_jagged_sequence(instrument_site_pattern_results)
+            return self._tsm_context.PublishPatternResults(
+                pins, published_data_id, instrument_site_pattern_results
+            )
