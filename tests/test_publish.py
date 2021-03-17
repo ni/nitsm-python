@@ -121,7 +121,7 @@ class TestSinglePin2d:
         pin_query_context.publish_pattern_results(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         flattened_test_data = [data_point for row in test_data for data_point in row]
-        assert len(published_data) == len(test_data)
+        assert len(published_data) == len(flattened_test_data)
         for published_data_point, test_data_point in zip(published_data, flattened_test_data):
             assert published_data_point.boolean_value == test_data_point
 
@@ -210,6 +210,6 @@ class TestMultiplePins2d:
         pin_query_context.publish_pattern_results(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         flattened_test_data = [data_point for row in test_data for data_point in row]
-        assert len(published_data) == len(test_data)
+        assert len(published_data) == len(flattened_test_data)
         for published_data_point, test_data_point in zip(published_data, flattened_test_data):
             assert published_data_point.boolean_value == test_data_point
