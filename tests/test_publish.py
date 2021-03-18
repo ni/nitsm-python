@@ -117,13 +117,13 @@ class TestSinglePin2d:
             sessions,
             site_lists,
         ) = standalone_tsm_context.pins_to_nidigital_sessions_for_pattern(self._PIN)
-        test_data = [[True] * len(site_list.split(",")) for site_list in site_lists]
+        test_data = [[True], [False]]
+        expected_results = [True, False]  # test_data AND'd across site
         pin_query_context.publish_pattern_results(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
-        flattened_test_data = [data_point for row in test_data for data_point in row]
-        assert len(published_data) == len(flattened_test_data)
-        for published_data_point, test_data_point in zip(published_data, flattened_test_data):
-            assert published_data_point.boolean_value == test_data_point
+        assert len(published_data) == len(expected_results)
+        for published_data_point, expected_result in zip(published_data, expected_results):
+            assert published_data_point.boolean_value == expected_result
 
 
 @pytest.mark.pin_map("publish.pinmap")
@@ -206,10 +206,10 @@ class TestMultiplePins2d:
             sessions,
             site_lists,
         ) = standalone_tsm_context.pins_to_nidigital_sessions_for_pattern(self._PINS)
-        test_data = [[True] * len(site_list.split(",")) for site_list in site_lists]
+        test_data = [[True, False], [True]]
+        expected_results = [True, False]  # test_data AND'd across site
         pin_query_context.publish_pattern_results(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
-        flattened_test_data = [data_point for row in test_data for data_point in row]
-        assert len(published_data) == len(flattened_test_data)
-        for published_data_point, test_data_point in zip(published_data, flattened_test_data):
-            assert published_data_point.boolean_value == test_data_point
+        assert len(published_data) == len(expected_results)
+        for published_data_point, expected_result in zip(published_data, expected_results):
+            assert published_data_point.boolean_value == expected_result
