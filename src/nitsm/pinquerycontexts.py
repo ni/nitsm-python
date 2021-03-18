@@ -122,11 +122,11 @@ class PinQueryContext:
             instrument_site_pattern_results:
                 The pattern result data from multiple pins connected to one or more NI-Digital
                 Pattern instruments. Provide a 1D sequence to publish pattern results from a single
-                NI-Digital Pattern instrument. Provide a 2D sequence to publish pattern results from
-                multiple NI-Digital Pattern instruments. Each element in the burst results
-                sequence(s) contains pattern results for the sites of a single instrument session.
-                For multiple sessions, the size of the results sequence must be the same size as the
-                session data output from the pin query method.
+                NI-Digital Pattern instrument session. Provide a 2D sequence to publish pattern
+                results from multiple NI-Digital Pattern instrument sessions. Each element in the
+                burst results sequence(s) contains pattern results for the sites of a single
+                instrument session. For multiple sessions, the size of the results sequence must be
+                the same size as the session data output from the pin query method.
             published_data_id:
                 The unique ID for identifying the results. This ID must match one of the values in
                 the Published Data Id column on the Tests tab of the Semiconductor Multi Test step.
