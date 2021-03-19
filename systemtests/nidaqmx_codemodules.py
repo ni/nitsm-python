@@ -6,10 +6,20 @@ from sessionutils import get_task_name_from_task
 
 @nitsm.codemoduleapi.code_module
 def open_sessions(tsm_context: SemiconductorModuleContext):
-    task_names, channel_lists = tsm_context.get_all_nidaqmx_task_names("ai")
-    for task_name, channel_list in zip(task_names, channel_lists):
+    # get task names and channel lists
+    ai_task_names, ai_channel_lists = tsm_context.get_all_nidaqmx_task_names("ai")
+    ao_task_names, ao_channel_lists = tsm_context.get_all_nidaqmx_task_names("ao")
+
+    # create and set ai tasks
+    for task_name, channel_list in zip(ai_task_names, ai_channel_lists):
         task = nidaqmx.Task(task_name)
         task.ai_channels.add_ai_voltage_chan(channel_list)
+        tsm_context.set_nidaqmx_task(task_name, task)
+
+    # create and set ao tasks
+    for task_name, channel_list in zip(ao_task_names, ao_channel_lists):
+        task = nidaqmx.Task(task_name)
+        task.ao_channels.add_ao_voltage_chan(channel_list)
         tsm_context.set_nidaqmx_task(task_name, task)
 
 
