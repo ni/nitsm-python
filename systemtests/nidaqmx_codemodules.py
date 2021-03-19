@@ -37,8 +37,9 @@ def measure(
     for task, channel_list in zip(tasks, channel_lists):
         # call some methods on the session to ensure no errors
         task.timing.cfg_samp_clk_timing(1e3, "OnboardClock", samps_per_chan=10)
+        task.in_stream.channels_to_read = task.ai_channels[channel_list]
         task.start()
-        task.read(-1)
+        task.read()
         task.stop()
 
         # check instrument channel we received is in the set of instrument channels we expected
