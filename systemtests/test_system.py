@@ -20,3 +20,9 @@ def test_nidcpower_legacy(system_test_runner):
 @pytest.mark.sequence_file("nifgen.seq")
 def test_nifgen(system_test_runner):
     assert system_test_runner.run()
+
+
+@pytest.mark.sequence_file("nidaqmx.seq")
+@pytest.mark.offline_mode("nidaqmx.offlinecfg")
+def test_nidaqmx(system_test_runner):
+    assert system_test_runner.run()
