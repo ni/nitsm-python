@@ -99,7 +99,7 @@ class SemiconductorModuleContext:
         Returns all DUT and system pins available in the Semiconductor Module context that are
         connected to an instrument of the type you specify in the instrument_type_id. This method
         returns only the pins specified on the Options tab of the Semiconductor Multi Test step.
-        Pass an empty string to instrument_type_id to return all available pins.
+        Pass an empty string to instrument_type_id to return all available pins. IGNORE
 
         Args:
             instrument_type_id: Specifies the type of instrument for which you want to return DUT
