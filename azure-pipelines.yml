@@ -2,6 +2,11 @@
 trigger:
 - main
 
+pr:
+  branches:
+    include:
+    - main
+
 jobs:
 - job: CI
   workspace:
