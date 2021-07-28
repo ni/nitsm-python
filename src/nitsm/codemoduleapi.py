@@ -36,5 +36,5 @@ class code_module:
                 raise ValueError(
                     f"Failed to convert Semiconductor Module context from class '{class_name}'."
                 )
-            args = *args[:index], tsm_context, *args[index + 1 :]  # noqa E203
+            args = *args[:index], tsm_context, *args[index + 1 :]  # noqa: E203
         return self._callable(*args, **kwargs)
