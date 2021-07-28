@@ -31,7 +31,7 @@ class TestCodeModuleApi:
         assert issubclass(cls, TestCodeModuleApi)
         assert isinstance(tsm_context, SemiconductorModuleContext)
 
-    def test_class_method(cls, standalone_tsm_context_com_object):
+    def test_class_method(self, standalone_tsm_context_com_object):
         return TestCodeModuleApi._class_method(standalone_tsm_context_com_object)
 
     @code_module
@@ -45,6 +45,7 @@ class TestCodeModuleApi:
         assert e.value.args[0] == "Invalid number of positional arguments."
         assert e.value.args[1] == self._invalid_number_of_positional_arguments._callable
 
+    # noinspection PyUnusedLocal
     @code_module
     def _tsm_context_not_first_positional_argument(self, something_else, tsm_context):
         assert False  # should not reach this point
@@ -60,6 +61,14 @@ class TestCodeModuleApi:
         assert e.value.args[0].startswith(
             "Failed to convert Semiconductor Module context from class"
         )
+
+    # noinspection PyUnusedLocal
+    @code_module
+    def _positional_arguments_after_tsm_context(self, tsm_context, *args):
+        assert isinstance(tsm_context, SemiconductorModuleContext)
+
+    def test_positional_arguments_after_tsm_context(self, standalone_tsm_context_com_object):
+        self._positional_arguments_after_tsm_context(standalone_tsm_context_com_object, None)
 
 
 @pytest.mark.pin_map("empty.pinmap")
