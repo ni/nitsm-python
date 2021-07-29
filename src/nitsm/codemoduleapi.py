@@ -34,9 +34,9 @@ class code_module:
         except StopIteration:
             raise TypeError(
                 (
-                    "The number of arguments to the code module is less expected. It must accept "
-                    "as it's first argument the Semiconductor Module context passed from TestStand "
-                    "or another code module.",
+                    "The number of arguments to the code module is less than expected. It must"
+                    "accept as it's first argument the Semiconductor Module context passed from"
+                    "TestStand or another code module.",
                 )
             )
 
