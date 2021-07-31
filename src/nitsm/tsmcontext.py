@@ -4,15 +4,15 @@ NI TestStand Semiconductor Module Context Python Wrapper
 
 import time
 import typing
-from typing import Any as _Any
-from typing import Tuple as _Tuple
-from typing import Union as _Union
-from typing import Sequence as _Sequence
+from typing import Any as _Any, Tuple as _Tuple, Union as _Union, Sequence as _Sequence
 import warnings
+import pickle
+import win32com.client
 import pythoncom
 import nitsm.pinmapinterfaces
 import nitsm.pinquerycontexts
 import nitsm.enums
+
 
 __all__ = ["SemiconductorModuleContext"]
 
@@ -228,7 +228,13 @@ class SemiconductorModuleContext:
                 site_numbers property.
         """
 
-        return self._context.SetSiteData(data_id, data)
+        pickled_data = (pickle.dumps(site_data) for site_data in data)
+        # noinspection PyUnresolvedReferences
+        variants = [
+            win32com.client.VARIANT(pythoncom.VT_ARRAY | pythoncom.VT_UI8, pickled_site_data)
+            for pickled_site_data in pickled_data
+        ]
+        return self._context.SetSiteData(data_id, variants)
 
     def get_site_data(self, data_id: str) -> _Tuple[_Any, ...]:
         """
@@ -243,7 +249,9 @@ class SemiconductorModuleContext:
                 specify in a call to the set_site_data method.
         """
 
-        return self._context.GetSiteData(data_id)
+        pickled_data = self._context.GetSiteData(data_id)
+        pickled_data = (bytes(pickled_site_data) for pickled_site_data in pickled_data)
+        return tuple(pickle.loads(pickled_site_data) for pickled_site_data in pickled_data)
 
     def site_data_exists(self, data_id: str) -> bool:
         """
@@ -270,7 +278,10 @@ class SemiconductorModuleContext:
                 item is None, the method deletes the data with the specified data_id if it exists.
         """
 
-        return self._context.SetGlobalData(data_id, data)
+        pickled_data = pickle.dumps(data)
+        # noinspection PyUnresolvedReferences
+        variant = win32com.client.VARIANT(pythoncom.VT_ARRAY | pythoncom.VT_UI8, pickled_data)
+        return self._context.SetGlobalData(data_id, variant)
 
     def get_global_data(self, data_id: str) -> _Any:
         """
@@ -283,7 +294,9 @@ class SemiconductorModuleContext:
                 specify in a call to the set_global_data method.
         """
 
-        return self._context.GetGlobalData(data_id)
+        pickled_data = self._context.GetGlobalData(data_id)
+        pickled_data = bytes(pickled_data)
+        return pickle.loads(pickled_data)
 
     def global_data_exists(self, data_id: str) -> bool:
         """
