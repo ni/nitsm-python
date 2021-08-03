@@ -6,6 +6,7 @@ import time
 import typing
 from typing import Any as _Any, Tuple as _Tuple, Union as _Union, Sequence as _Sequence
 import warnings
+import win32com.client
 import pythoncom
 import nitsm.pinmapinterfaces
 import nitsm.pinquerycontexts
@@ -72,6 +73,8 @@ if typing.TYPE_CHECKING:
 
 class SemiconductorModuleContext:
     _sessions = {}
+    _site_data = {}
+    _global_data = {}
 
     def __init__(self, tsm_com_obj):
         """
@@ -214,7 +217,16 @@ class SemiconductorModuleContext:
                 site_numbers property.
         """
 
-        return self._context.SetSiteData(data_id, data)
+        if data is not None and len(data) > 0:
+            py_data_ids = [id(item) for item in data]
+            none_ = self._context.SetSiteData(data_id, py_data_ids)
+            SemiconductorModuleContext._site_data[data_id] = tuple(data)
+        else:
+            # noinspection PyUnresolvedReferences
+            none_ = self._context.SetSiteData(data_id, None)
+            if data_id in SemiconductorModuleContext._site_data:
+                del SemiconductorModuleContext._site_data[data_id]
+        return none_
 
     def get_site_data(self, data_id: str) -> _Tuple[_Any, ...]:
         """
@@ -229,7 +241,8 @@ class SemiconductorModuleContext:
                 specify in a call to the set_site_data method.
         """
 
-        return self._context.GetSiteData(data_id)
+        self._context.GetSiteData(data_id)  # raise tsm error if data doesn't exist
+        return SemiconductorModuleContext._site_data[data_id]
 
     def site_data_exists(self, data_id: str) -> bool:
         """
@@ -252,11 +265,21 @@ class SemiconductorModuleContext:
 
         Args:
             data_id: A unique ID to distinguish the data.
-            data: A data item to store and later retrieve using the specified data_id . If the data
+            data: A data item to store and later retrieve using the specified data_id. If the data
                 item is None, the method deletes the data with the specified data_id if it exists.
         """
 
-        return self._context.SetGlobalData(data_id, data)
+        if data is not None:
+            py_data_id = id(data)
+            none_ = self._context.SetGlobalData(data_id, py_data_id)
+            SemiconductorModuleContext._global_data[data_id] = data
+        else:
+            # noinspection PyUnresolvedReferences
+            empty = win32com.client.VARIANT(pythoncom.VT_EMPTY, None)
+            none_ = self._context.SetGlobalData(data_id, empty)
+            if data_id in SemiconductorModuleContext._global_data:
+                del SemiconductorModuleContext._global_data[data_id]
+        return none_
 
     def get_global_data(self, data_id: str) -> _Any:
         """
@@ -269,7 +292,8 @@ class SemiconductorModuleContext:
                 specify in a call to the set_global_data method.
         """
 
-        return self._context.GetGlobalData(data_id)
+        self._context.GetGlobalData(data_id)  # raise tsm error if data doesn't exist
+        return SemiconductorModuleContext._global_data[data_id]
 
     def global_data_exists(self, data_id: str) -> bool:
         """
