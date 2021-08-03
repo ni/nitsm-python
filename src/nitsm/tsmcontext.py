@@ -4,10 +4,7 @@ NI TestStand Semiconductor Module Context Python Wrapper
 
 import time
 import typing
-from typing import Any as _Any
-from typing import Tuple as _Tuple
-from typing import Union as _Union
-from typing import Sequence as _Sequence
+from typing import Any as _Any, Tuple as _Tuple, Union as _Union, Sequence as _Sequence
 import warnings
 import pythoncom
 import nitsm.pinmapinterfaces
