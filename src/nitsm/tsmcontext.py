@@ -222,10 +222,10 @@ class SemiconductorModuleContext:
     def get_site_data(self, data_id: str) -> _Tuple[_Any, ...]:
         """
         Returns per-site data that a previous call to the set_site_data method stores. The returned
-        tuple contains the data the site_numbers property stores for each site in the same order as
-        the sites that the Get Site Numbers method returns. Raises an exception if a data item with
-        the specified data_id does not exist on every site in the Semiconductor Module context. Use
-        the site_data_exists method to determine if the specified data_id exists.
+        tuple contains the data the Semiconductor Module context stores for each site in the same
+        order as the sites that the site_numbers property returns. Raises an exception if a data
+        item with the specified data_id does not exist for every site in the Semiconductor Module
+        context. Use the site_data_exists method to determine if the specified data_id exists.
 
         Args:
             data_id: The unique ID to distinguish the data. This parameter must match a value you
