@@ -32,18 +32,10 @@ class TestGeneralAndAdvanced:
             assert isinstance(filtered_pin, str)
             assert filtered_pin in self.pin_map_dut_pins
 
-    def test_get_pins_in_pin_group(self, standalone_tsm_context):
+    @pytest.mark.parametrize("pin_groups", ("PinGroup1", ["PinGroup1"]))
+    def test_get_pins_in_pin_groups(self, standalone_tsm_context, pin_groups):
         pin_group_pins = self.pin_map_dut_pins + self.pin_map_system_pins
-        queried_pins = standalone_tsm_context.get_pins_in_pin_group("PinGroup1")
-        assert isinstance(queried_pins, tuple)
-        assert len(queried_pins) == len(pin_group_pins)
-        for queried_pin in queried_pins:
-            assert isinstance(queried_pin, str)
-            assert queried_pin in pin_group_pins
-
-    def test_get_pins_in_pin_groups(self, standalone_tsm_context):
-        pin_group_pins = self.pin_map_dut_pins + self.pin_map_system_pins
-        queried_pins = standalone_tsm_context.get_pins_in_pin_groups(["PinGroup1"])
+        queried_pins = standalone_tsm_context.get_pins_in_pin_groups(pin_groups)
         assert isinstance(queried_pins, tuple)
         assert len(queried_pins) == len(pin_group_pins)
         for queried_pin in queried_pins:

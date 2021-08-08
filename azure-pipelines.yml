@@ -2,6 +2,11 @@
 trigger:
 - main
 
+pr:
+  branches:
+    include:
+    - main
+
 jobs:
 - job: CI
   workspace:
@@ -11,13 +16,21 @@ jobs:
     name: nitsm-python-test
 
   steps:
-  - script: pip install -r requirements.txt
-    displayName: 'Install requirements'
+  - script: |
+      python -m pip install --upgrade pip
+    displayName: 'Upgrade pip'
 
-  - script: pip install .
-    displayName: 'Install nitsm-python'
+  - script: |
+      pip install --upgrade -r requirements.txt
+    displayName: 'Install or upgrade required packages'
 
-  - script: pytest tests systemtests --junitxml=test-results.xml --cov=nitsm --cov-report=xml
+  # installing from local automatically builds and re-installs the package without using any cached versions
+  - script: |
+      pip install .
+    displayName: 'Install/reinstall nitsm'
+
+  - script: |
+      pytest tests systemtests --junitxml=test-results.xml --cov=nitsm --cov-report=xml
     displayName: 'Run python unit tests'
 
   - task: PublishTestResults@2
