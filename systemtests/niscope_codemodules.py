@@ -1,16 +1,9 @@
-import pytest
 import niscope
 import nitsm.codemoduleapi
-from nitsm.codemoduleapi import SemiconductorModuleContext
-
-
-@pytest.mark.sequence_file("niscope.seq")
-def test_niscope(system_test_runner):
-    assert system_test_runner.run()
 
 
 @nitsm.codemoduleapi.code_module
-def open_sessions(tsm_context: SemiconductorModuleContext):
+def open_sessions(tsm_context: nitsm.codemoduleapi.SemiconductorModuleContext):
     instrument_names = tsm_context.get_all_niscope_instrument_names()
     for instrument_name in instrument_names:
         session = niscope.Session(instrument_name, options={"Simulate": True})
@@ -19,7 +12,7 @@ def open_sessions(tsm_context: SemiconductorModuleContext):
 
 @nitsm.codemoduleapi.code_module
 def measure(
-    tsm_context: SemiconductorModuleContext,
+    tsm_context: nitsm.codemoduleapi.SemiconductorModuleContext,
     pins,
     expected_instrument_names,
     expected_channel_lists,
@@ -47,7 +40,7 @@ def measure(
 
 
 @nitsm.codemoduleapi.code_module
-def close_sessions(tsm_context: SemiconductorModuleContext):
+def close_sessions(tsm_context: nitsm.codemoduleapi.SemiconductorModuleContext):
     sessions = tsm_context.get_all_niscope_sessions()
     for session in sessions:
         session.close()
