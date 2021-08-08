@@ -3,7 +3,7 @@ import pytest
 from nitsm.codemoduleapi import code_module, SemiconductorModuleContext
 
 
-@pytest.mark.pin_map("empty.pinmap")
+@pytest.mark.pin_map("codemoduleapi.pinmap")
 class TestCodeModuleApi:
     @staticmethod
     @code_module
@@ -75,13 +75,13 @@ class TestCodeModuleApi:
         assert isinstance(standalone_tsm_context_com_object, SemiconductorModuleContext)
 
 
-@pytest.mark.pin_map("empty.pinmap")
+@pytest.mark.pin_map("codemoduleapi.pinmap")
 @code_module
 def test_function_converts(standalone_tsm_context_com_object):
     assert isinstance(standalone_tsm_context_com_object, SemiconductorModuleContext)
 
 
-@pytest.mark.pin_map("empty.pinmap")
+@pytest.mark.pin_map("codemoduleapi.pinmap")
 @code_module
 def test_function_does_not_convert(standalone_tsm_context):
     assert isinstance(standalone_tsm_context, SemiconductorModuleContext)
