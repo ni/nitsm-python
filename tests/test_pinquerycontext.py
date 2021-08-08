@@ -16,7 +16,6 @@ def pseudo_sessions(standalone_tsm_context):
 
 @pytest.mark.pin_map("pinquerycontext.pinmap")
 class TestPinQueryContext:
-
     @pytest.mark.usefixtures("pseudo_sessions")
     def test_get_session_and_channel_index(
         self, standalone_tsm_context: "SemiconductorModuleContext"
