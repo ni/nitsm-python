@@ -30,8 +30,3 @@ jobs:
     - name: Lint with NI style guide
       run: |
         python -m ni_python_styleguide lint
-#    - name: Install package in edit mode
-#      run: |
-#        pip install -e .
-#    - name: Run unit tests
-#      run: pytest

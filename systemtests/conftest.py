@@ -1,10 +1,16 @@
 import os
 import os.path
+import sys
 import shutil
 import subprocess
 import pytest
 
 _teststand_public_path = os.environ["TestStandPublic64"]
+_python_version = ".".join(map(str, sys.version_info[:2]))
+try:
+    _python_environment_path = os.environ["VIRTUAL_ENV"]
+except KeyError:
+    _python_environment_path = ""  # global interpreter
 
 
 class SystemTestRunner:
@@ -23,6 +29,8 @@ class SystemTestRunner:
         "release",
         "TestExec.exe",
     )
+
+    _test_fixture_path = os.path.join(os.path.dirname(__file__), "SystemTestFixture.seq")
 
     _offline_mode_tool_path = os.path.join(
         os.environ["ProgramFiles(x86)"],
@@ -49,13 +57,20 @@ class SystemTestRunner:
             subprocess.run([self._offline_mode_tool_path, "/leave"], **self._SUBPROCESS_RUN_OPTIONS)
 
     def run(self):
-        subprocess.run(
+        ret = subprocess.run(
             [
                 self._csharp_oi_path,
                 "/outputtostdio",
-                "/runentrypoint",
+                "/run",
+                "MainSequence",
+                self._test_fixture_path,
+                "/pyrunentrypoint",
                 "Test UUTs",
                 self._sequence_file_path,
+                "/pyversion",
+                _python_version,
+                "/pyenvironment",
+                _python_environment_path,
                 "/quit",
             ],
             **self._SUBPROCESS_RUN_OPTIONS,
