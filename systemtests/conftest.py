@@ -57,7 +57,7 @@ class SystemTestRunner:
             subprocess.run([self._offline_mode_tool_path, "/leave"], **self._SUBPROCESS_RUN_OPTIONS)
 
     def run(self):
-        ret = subprocess.run(
+        subprocess.run(
             [
                 self._csharp_oi_path,
                 "/outputtostdio",
