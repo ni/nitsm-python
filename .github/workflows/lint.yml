@@ -23,7 +23,8 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip black ni-python-styleguide==0.1.2
+        python -m pip install ni-python-styleguide==0.1.2
+        python -m pip install --upgrade black
     - name: Check code formatting with black
       run: |
         python -m black --check .
