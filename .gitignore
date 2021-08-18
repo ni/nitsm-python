@@ -19,8 +19,7 @@ dist/
 .tox/
 
 # coverage
-*.coverage
-*.coverage.*
+*.coverage*
 coverage.xml
 
 # Digital Pattern Editor
