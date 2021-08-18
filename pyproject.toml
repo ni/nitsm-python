@@ -24,7 +24,7 @@ envlist = clean, py3{6,7,8}-tests, py3{6,7,8}-systemtests, report
 [testenv]
 deps =
     pytest
-    coverage
+    pytest-cov
     nidcpower
     nidmm
     niscope
@@ -33,12 +33,12 @@ deps =
     nidaqmx
     nifgen
 commands =
-    tests: coverage run -m pytest tests --junitxml={envname}-results.xml
-    systemtests: coverage run -m pytest systemtests --junitxml={envname}-results.xml
+    tests: pytest tests --junitxml={envname}-results.xml --cov --cov-report=term
+    systemtests: pytest systemtests --junitxml={envname}-results.xml --cov --cov-report=term
 passenv =
     systemtests: TestStandPublic64 ProgramFiles(x86)
 setenv =
-    COVERAGE_FILE = .coverage.{envname}
+    tests,systemtests: COVERAGE_FILE = .coverage.{envname}
 
 [testenv:clean]
 deps = coverage
@@ -49,6 +49,7 @@ commands = coverage erase
 deps = coverage
 skip_install = true
 commands =
+    coverage combine
     coverage report
     coverage xml
 """
