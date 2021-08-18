@@ -8,5 +8,5 @@ nidaqmx
 nifgen
 tox
 pytest
-pytest-cov
+coverage
 black

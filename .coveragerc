@@ -1,4 +1,5 @@
 [run]
+parallel = True
 source_pkgs = nitsm
 omit =
     */nitsm/pinmapinterfaces.py

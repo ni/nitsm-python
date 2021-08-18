@@ -6,17 +6,26 @@ import subprocess
 import pytest
 
 _teststand_public_path = os.environ["TestStandPublic64"]
+
 _python_version = ".".join(map(str, sys.version_info[:2]))
 try:
     _python_environment_path = os.environ["VIRTUAL_ENV"]
 except KeyError:
     _python_environment_path = ""  # global interpreter
 
+_environment_variables = os.environ.copy()
+_environment_variables["COVERAGE_PROCESS_START"] = ".coveragerc"
+
 
 class SystemTestRunner:
     # subprocess.run with check=True will throw an exception if the return code is non-zero
     # with stdout set to subprocess.PIPE, exit code and stdout will be included in the exception
-    _SUBPROCESS_RUN_OPTIONS = {"stdout": subprocess.PIPE, "timeout": 180, "check": True}
+    _SUBPROCESS_RUN_OPTIONS = {
+        "stdout": subprocess.PIPE,
+        "timeout": 180,
+        "check": True,
+        "env": _environment_variables,
+    }
 
     _csharp_oi_path = os.path.join(
         _teststand_public_path,

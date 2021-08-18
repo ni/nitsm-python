@@ -33,10 +33,12 @@ deps =
     nidaqmx
     nifgen
 commands =
-    tests: pytest tests --junitxml={envname}-results.xml --cov --cov-report= --cov-append
-    systemtests: pytest systemtests --junitxml={envname}-results.xml --cov --cov-report= --cov-append
+    tests: coverage run -m pytest tests --junitxml={envname}-results.xml
+    systemtests: coverage run -m pytest systemtests --junitxml={envname}-results.xml
 passenv =
     systemtests: TestStandPublic64 ProgramFiles(x86)
+setenv =
+    COVERAGE_FILE = .coverage.{envname}
 
 [testenv:clean]
 deps = coverage
