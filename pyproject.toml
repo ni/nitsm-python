@@ -24,7 +24,7 @@ envlist = clean, py3{6,7,8}-tests, py3{6,7,8}-systemtests, report
 [testenv]
 deps =
     pytest
-    pytest-cov
+    coverage
     nidcpower
     nidmm
     niscope
