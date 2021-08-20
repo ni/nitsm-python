@@ -50,6 +50,6 @@ deps = coverage
 skip_install = true
 commands =
     coverage combine
-    coverage report
+    coverage report -m
     coverage xml
 """
