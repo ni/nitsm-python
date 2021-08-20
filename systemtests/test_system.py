@@ -26,3 +26,8 @@ def test_nifgen(system_test_runner):
 @pytest.mark.offline_mode("nidaqmx.offlinecfg")
 def test_nidaqmx(system_test_runner):
     assert system_test_runner.run()
+
+
+@pytest.mark.sequence_file("niscope.seq")
+def test_niscope(system_test_runner):
+    assert system_test_runner.run()
