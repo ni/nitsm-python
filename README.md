@@ -2,12 +2,17 @@
 # nitsm-python
 ## Known Limitations
 * Instrument alarms are currently not supported
+* See [STATUS.md](./STATUS.md) for additional information about the current state of the API and system tests
 ## Tests
+Executing the nitsm-python tests requires the **TSM Standalone Semiconductor Module Context**. If you are not an
+NI employee, contact one of the
+repository owners to determine how to obtain a copy of this non-public component.
+
 Before you can run tests you must install the following:
 * [TestStand 20.0+](https://www.ni.com/en-us/support/downloads/software-products/download.teststand.html)
 * [TestStand Semiconductor Module 20.0+](https://www.ni.com/en-us/support/downloads/software-products/download.teststand-semiconductor-module.html)
 * TSM standalone context
-    * Copy locally from \\nirvana\perforceexports\TesterOS\TSM\StandaloneSemiconductorModuleContext
+    * Copy locally from \\\nirvana\perforceexports\TesterOS\TSM\StandaloneSemiconductorModuleContext
     * Execute RegisterAssembly.bat as administrator (see Readme.txt)
 * NI drivers:
   - [NI-DCPower](https://www.ni.com/en-us/support/downloads/drivers/download.ni-dcpower.html)
