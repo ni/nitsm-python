@@ -3,10 +3,10 @@ Contributing to nitsm-python
 
 Contributions to **[nitsm-python](https://github.com/ni/nitsm-python)** are welcome from all!
 
-**[nitsm-python](https://github.com/ni/nitsm-python)** is managed via [Git](https://git-scm.com), with the canonical
-upstream repository hosted on [GitHub](http://developercertificate.org/).
+*nitsm-python* is managed via [Git](https://git-scm.com), with the canonical
+upstream repository hosted on [GitHub](https://github.com/ni/nitsm-python).
 
-**[nitsm-python](https://github.com/ni/nitsm-python)** follows a pull request model for development.
+*nitsm-python* follows a pull request model for development.
 If you wish to contribute, you will need to create a GitHub account, fork this project,
 push a branch with your changes to your project, and then submit a pull request.
 
