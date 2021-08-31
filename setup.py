@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="nitsm",
-    version="1.0.0a0",
+    version="0.1.0a0",
     author="NI",
     author_email="opensource@ni.com",
     description="NI TestStand Semiconductor Module Python API",
