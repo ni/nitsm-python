@@ -216,7 +216,6 @@ class SemiconductorModuleContext:
                 contains data for each site in the Semiconductor Module context, each item in the
                 sequence contains data for the site specified by the corresponding item in the
                 site_numbers property.
-
         """
 
         return self._context.SetSiteData(data_id, data)
