@@ -64,8 +64,8 @@
 | Relay Driver    | GetRelayDriverNISwitchSession(s)                                        | relays\_to\_relay\_driver\_niswitch\_session(s) | **needed for 0.1**            |
 | Relay Driver    | SetRelayDriverNISwitchSession                                           | set\_relay\_driver\_niswitch\_session           | **needed for 0.1**            |
 | Relay Driver    | GetAllRelayDriverNISwitchSessions                                       | get\_all\_relay\_driver\_niswitch\_sessions     | **needed for 0.1**            |
-| Relay Driver    | ControlRelay                                                            | \*omitted on purpose                            |                               |
-| Relay Driver    | ApplyRelayConfiguration                                                 | \*omitted on purpose                            |                               |
+| Relay Driver    | ControlRelay                                                            | \*omit in issue #120                            |                               |
+| Relay Driver    | ApplyRelayConfiguration                                                 | \*omit in issue #120                            |                               |
 | Custom          | GetCustomInstrumentNames                                                | get\_custom\_instrument\_names                  | **needed for 0.1**            |
 | Custom          | SetCustomSession                                                        | set\_custom\_session                            | **needed for 0.1**            |
 | Custom          | GetCustomSession(s)                                                     | pins\_to\_custom\_session(s)                    | **needed for 0.1**            |
