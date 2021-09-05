@@ -1,20 +1,8 @@
-import pytest
 import nidcpower
 import nitsm.codemoduleapi
 from nitsm.codemoduleapi import SemiconductorModuleContext
 
 OPTIONS = {"Simulate": True, "DriverSetup": {"Model": "4141", "BoardType": "PXIe"}}
-
-
-@pytest.mark.skip("Can't enable this test until nidcpower python supports channel expansion.")
-@pytest.mark.sequence_file("nidcpower.seq")
-def test_nidcpower(system_test_runner):
-    assert system_test_runner.run()
-
-
-@pytest.mark.sequence_file("nidcpower_legacy.seq")
-def test_nidcpower_legacy(system_test_runner):
-    assert system_test_runner.run()
 
 
 @nitsm.codemoduleapi.code_module
@@ -29,7 +17,9 @@ def open_sessions_channel_expansion(tsm_context: SemiconductorModuleContext):
 def open_sessions(tsm_context: SemiconductorModuleContext):
     instrument_names, channel_strings = tsm_context.get_all_nidcpower_instrument_names()
     for instrument_name, channel_string in zip(instrument_names, channel_strings):
-        session = nidcpower.Session(instrument_name, channel_string, options=OPTIONS)
+        session = nidcpower.Session(
+            instrument_name, channel_string, options=OPTIONS, independent_channels=False
+        )
         tsm_context.set_nidcpower_session_with_channel_string(
             instrument_name, channel_string, session
         )

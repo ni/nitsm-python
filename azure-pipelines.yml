@@ -2,6 +2,11 @@
 trigger:
 - main
 
+pr:
+  branches:
+    include:
+    - main
+
 jobs:
 - job: CI
   workspace:
@@ -10,20 +15,24 @@ jobs:
   pool:
     name: nitsm-python-test
 
+  # py -3 indicates the latest python version installed on the system
   steps:
-  - script: pip install -r requirements.txt
-    displayName: 'Install requirements'
+  - script: |
+      py -3 -m pip install --upgrade pip
+    displayName: 'Upgrade pip'
 
-  - script: pip install .
-    displayName: 'Install nitsm-python'
+  - script: |
+      py -3 -m pip install --upgrade tox
+    displayName: 'Install or upgrade tox'
 
-  - script: pytest tests systemtests --junitxml=test-results.xml --cov=nitsm --cov-report=xml
+  - script: |
+      tox
     displayName: 'Run python unit tests'
 
   - task: PublishTestResults@2
     condition: succeededOrFailed()
     inputs:
-      testResultsFiles: '**/test-results.xml'
+      testResultsFiles: '**/*-results.xml'
       testRunTitle: 'Publish test results'
     displayName: 'Display test results'
 

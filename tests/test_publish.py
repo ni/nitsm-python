@@ -70,7 +70,7 @@ class TestSinglePin2d:
     @pytest.fixture
     def pin_query_context(self, standalone_tsm_context):
         pin_query_context, *_ = standalone_tsm_context.pins_to_nidigital_sessions_for_ppmu(
-            ["DUTPin3"]
+            "DUTPin3"
         )
         return pin_query_context
 

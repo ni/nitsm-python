@@ -24,8 +24,13 @@ def _published_data_reader_factory(request):
 
 
 @pytest.fixture
-def standalone_tsm_context(_published_data_reader_factory):
-    return nitsm.codemoduleapi.SemiconductorModuleContext(_published_data_reader_factory[0])
+def standalone_tsm_context_com_object(_published_data_reader_factory):
+    return _published_data_reader_factory[0]
+
+
+@pytest.fixture
+def standalone_tsm_context(standalone_tsm_context_com_object):
+    return nitsm.codemoduleapi.SemiconductorModuleContext(standalone_tsm_context_com_object)
 
 
 class PublishedData:

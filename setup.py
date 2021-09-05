@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="nitsm",
-    version="0.0.1",
+    version="0.1.0a0",
     author="NI",
     author_email="opensource@ni.com",
     description="NI TestStand Semiconductor Module Python API",
@@ -19,4 +19,5 @@ setuptools.setup(
         "Operating System :: Microsoft :: Windows",
     ],
     python_requires=">=3.6",
+    install_requires=["pywin32>=228;platform_system=='Windows'"],
 )
