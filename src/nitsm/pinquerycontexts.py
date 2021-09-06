@@ -17,6 +17,8 @@ if typing.TYPE_CHECKING:
         _PublishDataScalar, _PublishDataSequence, _PublishDataJaggedSequence
     ]
 
+    _PatternResults = typing.Union[typing.Sequence[bool], typing.Sequence[typing.Sequence[bool]]]
+
 
 class PinQueryContext:
     def __init__(self, tsm_context, pins):
@@ -41,12 +43,43 @@ class PinQueryContext:
                 match one of the values in the Published Data Id column on the Tests tab of the
                 Semiconductor Multi Test step.
         """
+
         if isinstance(data, bool):
             return self._publish_bool_scalar(data, published_data_id)
         elif isinstance(data, (float, int)):
             return self._publish_float_scalar(data, published_data_id)
         else:
             return self._publish_sequence(data, published_data_id)
+
+    def publish_pattern_results(
+        self, instrument_site_pattern_results: "_PatternResults", published_data_id: str
+    ):
+        """
+        Publishes results from NI-Digital pattern burst to the Semiconductor Multi Test step for all
+        sites in the Semiconductor Module context. Leave the Pin column blank for the test on the
+        Semiconductor Multi Test step when publishing pattern results with this method.
+
+        Args:
+            instrument_site_pattern_results: The pattern result data from multiple pins connected to
+                one or more NI-Digital Pattern instruments. For a single instrument session, the
+                pattern results sequence contains the pattern results for all sites. For multiple
+                instrument sessions, each element in the burst results sequence is a sequence that
+                contains pattern results for the sites of a single instrument session. The size of
+                the results sequence must be the same size as the session data output from the pin
+                query method.
+            published_data_id: The unique ID for identifying the results. This ID must match one of
+                the values in the Published Data Id column on the Tests tab of the Semiconductor
+                Multi Test step.
+        """
+
+        if isinstance(instrument_site_pattern_results[0], bool):
+            self._tsm_context.PublishPatternResults_2(
+                self._pins, published_data_id, instrument_site_pattern_results
+            )
+        else:
+            self._tsm_context.PublishPatternResults(
+                self._pins, published_data_id, instrument_site_pattern_results
+            )
 
     def _publish_float_scalar(self, data, published_data_id):
         return self._publish_float_1d([data], published_data_id)
