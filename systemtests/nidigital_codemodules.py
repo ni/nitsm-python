@@ -58,10 +58,11 @@ def measure_pattern(
     tsm_context: SemiconductorModuleContext, pins, expected_instrument_names, expected_site_lists
 ):
     pin_query, sessions, site_lists = tsm_context.pins_to_nidigital_sessions_for_pattern(pins)
+    _, _, pin_set_strings = tsm_context.pins_to_nidigital_sessions_for_ppmu(pins)
     expected_instrument_site_lists = set(zip(expected_instrument_names, expected_site_lists))
     valid_site_lists = []
 
-    for session, site_list in zip(sessions, site_lists):
+    for session, site_list, pin_set_string in zip(sessions, site_lists, pin_set_strings):
         # call some methods on the session to ensure no errors
         session.configure_active_load_levels(0.0015, -0.024, 2.0)
         session.configure_voltage_levels(0.1, 3.3, 0.5, 2.5, 5.5)
@@ -70,17 +71,11 @@ def measure_pattern(
 
         # check instrument site we received is in the set of instrument sites we expected
         actual_instrument_site_list = (session.io_resource_descriptor, site_list)
-        valid_site_lists.append(actual_instrument_site_list in expected_instrument_site_lists)
+        valid_site_lists.extend([actual_instrument_site_list in expected_instrument_site_lists] * len(pin_set_string.split(",")))
         expected_instrument_site_lists -= {actual_instrument_site_list}
 
-    _, _, pin_set_strings = tsm_context.pins_to_nidigital_sessions_for_ppmu(pins)
-    pin_counts = [len(pin_set_string.split(",")) for pin_set_string in pin_set_strings]
-    valid_site_lists = [
-        [valid_site_list] * pin_count
-        for valid_site_list, pin_count in zip(valid_site_lists, pin_counts)
-    ]
-    pin_query.publish_pattern_results(valid_site_lists, "ValidSiteLists")
-    num_missing_site_lists = [len(expected_instrument_site_lists)] * sum(pin_counts)
+    pin_query.publish(valid_site_lists, "ValidSiteLists")
+    num_missing_site_lists = [len(expected_instrument_site_lists)] * len(valid_site_lists)
     pin_query.publish(num_missing_site_lists, "NumMissingSiteLists")
 
 
