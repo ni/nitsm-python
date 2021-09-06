@@ -31,3 +31,8 @@ def test_nidaqmx(system_test_runner):
 @pytest.mark.sequence_file("niscope.seq")
 def test_niscope(system_test_runner):
     assert system_test_runner.run()
+
+
+@pytest.mark.sequence_file("nidigital.seq")
+def test_nidigital(system_test_runner):
+    assert system_test_runner.run()
