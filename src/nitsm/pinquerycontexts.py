@@ -17,8 +17,6 @@ if typing.TYPE_CHECKING:
         _PublishDataScalar, _PublishDataSequence, _PublishDataJaggedSequence
     ]
 
-    _PatternResults = typing.Union[typing.Sequence[bool], typing.Sequence[typing.Sequence[bool]]]
-
 
 class PinQueryContext:
     def __init__(self, tsm_context, pins):
