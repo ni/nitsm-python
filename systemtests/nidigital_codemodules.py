@@ -71,7 +71,10 @@ def measure_pattern(
 
         # check instrument site we received is in the set of instrument sites we expected
         actual_instrument_site_list = (session.io_resource_descriptor, site_list)
-        valid_site_lists.extend([actual_instrument_site_list in expected_instrument_site_lists] * len(pin_set_string.split(",")))
+        valid_site_lists.extend(
+            [actual_instrument_site_list in expected_instrument_site_lists]
+            * len(pin_set_string.split(","))
+        )
         expected_instrument_site_lists -= {actual_instrument_site_list}
 
     pin_query.publish(valid_site_lists, "ValidSiteLists")
