@@ -4,10 +4,6 @@ NI TestStand Semiconductor Module Context Python Wrapper
 
 import time
 import typing
-from typing import Any as _Any
-from typing import Tuple as _Tuple
-from typing import Union as _Union
-from typing import Sequence as _Sequence
 import warnings
 import pythoncom
 import nitsm.pinmapinterfaces
@@ -22,6 +18,10 @@ warnings.filterwarnings("default", category=DeprecationWarning, module=__name__)
 warnings.filterwarnings("default", category=PendingDeprecationWarning, module=__name__)
 
 if typing.TYPE_CHECKING:
+    from typing import Any as _Any
+    from typing import Tuple as _Tuple
+    from typing import Union as _Union
+    from typing import Sequence as _Sequence
     import nidigital
     import nidcpower
     import nidaqmx
