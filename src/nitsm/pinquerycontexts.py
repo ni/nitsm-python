@@ -23,6 +23,31 @@ class PinQueryContext:
         self._tsm_context: nitsm._pinmapinterfaces.ISemiconductorModuleContext = tsm_context
         self._pins: typing.Union[str, typing.Sequence[str]] = pins
 
+    def get_session_and_channel_index(self, site_number: int, pin: str):
+        """
+        Returns the index of the session and channel that corresponds to a pin query. Use this
+        method to access an individual pin on a specific site when you take a measurement across
+        multiple instruments. When you call a pin query method, such as
+        pins_to_nidigital_sessions_for_ppmu, the method returns a tuple of sessions and a tuple of
+        channel lists. Use this method to identify which session and which channel refers to the pin
+        from the pin query and the site number you specify.
+
+        Args:
+            site_number: The site number of the pin to obtain the session and channel index in a
+                previous pin query. For a system pin, pass any valid site number.
+            pin: The name of the pin to obtain the session and channel index in a previous pin
+                query.
+
+        Returns:
+            session_index: Returns the index of the session for a measurement taken on the pin and
+                site number you specify.
+            channel_index: Returns the index of the channel within the channel list for a
+                measurement taken on the pin and site number you specify.
+        """
+
+        pins = [self._pins] if isinstance(self._pins, str) else self._pins
+        return self._tsm_context.GetChannelGroupAndChannelIndex_2(pins, pin, site_number, 0, 0)
+
     def publish(self, data: "_PublishDataArg", published_data_id=""):
         """
         Publishes the measurement data for one or more pins to the Semiconductor Multi Test step
