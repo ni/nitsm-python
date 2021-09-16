@@ -8,7 +8,7 @@ import typing
 __all__ = ["PinQueryContext"]
 
 if typing.TYPE_CHECKING:
-    import nitsm.pinmapinterfaces
+    import nitsm._pinmapinterfaces
 
     _PublishDataScalar = typing.Union[bool, int, float]
     _PublishDataSequence = typing.Sequence[_PublishDataScalar]
@@ -20,7 +20,7 @@ if typing.TYPE_CHECKING:
 
 class PinQueryContext:
     def __init__(self, tsm_context, pins):
-        self._tsm_context: nitsm.pinmapinterfaces.ISemiconductorModuleContext = tsm_context
+        self._tsm_context: nitsm._pinmapinterfaces.ISemiconductorModuleContext = tsm_context
         self._pins: typing.Union[str, typing.Sequence[str]] = pins
 
     def publish(self, data: "_PublishDataArg", published_data_id=""):

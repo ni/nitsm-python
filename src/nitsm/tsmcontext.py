@@ -6,7 +6,7 @@ import time
 import typing
 import warnings
 import pythoncom
-import nitsm.pinmapinterfaces
+import nitsm._pinmapinterfaces
 import nitsm.pinquerycontexts
 import nitsm.enums
 
@@ -83,7 +83,7 @@ class SemiconductorModuleContext:
                 TestStand
         """
 
-        self._context = nitsm.pinmapinterfaces.ISemiconductorModuleContext(tsm_com_obj)
+        self._context = nitsm._pinmapinterfaces.ISemiconductorModuleContext(tsm_com_obj)
         self._context._oleobj_ = tsm_com_obj._oleobj_.QueryInterface(
             self._context.CLSID, pythoncom.IID_IDispatch
         )
