@@ -203,9 +203,10 @@ class SemiconductorModuleContext:
         """
         Associates a data item with each site. You can associate data with all sites or with the
         sub-set of sites in the Semiconductor Module context. You can use this method to store
-        instrument sessions or other per-site data you initialize in a central location but access
-        within each site. The data item is accessible from a process model controller execution and
-        the site with which the data is associated.
+        per-site data you initialize in a central location but access within each site. The data
+        item is accessible from a process model controller execution and the site with which the
+        data is associated. This method supports only basic data types and sequences of basic
+        data types that can be represented by a COM VARIANT.
 
         Args:
             data_id: A unique ID to distinguish the data.
@@ -248,10 +249,11 @@ class SemiconductorModuleContext:
 
     def set_global_data(self, data_id: str, data: _Any) -> None:
         """
-        Associates a data item with a data_id. You can use this method to store an instrument
-        session or other data you initialize in a central location but access from multiple sites.
-        The data item is accessible from a process model controller execution and all of its test
-        socket executions.
+        Associates a data item with a data_id. You can use this method to store data you initialize
+        in a central location but access from multiple sites. The data item is accessible from a
+        process model controller execution and all of its test socket executions. This method
+        supports only basic data types and sequences of basic data types that can be represented by
+        a COM VARIANT.
 
         Args:
             data_id: A unique ID to distinguish the data.

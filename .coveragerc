@@ -1,8 +1,15 @@
-[report]
+[run]
+source_pkgs = nitsm
 omit =
     */nitsm/pinmapinterfaces.py
     */nitsm/__init__.py
 
+[paths]
+tox =
+    src/nitsm/
+    */nitsm/
+
+[report]
 exclude_lines =
     pragma: no cover
     if typing.TYPE_CHECKING:

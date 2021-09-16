@@ -15,28 +15,24 @@ jobs:
   pool:
     name: nitsm-python-test
 
+  # py -3 indicates the latest python version installed on the system
   steps:
   - script: |
-      python -m pip install --upgrade pip
+      py -3 -m pip install --upgrade pip
     displayName: 'Upgrade pip'
 
   - script: |
-      pip install --upgrade -r requirements.txt
-    displayName: 'Install or upgrade required packages'
-
-  # installing from local automatically builds and re-installs the package without using any cached versions
-  - script: |
-      pip install .
-    displayName: 'Install/reinstall nitsm'
+      py -3 -m pip install --upgrade tox
+    displayName: 'Install or upgrade tox'
 
   - script: |
-      pytest tests systemtests --junitxml=test-results.xml --cov=nitsm --cov-report=xml
+      tox
     displayName: 'Run python unit tests'
 
   - task: PublishTestResults@2
     condition: succeededOrFailed()
     inputs:
-      testResultsFiles: '**/test-results.xml'
+      testResultsFiles: '**/*-results.xml'
       testRunTitle: 'Publish test results'
     displayName: 'Display test results'
 

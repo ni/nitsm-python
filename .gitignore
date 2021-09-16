@@ -4,15 +4,24 @@
 # Python
 __pycache__/
 *.pyc
+.venv/
 venv/
 
-# Pytest
+# pytest
 .pytest_cache/
+*-results.xml
 
-# Setuptools
+# setuptools
 build/
 dist/
 *.egg-info
+
+# tox
+.tox/
+
+# coverage
+*.coverage*
+coverage.xml
 
 # Digital Pattern Editor
 *.digiprojcache

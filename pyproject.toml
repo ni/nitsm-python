@@ -1,23 +1,7 @@
 [tool.black]
 line-length = 100
-target-version = ['py36']
-exclude = '''
-(
-  /(
-      \.eggs         # exclude a few common directories in the
-    | \.git          # root of the project
-    | \.hg
-    | \.mypy_cache
-    | \.tox
-    | \.venv
-    | _build
-    | buck-out
-    | build
-    | dist
-  )/
-  | nitsm/pinmapinterfaces.py
-)
-'''
+target-version = ["py36", "py37", "py38"]
+extend-exclude = "^/src/nitsm/pinmapinterfaces.py"
 
 [tool.ni-python-styleguide]
 extend_exclude = "src/nitsm/pinmapinterfaces.py"
@@ -31,3 +15,41 @@ markers = [
     "sequence_file",
     "offline_mode"
 ]
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = clean, py3{6,7,8}-tests, py3{6,7,8}-systemtests, report
+
+[testenv]
+deps =
+    pytest
+    pytest-cov
+    nidcpower
+    nidmm
+    niscope
+    nidigital
+    niswitch
+    nidaqmx
+    nifgen
+commands =
+    tests: pytest tests --junitxml={envname}-results.xml --cov --cov-report=term
+    systemtests: pytest systemtests --junitxml={envname}-results.xml --cov --cov-report=term
+passenv =
+    systemtests: TestStandPublic64 ProgramFiles(x86)
+setenv =
+    tests,systemtests: COVERAGE_FILE = .coverage.{envname}
+
+[testenv:clean]
+deps = coverage
+skip_install = true
+commands = coverage erase
+
+[testenv:report]
+deps = coverage
+skip_install = true
+commands =
+    coverage combine
+    coverage report -m
+    coverage xml
+"""

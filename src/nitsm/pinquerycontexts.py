@@ -27,10 +27,10 @@ class PinQueryContext:
         """
         Returns the index of the session and channel that corresponds to a pin query. Use this
         method to access an individual pin on a specific site when you take a measurement across
-        multiple instruments. When you call a pin query method, such as pins_to_nihsdio_sessions,
-        the method returns an array of sessions and an array of channel lists. Use this method to
-        identify which session and which channel refers to the pin from the pin query and the site
-        number you specify.
+        multiple instruments. When you call a pin query method, such as
+        pins_to_nidigital_sessions_for_ppmu, the method returns a tuple of sessions and a tuple of
+        channel lists. Use this method to identify which session and which channel refers to the pin
+        from the pin query and the site number you specify.
 
         Args:
             site_number: The site number of the pin to obtain the session and channel index in a

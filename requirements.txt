@@ -1,7 +1,4 @@
 pywin32
-pytest
-pytest-cov
-black
 nidcpower
 nidmm
 niscope
@@ -9,3 +6,7 @@ nidigital
 niswitch
 nidaqmx
 nifgen
+tox
+pytest
+pytest-cov
+black
