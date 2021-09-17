@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SystemConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" schemaVersion="1.0" xmlns="http://www.ni.com/TestStand/SemiconductorModule/SystemConfiguration.xsd">
+  <PXIChassis Number="1" Model="NI PXIe-1085">
+    <PXI Name="dev1" Model="NI PXIe-6363" Slot="2" />
+    <PXI Name="dev2" Model="NI PXIe-6363" Slot="3" />
+  </PXIChassis>
+</SystemConfiguration>
