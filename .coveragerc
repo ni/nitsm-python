@@ -1,7 +1,7 @@
 [run]
 source_pkgs = nitsm
 omit =
-    */nitsm/pinmapinterfaces.py
+    */nitsm/_pinmapinterfaces.py
     */nitsm/__init__.py
 
 [paths]
