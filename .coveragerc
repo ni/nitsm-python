@@ -3,6 +3,7 @@ source_pkgs = nitsm
 omit =
     */nitsm/pinmapinterfaces.py
     */nitsm/__init__.py
+    */nitsm/debug.py  # requires manual testing
 
 [paths]
 tox =
