@@ -1,15 +1,31 @@
+import os.path
+import re
 import setuptools
 
-with open("README.md", "r", encoding="utf-8") as fh:
-    long_description = fh.read()
+
+def read(relative_path):
+    here = os.path.abspath(os.path.dirname(__file__))
+    there = os.path.join(here, relative_path)
+    with open(there, "r", encoding="utf-8") as fh:
+        return fh.read()
+
+
+def get_version(relative_path):
+    text = read(relative_path)
+    match = re.findall(r"__version__ = \"(.+)\"", text)
+    try:
+        return match[0]
+    except IndexError:
+        raise RuntimeError("Failed to find version string.")
+
 
 setuptools.setup(
     name="nitsm",
-    version="0.1.0a0",
+    version=get_version("src/nitsm/__init__.py"),
     author="NI",
     author_email="opensource@ni.com",
     description="NI TestStand Semiconductor Module Python API",
-    long_description=long_description,
+    long_description=read("README.md"),
     long_description_content_type="text/markdown",
     url="https://github.com/ni/nitsm-python",
     package_dir={"": "src"},  # sets package root to the src directory
