@@ -118,7 +118,10 @@ class TestSinglePin2d:
         ) = standalone_tsm_context.pins_to_nidigital_sessions_for_pattern(self._PIN)
         expected_results = [True, False, True]  # test data across sites [0, 1, 2]
         test_data = [  # creates data for purely jagged results [[site0], [site1, site2]]
-            [expected_results[int(re.match(r"\s*site(\d)", site)[1])] for site in site_list.split(",")]
+            [
+                expected_results[int(re.match(r"\s*site(\d)", site)[1])]
+                for site in site_list.split(",")
+            ]
             for site_list in site_lists
         ]
         pin_query_context.publish_pattern_results(test_data)
