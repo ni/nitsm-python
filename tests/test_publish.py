@@ -1,4 +1,5 @@
 import re
+import random
 import pytest
 from nitsm.codemoduleapi import SemiconductorModuleContext
 
@@ -15,21 +16,22 @@ def simulated_nidigital_sessions(standalone_tsm_context: SemiconductorModuleCont
 @pytest.mark.usefixtures("simulated_nidigital_sessions")
 class TestSinglePinScalar:
     _PIN = "SystemPin1"
-    _NUM_SITES = 2
+    _NUM_SITES = 3
 
     @pytest.fixture
     def pin_query_context(self, standalone_tsm_context):
         pin_query_context, *_ = standalone_tsm_context.pins_to_nidigital_session_for_ppmu(self._PIN)
         return pin_query_context
 
-    def test_publish_float_scalar(self, pin_query_context, published_data_reader, num_sites):
-        pin_query_context.publish(1150.0)
+    def test_publish_float_scalar(self, pin_query_context, published_data_reader):
+        test_data = random.random()
+        pin_query_context.publish(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         assert len(published_data) == self._NUM_SITES
         for published_data_point in published_data:
-            assert published_data_point.double_value == 1150.0
+            assert published_data_point.double_value == test_data
 
-    def test_publish_bool_scalar(self, pin_query_context, published_data_reader, num_sites):
+    def test_publish_bool_scalar(self, pin_query_context, published_data_reader):
         pin_query_context.publish(True)
         published_data = published_data_reader.get_and_clear_published_data()
         assert len(published_data) == self._NUM_SITES
@@ -41,6 +43,7 @@ class TestSinglePinScalar:
 @pytest.mark.usefixtures("simulated_nidigital_sessions")
 class TestSinglePin1d:
     _PIN = "DUTPin1"
+    _NUM_SITES = 3
 
     @pytest.fixture
     def pin_query_context(self, standalone_tsm_context):
@@ -48,7 +51,7 @@ class TestSinglePin1d:
         return pin_query_context
 
     def test_publish_float_1d(self, pin_query_context, published_data_reader):
-        test_data = [1150.0, 1952.5]
+        test_data = [random.random() for _ in range(self._NUM_SITES)]
         pin_query_context.publish(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         assert len(published_data) == len(test_data)
@@ -56,7 +59,7 @@ class TestSinglePin1d:
             assert published_data_point.double_value == test_data_point
 
     def test_publish_bool_1d(self, pin_query_context, published_data_reader):
-        test_data = [True, False]
+        test_data = [bool(i % 2) for i in range(self._NUM_SITES)]
         pin_query_context.publish(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         assert len(published_data) == len(test_data)
@@ -91,8 +94,8 @@ class TestSinglePin2d:
         return pin_query_context
 
     def test_publish_float_2d(self, pin_query_context, published_data_reader):
-        # [DigitalPattern1(ch4), DigitalPattern2(ch0)]
-        test_data = [[1150.0], [1952.5]]
+        # [[DigitalPattern1(ch6)], [DigitalPattern2(ch0), DigitalPattern2(ch1)]]
+        test_data = [[1150.0], [1952.5, 60417]]
         pin_query_context.publish(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         flattened_test_data = [data_point for row in test_data for data_point in row]
@@ -101,8 +104,8 @@ class TestSinglePin2d:
             assert published_data_point.double_value == test_data_point
 
     def test_publish_bool_2d(self, pin_query_context, published_data_reader):
-        # [DigitalPattern1(ch4), DigitalPattern2(ch0)]
-        test_data = [[True], [False]]
+        # [[DigitalPattern1(ch6)], [DigitalPattern2(ch0), DigitalPattern2(ch1)]]
+        test_data = [[True], [False, True]]
         pin_query_context.publish(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         flattened_test_data = [data_point for row in test_data for data_point in row]
@@ -135,6 +138,7 @@ class TestSinglePin2d:
 @pytest.mark.usefixtures("simulated_nidigital_sessions")
 class TestMultiplePins1d:
     _PINS = ["DUTPin1", "DUTPin2"]
+    _NUM_SITES = 3
 
     @pytest.fixture
     def pin_query_context(self, standalone_tsm_context):
@@ -144,7 +148,7 @@ class TestMultiplePins1d:
         return pin_query_context
 
     def test_publish_float_1d(self, pin_query_context, published_data_reader):
-        test_data = [1150.0, 1952.5, 20.5, 33.3]
+        test_data = [random.random() for _ in range(len(self._PINS) * self._NUM_SITES)]
         pin_query_context.publish(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         assert len(published_data) == len(test_data)
@@ -152,7 +156,7 @@ class TestMultiplePins1d:
             assert published_data_point.double_value == test_data_point
 
     def test_publish_bool_1d(self, pin_query_context, published_data_reader):
-        test_data = [True, False, False, True]
+        test_data = [bool(i % 2) for i in range(len(self._PINS) * self._NUM_SITES)]
         pin_query_context.publish(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         assert len(published_data) == len(test_data)
@@ -187,8 +191,8 @@ class TestMultiplePins2d:
         return pin_query_context
 
     def test_publish_float_2d(self, pin_query_context, published_data_reader):
-        # [DigitalPattern1(ch2,ch3,ch4), DigitalPattern2(ch0)]
-        test_data = [[1150.0, 20.5, 30.5], [1952.5]]
+        # [DigitalPattern1(ch3,ch4,ch5,ch6), DigitalPattern2(ch0,ch1)]
+        test_data = [[1150.0, 20.5, 30.5, -1.0], [1952.5, -60417]]
         pin_query_context.publish(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         flattened_test_data = [data_point for row in test_data for data_point in row]
@@ -197,8 +201,8 @@ class TestMultiplePins2d:
             assert published_data_point.double_value == test_data_point
 
     def test_publish_bool_2d(self, pin_query_context, published_data_reader):
-        # [DigitalPattern1(ch2,ch3,ch4), DigitalPattern2(ch0)]
-        test_data = [[True, False, True], [True]]
+        # [DigitalPattern1(ch3,ch4,ch5,ch6), DigitalPattern2(ch0,ch1)]
+        test_data = [[True, False, True, False], [True, False]]
         pin_query_context.publish(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         flattened_test_data = [data_point for row in test_data for data_point in row]
@@ -212,11 +216,9 @@ class TestMultiplePins2d:
             sessions,
             site_lists,
         ) = standalone_tsm_context.pins_to_nidigital_sessions_for_pattern(self._PINS)
-        test_data = [
-            [True, False],
-            [True],
-        ]  # [DigitalPattern1: site0, site1], [DigitalPattern2: site1]
-        expected_results = [True, False]  # test_data AND'd across site
+        # [DigitalPattern1: site0, site1, site2], [DigitalPattern2: site1, site2]
+        test_data = [[True, False, True], [True, True]]
+        expected_results = [True, False, True]  # test_data AND'd across site
         pin_query_context.publish_pattern_results(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         assert len(published_data) == len(expected_results)
