@@ -8,20 +8,17 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  lint:
 
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        python-version: [3.6]
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: '3.6'
 
     - name: Upgrade pip
       run: |
