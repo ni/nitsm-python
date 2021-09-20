@@ -1,7 +1,7 @@
 """
 Pin Query Contexts
 """
-
+import re
 import typing
 
 __all__ = ["PinQueryContext"]
@@ -15,7 +15,9 @@ if typing.TYPE_CHECKING:
     _PublishDataArg = typing.Union[
         _PublishDataScalar, _PublishDataSequence, _PublishDataJaggedSequence
     ]
-    _PublishPatternArg = typing.Union[typing.Sequence[bool], typing.Sequence[typing.Sequence[bool]]]
+    _PublishPatternArg = typing.Union[
+        typing.Dict[int, bool], typing.Sequence[typing.Dict[int, bool]]
+    ]
 
 
 def _pad_jagged_sequence(seq):
@@ -34,9 +36,10 @@ def _pad_jagged_sequence(seq):
 
 
 class PinQueryContext:
-    def __init__(self, tsm_context, pins):
+    def __init__(self, tsm_context, pins, **kwargs):
         self._tsm_context: nitsm._pinmapinterfaces.ISemiconductorModuleContext = tsm_context
         self._pins: typing.Union[str, typing.Sequence[str]] = pins
+        self._kwargs = kwargs
 
     def get_session_and_channel_index(self, site_number: int, pin: str):
         """
@@ -162,12 +165,26 @@ class PinQueryContext:
         else:
             pins = self._pins
 
-        # dispatch to appropriate method based on the dimensions of the pattern results
-        if isinstance(instrument_site_pattern_results[0], bool):
+        # convert pattern results dictionary to pattern results list then dispatch to method
+        pattern = re.compile(r"\s*site(\d)")
+        if isinstance(instrument_site_pattern_results, dict):
+            site_list = self._kwargs["site_list"]
+            instrument_site_pattern_results = [
+                instrument_site_pattern_results[int(match[1])]
+                for match in map(pattern.match, site_list.split(","))
+            ]
             return self._tsm_context.PublishPatternResults_2(
                 pins, published_data_id, instrument_site_pattern_results
             )
-        else:  # assumed to be 2D sequence
+        else:
+            site_lists = self._kwargs["site_lists"]
+            instrument_site_pattern_results = [
+                [
+                    pattern_results[int(match[1])]
+                    for match in map(pattern.match, site_list.split(","))
+                ]
+                for site_list, pattern_results in zip(site_lists, instrument_site_pattern_results)
+            ]
             instrument_site_pattern_results = _pad_jagged_sequence(instrument_site_pattern_results)
             return self._tsm_context.PublishPatternResults(
                 pins, published_data_id, instrument_site_pattern_results
