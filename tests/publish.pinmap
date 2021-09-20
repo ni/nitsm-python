@@ -14,14 +14,18 @@
 	<Sites>
 		<Site siteNumber="0" />
 		<Site siteNumber="1" />
+		<Site siteNumber="2" />
 	</Sites>
 	<Connections>
 		<Connection pin="DUTPin1" siteNumber="0" instrument="DigitalPattern1" channel="0" />
 		<Connection pin="DUTPin1" siteNumber="1" instrument="DigitalPattern1" channel="1" />
-		<Connection pin="DUTPin2" siteNumber="0" instrument="DigitalPattern1" channel="2" />
-		<Connection pin="DUTPin2" siteNumber="1" instrument="DigitalPattern1" channel="3" />
-		<Connection pin="DUTPin3" siteNumber="0" instrument="DigitalPattern1" channel="4" />
+		<Connection pin="DUTPin1" siteNumber="2" instrument="DigitalPattern1" channel="2" />
+		<Connection pin="DUTPin2" siteNumber="0" instrument="DigitalPattern1" channel="3" />
+		<Connection pin="DUTPin2" siteNumber="2" instrument="DigitalPattern1" channel="5" />
+		<Connection pin="DUTPin2" siteNumber="1" instrument="DigitalPattern1" channel="4" />
+		<Connection pin="DUTPin3" siteNumber="0" instrument="DigitalPattern1" channel="6" />
 		<Connection pin="DUTPin3" siteNumber="1" instrument="DigitalPattern2" channel="0" />
-		<SystemConnection pin="SystemPin1" instrument="DigitalPattern1" channel="5" />
+		<Connection pin="DUTPin3" siteNumber="2" instrument="DigitalPattern2" channel="1" />
+		<SystemConnection pin="SystemPin1" instrument="DigitalPattern2" channel="2" />
 	</Connections>
 </PinMap>

@@ -1,3 +1,4 @@
+import re
 import pytest
 from nitsm.codemoduleapi import SemiconductorModuleContext
 
@@ -14,10 +15,7 @@ def simulated_nidigital_sessions(standalone_tsm_context: SemiconductorModuleCont
 @pytest.mark.usefixtures("simulated_nidigital_sessions")
 class TestSinglePinScalar:
     _PIN = "SystemPin1"
-
-    @pytest.fixture
-    def num_sites(self):
-        return 2  # defined in publish.pinmap
+    _NUM_SITES = 2
 
     @pytest.fixture
     def pin_query_context(self, standalone_tsm_context):
@@ -27,14 +25,14 @@ class TestSinglePinScalar:
     def test_publish_float_scalar(self, pin_query_context, published_data_reader, num_sites):
         pin_query_context.publish(1150.0)
         published_data = published_data_reader.get_and_clear_published_data()
-        assert len(published_data) == num_sites
+        assert len(published_data) == self._NUM_SITES
         for published_data_point in published_data:
             assert published_data_point.double_value == 1150.0
 
     def test_publish_bool_scalar(self, pin_query_context, published_data_reader, num_sites):
         pin_query_context.publish(True)
         published_data = published_data_reader.get_and_clear_published_data()
-        assert len(published_data) == num_sites
+        assert len(published_data) == self._NUM_SITES
         for published_data_point in published_data:
             assert published_data_point.boolean_value
 
@@ -71,7 +69,8 @@ class TestSinglePin1d:
             session,
             site_list,
         ) = standalone_tsm_context.pins_to_nidigital_session_for_pattern(self._PIN)
-        test_data = [True] * len(site_list.split(","))
+        num_sites = len(site_list.split(","))
+        test_data = [bool(i % 2) for i in range(num_sites)]  # alternate True and False values
         pin_query_context.publish_pattern_results(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         assert len(published_data) == len(test_data)
@@ -117,8 +116,11 @@ class TestSinglePin2d:
             sessions,
             site_lists,
         ) = standalone_tsm_context.pins_to_nidigital_sessions_for_pattern(self._PIN)
-        test_data = [[True], [False]]
-        expected_results = [True, False]  # test_data AND'd across site
+        expected_results = [True, False, True]  # test data across sites [0, 1, 2]
+        test_data = [  # creates data for purely jagged results [[site0], [site1, site2]]
+            [expected_results[int(re.match(r"\s*site(\d)", site)[1])] for site in site_list.split(",")]
+            for site_list in site_lists
+        ]
         pin_query_context.publish_pattern_results(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         assert len(published_data) == len(expected_results)
@@ -160,7 +162,8 @@ class TestMultiplePins1d:
             session,
             site_list,
         ) = standalone_tsm_context.pins_to_nidigital_session_for_pattern(self._PINS)
-        test_data = [True] * len(site_list.split(","))
+        num_sites = len(site_list.split(","))
+        test_data = [bool(i % 2) for i in range(num_sites)]  # alternate True and False values
         pin_query_context.publish_pattern_results(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         assert len(published_data) == len(test_data)
@@ -206,7 +209,10 @@ class TestMultiplePins2d:
             sessions,
             site_lists,
         ) = standalone_tsm_context.pins_to_nidigital_sessions_for_pattern(self._PINS)
-        test_data = [[True, False], [True]]
+        test_data = [
+            [True, False],
+            [True],
+        ]  # [DigitalPattern1: site0, site1], [DigitalPattern2: site1]
         expected_results = [True, False]  # test_data AND'd across site
         pin_query_context.publish_pattern_results(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
