@@ -53,3 +53,7 @@ commands =
     coverage report -m
     coverage xml
 """
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
