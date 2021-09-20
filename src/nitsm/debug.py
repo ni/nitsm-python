@@ -13,7 +13,7 @@ def prompt_attach_debugger() -> None:
             of the code module is recommended.
         2. Add a breakpoint at the location where you want to start debugging. Make sure this
             breakpoint will be reached after this function is called.
-        3. From TestStand, execute a sequence that calls into the code module.
+        3. In TestStand, execute a sequence that calls into the code module.
         4. A dialog box will appear displaying the PID of the current process. Before clicking
             "Okay" on the dialog, select Run -> Attach To Process... from the PyCharm menu.
         5. PyCharm will display a window of discovered processes. Click the process with the
