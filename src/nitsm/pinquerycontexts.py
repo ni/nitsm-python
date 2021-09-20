@@ -2,7 +2,6 @@
 Pin Query Contexts
 """
 
-import itertools
 import typing
 
 __all__ = ["PinQueryContext"]
@@ -28,7 +27,7 @@ def _pad_jagged_sequence(seq):
     columns = max(map(len, seq))  # gets length of the longest row
     return type(seq)(
         (
-            sub_seq + type(sub_seq)(itertools.repeat(type(sub_seq[0])(), columns - len(sub_seq)))
+            sub_seq + type(sub_seq)(type(sub_seq[0])() for _ in range(columns - len(sub_seq)))
             for sub_seq in seq
         )
     )
