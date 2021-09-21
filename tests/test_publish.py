@@ -123,7 +123,7 @@ class TestSinglePin2d:
             site_lists,
         ) = standalone_tsm_context.pins_to_nidigital_sessions_for_pattern(self._PIN)
         expected_results = [True, False, True]  # test data across sites [0, 1, 2]
-        pattern = re.compile(r"\s*site(\d)")
+        pattern = re.compile(r"\s*site(\d+)")
         site_lists = [
             [int(match[1]) for match in map(pattern.match, site_list.split(","))]
             for site_list in site_lists
