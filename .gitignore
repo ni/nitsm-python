@@ -11,8 +11,7 @@ venv/
 .pytest_cache/
 *-results.xml
 
-# setuptools
-build/
+# build
 dist/
 *.egg-info
 
