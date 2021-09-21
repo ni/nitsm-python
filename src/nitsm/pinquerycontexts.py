@@ -139,8 +139,17 @@ class PinQueryContext:
 
 class DigitalPatternPinQueryContext(PinQueryContext):
     def __init__(self, tsm_context, pins, site_lists):
+        # convert pins to a list of pins if it isn't already
+        if isinstance(pins, str):
+            pins = [pins]
+
         super().__init__(tsm_context, pins)
-        self._site_lists = site_lists
+
+        # convert site_lists to a list if it isn't already
+        if isinstance(site_lists, str):
+            self._site_lists = [site_lists]
+        else:
+            self._site_lists = site_lists
 
     def publish_pattern_results(
         self, instrument_site_pattern_results: "_PublishPatternArg", published_data_id=""
@@ -165,33 +174,17 @@ class DigitalPatternPinQueryContext(PinQueryContext):
                 the Published Data Id column on the Tests tab of the Semiconductor Multi Test step.
         """
 
-        # convert pins to a list of pins if it isn't already
-        if isinstance(self._pins, str):
-            pins = [self._pins]
-        else:
-            pins = self._pins
-
-        # convert pattern results dictionary to pattern results list then dispatch to method
-        pattern = re.compile(r"\s*site(\d)")
+        # convert instrument_site_pattern_results to a list if it isn't already
         if isinstance(instrument_site_pattern_results, dict):
-            instrument_site_pattern_results = [
-                instrument_site_pattern_results[int(match[1])]
-                for match in map(pattern.match, self._site_lists.split(","))
-            ]
-            return self._tsm_context.PublishPatternResults_2(
-                pins, published_data_id, instrument_site_pattern_results
-            )
-        else:
-            instrument_site_pattern_results = [
-                [
-                    pattern_results[int(match[1])]
-                    for match in map(pattern.match, site_list.split(","))
-                ]
-                for site_list, pattern_results in zip(
-                    self._site_lists, instrument_site_pattern_results
-                )
-            ]
-            instrument_site_pattern_results = _pad_jagged_sequence(instrument_site_pattern_results)
-            return self._tsm_context.PublishPatternResults(
-                pins, published_data_id, instrument_site_pattern_results
-            )
+            instrument_site_pattern_results = [instrument_site_pattern_results]
+
+        # convert pattern results dictionaries to pattern results lists then publish
+        pattern = re.compile(r"\s*site(\d+)")
+        instrument_site_pattern_results = [
+            [pattern_results[int(match[1])] for match in map(pattern.match, site_list.split(","))]
+            for site_list, pattern_results in zip(self._site_lists, instrument_site_pattern_results)
+        ]
+        instrument_site_pattern_results = _pad_jagged_sequence(instrument_site_pattern_results)
+        return self._tsm_context.PublishPatternResults(
+            self._pins, published_data_id, instrument_site_pattern_results
+        )
