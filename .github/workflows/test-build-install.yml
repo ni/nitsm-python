@@ -1,4 +1,4 @@
-name: Test Build Package
+name: Test Build and Install Package
 
 on:
   pull_request:
@@ -6,9 +6,9 @@ on:
       - main
 
 jobs:
-  build:
+  build-install:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -20,3 +20,8 @@ jobs:
 
     - name: Build package
       uses: ./.github/actions/build
+
+    - name: Install package
+      run: |
+        pip install pywin32  # install from pypi
+        pip install nitsm --no-index -f dist/  # install local distribution
