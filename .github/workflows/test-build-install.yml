@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build:
+  build-install:
 
     runs-on: windows-latest
 
@@ -23,5 +23,5 @@ jobs:
 
     - name: Install package
       run: |
-        pip install pywin32
-        pip install nitsm --no-index -f dist/
+        pip install pywin32  # install from pypi
+        pip install nitsm --no-index -f dist/  # install local distribution
