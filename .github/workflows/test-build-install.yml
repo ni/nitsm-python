@@ -22,4 +22,6 @@ jobs:
       uses: ./.github/actions/build
 
     - name: Install package
-      run: pip install nitsm --no-index -f dist/
+      run: |
+        pip install pywin32
+        pip install nitsm --no-index -f dist/
