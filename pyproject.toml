@@ -1,10 +1,10 @@
 [tool.black]
 line-length = 100
 target-version = ["py36", "py37", "py38"]
-extend-exclude = "^/src/nitsm/pinmapinterfaces.py"
+extend-exclude = "^/src/nitsm/_pinmapinterfaces.py"
 
 [tool.ni-python-styleguide]
-extend_exclude = "src/nitsm/pinmapinterfaces.py"
+extend_exclude = "src/nitsm/_pinmapinterfaces.py"
 
 [tool.pytest.ini_options]
 testpaths = [
@@ -19,6 +19,7 @@ markers = [
 [tool.tox]
 legacy_tox_ini = """
 [tox]
+isolated_build = True
 envlist = clean, py3{6,7,8}-tests, py3{6,7,8}-systemtests, report
 
 [testenv]
@@ -53,3 +54,7 @@ commands =
     coverage report -m
     coverage xml
 """
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"

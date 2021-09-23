@@ -1,0 +1,27 @@
+name: Test Build and Install Package
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-install:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.6
+
+    - name: Build package
+      uses: ./.github/actions/build
+
+    - name: Install package
+      run: |
+        pip install pywin32  # install from pypi
+        pip install nitsm --no-index -f dist/  # install local distribution

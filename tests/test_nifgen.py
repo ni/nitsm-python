@@ -35,7 +35,7 @@ class TestNIFGen:
     def test_set_nifgen_session(self, standalone_tsm_context):
         instrument_names = standalone_tsm_context.get_all_nifgen_instrument_names()
         for instrument_name in instrument_names:
-            with nifgen.Session("", options=OPTIONS) as session:
+            with nifgen.Session(instrument_name, options=OPTIONS) as session:
                 standalone_tsm_context.set_nifgen_session(instrument_name, session)
                 assert standalone_tsm_context._sessions[id(session)] is session
 
