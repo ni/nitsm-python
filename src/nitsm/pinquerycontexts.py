@@ -179,9 +179,9 @@ class DigitalPatternPinQueryContext(PinQueryContext):
             instrument_site_pattern_results = [instrument_site_pattern_results]
 
         # convert pattern results dictionaries to pattern results lists then publish
-        pattern = re.compile(r"\s*site(\d+)")
+        re_pattern = re.compile(r"\s*site(\d+)")
         instrument_site_pattern_results = [
-            [pattern_results[int(match[1])] for match in map(pattern.match, site_list.split(","))]
+            [pattern_results[int(match[1])] for match in map(re_pattern.match, site_list.split(","))]
             for site_list, pattern_results in zip(self._site_lists, instrument_site_pattern_results)
         ]
         instrument_site_pattern_results = _pad_jagged_sequence(instrument_site_pattern_results)
