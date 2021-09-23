@@ -25,25 +25,25 @@ class TestCodeModuleApi:
 
     @classmethod
     @code_module
-    def test_class_method_converts_core(cls, standalone_tsm_context_com_object):
+    def class_method_converts_core(cls, standalone_tsm_context_com_object):
         assert issubclass(cls, TestCodeModuleApi)
         assert isinstance(standalone_tsm_context_com_object, SemiconductorModuleContext)
 
     # pytest does not collect class methods so we need a static method that calls the class method
     @staticmethod
     def test_class_method_converts(standalone_tsm_context_com_object):
-        TestCodeModuleApi.test_class_method_converts_core(standalone_tsm_context_com_object)
+        TestCodeModuleApi.class_method_converts_core(standalone_tsm_context_com_object)
 
     @classmethod
     @code_module
-    def test_class_method_does_not_convert_core(cls, standalone_tsm_context):
+    def class_method_does_not_convert_core(cls, standalone_tsm_context):
         assert issubclass(cls, TestCodeModuleApi)
         assert isinstance(standalone_tsm_context, SemiconductorModuleContext)
 
     # pytest does not collect class methods so we need a static method that calls the class method
     @staticmethod
     def test_class_method_does_not_convert(standalone_tsm_context):
-        TestCodeModuleApi.test_class_method_converts_core(standalone_tsm_context)
+        TestCodeModuleApi.class_method_converts_core(standalone_tsm_context)
 
     @code_module
     def _invalid_number_of_positional_arguments(self):
