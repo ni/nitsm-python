@@ -1,3 +1,4 @@
+import re
 import nidigital
 import nitsm.codemoduleapi
 from nitsm.codemoduleapi import SemiconductorModuleContext
@@ -42,9 +43,9 @@ def measure_ppmu(
 
         # check instrument pin set we received is in the set of instrument pin sets we expected
         actual_instrument_pin_set = (session.io_resource_descriptor, pin_set_string)
+        num_pins_for_session = len(pin_set_string.split(","))
         valid_pin_sets.extend(
-            [actual_instrument_pin_set in expected_instrument_pin_sets]
-            * len(pin_set_string.split(","))
+            [actual_instrument_pin_set in expected_instrument_pin_sets] * num_pins_for_session
         )
         expected_instrument_pin_sets -= {actual_instrument_pin_set}
 
@@ -58,11 +59,10 @@ def measure_pattern(
     tsm_context: SemiconductorModuleContext, pins, expected_instrument_names, expected_site_lists
 ):
     pin_query, sessions, site_lists = tsm_context.pins_to_nidigital_sessions_for_pattern(pins)
-    _, _, pin_set_strings = tsm_context.pins_to_nidigital_sessions_for_ppmu(pins)
     expected_instrument_site_lists = set(zip(expected_instrument_names, expected_site_lists))
     valid_site_lists = []
 
-    for session, site_list, pin_set_string in zip(sessions, site_lists, pin_set_strings):
+    for session, site_list in zip(sessions, site_lists):
         # call some methods on the session to ensure no errors
         session.configure_active_load_levels(0.0015, -0.024, 2.0)
         session.configure_voltage_levels(0.1, 3.3, 0.5, 2.5, 5.5)
@@ -71,14 +71,15 @@ def measure_pattern(
 
         # check instrument site we received is in the set of instrument sites we expected
         actual_instrument_site_list = (session.io_resource_descriptor, site_list)
-        valid_site_lists.extend(
-            [actual_instrument_site_list in expected_instrument_site_lists]
-            * len(pin_set_string.split(","))
-        )
+        actual_in_expected = actual_instrument_site_list in expected_instrument_site_lists
+        re_pattern = re.compile("\s*site(\d+)")
+        site_numbers = (int(re_pattern.match(site)[1]) for site in site_list.split(","))
+        valid_site_lists.append({site: actual_in_expected for site in site_numbers})
         expected_instrument_site_lists -= {actual_instrument_site_list}
 
-    pin_query.publish(valid_site_lists, "ValidSiteLists")
-    num_missing_site_lists = [len(expected_instrument_site_lists)] * len(valid_site_lists)
+    pin_query.publish_pattern_results(valid_site_lists, "ValidSiteLists")
+    total_results = sum(map(len, valid_site_lists))
+    num_missing_site_lists = [len(expected_instrument_site_lists)] * total_results
     pin_query.publish(num_missing_site_lists, "NumMissingSiteLists")
 
 
