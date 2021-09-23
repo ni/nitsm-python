@@ -18,10 +18,7 @@ warnings.filterwarnings("default", category=DeprecationWarning, module=__name__)
 warnings.filterwarnings("default", category=PendingDeprecationWarning, module=__name__)
 
 if typing.TYPE_CHECKING:
-    from typing import Any as _Any
-    from typing import Tuple as _Tuple
-    from typing import Union as _Union
-    from typing import Sequence as _Sequence
+    from typing import Any as _Any, Tuple as _Tuple, Union as _Union, Sequence as _Sequence
     import nidigital
     import nidcpower
     import nidaqmx
@@ -31,14 +28,23 @@ if typing.TYPE_CHECKING:
     import niswitch
 
     _PinQueryContext = nitsm.pinquerycontexts.PinQueryContext
+    _DigitalPatternPinQueryContext = nitsm.pinquerycontexts.DigitalPatternPinQueryContext
     _InstrTypeIdArg = _Union[nitsm.enums.InstrumentTypeIdConstants, str]
     _CapabilityArg = _Union[nitsm.enums.Capability, str]
     _PinsArg = _Union[str, _Sequence[str]]  # argument that accepts 1 or more pins
     _StringTuple = _Tuple[str, ...]
 
-    _NIDigitalSingleSessionQuery = _Tuple[_PinQueryContext, nidigital.Session, str]
-    _NIDigitalMultipleSessionQuery = _Tuple[
+    _NIDigitalSingleSessionPpmuQuery = _Tuple[_PinQueryContext, nidigital.Session, str]
+    _NIDigitalMultipleSessionPpmuQuery = _Tuple[
         _PinQueryContext,
+        _Tuple[nidigital.Session, ...],
+        _StringTuple,
+    ]
+    _NIDigitalSingleSessionPatternQuery = _Tuple[
+        _DigitalPatternPinQueryContext, nidigital.Session, str
+    ]
+    _NIDigitalMultipleSessionPatternQuery = _Tuple[
+        _DigitalPatternPinQueryContext,
         _Tuple[nidigital.Session, ...],
         _StringTuple,
     ]
@@ -323,7 +329,7 @@ class SemiconductorModuleContext:
 
     def pins_to_nidigital_session_for_ppmu(
         self, pins: "_PinsArg"
-    ) -> "_NIDigitalSingleSessionQuery":
+    ) -> "_NIDigitalSingleSessionPpmuQuery":
         """
         Returns the NI-Digital Pattern session and pin_set_string required to perform PPMU
         operations on pin(s). If more than one session is required to access the pin(s), the method
@@ -361,7 +367,7 @@ class SemiconductorModuleContext:
 
     def pins_to_nidigital_sessions_for_ppmu(
         self, pins: "_PinsArg"
-    ) -> "_NIDigitalMultipleSessionQuery":
+    ) -> "_NIDigitalMultipleSessionPpmuQuery":
         """
         Returns the NI-Digital Pattern sessions and pin_set_strings required to perform PPMU
         operations on pin(s).
@@ -400,7 +406,7 @@ class SemiconductorModuleContext:
 
     def pins_to_nidigital_session_for_pattern(
         self, pins: "_PinsArg"
-    ) -> "_NIDigitalSingleSessionQuery":
+    ) -> "_NIDigitalSingleSessionPatternQuery":
         """
         Returns the NI-Digital Pattern session and site_list required to perform pattern operations
         for patterns that use the pin(s). If more than one session is required to access the pin(s),
@@ -433,7 +439,7 @@ class SemiconductorModuleContext:
 
     def pins_to_nidigital_sessions_for_pattern(
         self, pins: "_PinsArg"
-    ) -> "_NIDigitalMultipleSessionQuery":
+    ) -> "_NIDigitalMultipleSessionPatternQuery":
         """
         Returns the NI-Digital Pattern sessions and site_lists required to perform pattern
         operations for patterns that use the pin(s).
