@@ -421,11 +421,13 @@ class SemiconductorModuleContext:
                 needed as an input to certain NI-Digital Pattern driver calls.
         """
 
-        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
             session_id, _, site_list = self._context.GetNIDigitalPatternSession_2(pins, 0, "", "")
         else:
             session_id, _, site_list = self._context.GetNIDigitalPatternSession(pins, 0, "", "")
+        pin_query_context = nitsm.pinquerycontexts.DigitalPatternPinQueryContext(
+            self._context, pins, site_list
+        )
         session = SemiconductorModuleContext._sessions[session_id]
         return pin_query_context, session, site_list
 
@@ -450,7 +452,6 @@ class SemiconductorModuleContext:
                 needed as an input to certain NI-Digital Pattern driver calls.
         """
 
-        pin_query_context = nitsm.pinquerycontexts.PinQueryContext(self._context, pins)
         if isinstance(pins, str):
             session_ids, _, site_lists = self._context.GetNIDigitalPatternSessions_3(
                 pins, [], [], []
@@ -459,6 +460,9 @@ class SemiconductorModuleContext:
             session_ids, _, site_lists = self._context.GetNIDigitalPatternSessions_2(
                 pins, [], [], []
             )
+        pin_query_context = nitsm.pinquerycontexts.DigitalPatternPinQueryContext(
+            self._context, pins, site_lists
+        )
         sessions = tuple(
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
         )
