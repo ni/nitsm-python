@@ -53,5 +53,8 @@ def source_current(tsm_context, pins, current_level):
 
 ## Known Limitations
 * Instrument alarms are currently not supported
+* NI-Switch:
+  * `control_relays`: [#120](https://github.com/ni/nitsm-python/issues/120)
+  * `apply_relay_configuration`: [#120](https://github.com/ni/nitsm-python/issues/120)
 * See [STATUS.md](https://github.com/ni/nitsm-python/blob/main/STATUS.md) for additional information about the current 
 state of the API and system tests
