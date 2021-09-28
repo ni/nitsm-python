@@ -53,5 +53,6 @@ def source_current(tsm_context, pins, current_level):
 
 ## Known Limitations
 * Instrument alarms are currently not supported
+* The Set Relays TestStand step is not supported when creating relay sessions in python 
 * See [STATUS.md](https://github.com/ni/nitsm-python/blob/main/STATUS.md) for additional information about the current 
 state of the API and system tests
