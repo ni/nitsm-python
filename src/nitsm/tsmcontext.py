@@ -2,7 +2,6 @@
 NI TestStand Semiconductor Module Context Python Wrapper
 """
 
-import time
 import typing
 import warnings
 import pythoncom
