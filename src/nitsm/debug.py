@@ -25,6 +25,7 @@ def prompt_attach_debugger() -> None:
             the code.
     """
 
+    tkinter.Tk().withdraw()  # hide root window
     tkinter.messagebox.showinfo(
         "Attach debugger", "Process name: niPythonHost.exe and Process ID: " + str(os.getpid())
     )
