@@ -4,18 +4,12 @@ NI TestStand Semiconductor Module Context Python Wrapper
 
 import time
 import typing
-import warnings
 import pythoncom
 import nitsm._pinmapinterfaces
 import nitsm.pinquerycontexts
 import nitsm.enums
 
 __all__ = ["SemiconductorModuleContext"]
-
-# display warnings for deprecation and pending deprecation for this module
-# each warning will be displayed once per call site of warnings.warn
-warnings.filterwarnings("default", category=DeprecationWarning, module=__name__)
-warnings.filterwarnings("default", category=PendingDeprecationWarning, module=__name__)
 
 if typing.TYPE_CHECKING:
     from typing import Any as _Any
@@ -532,37 +526,6 @@ class SemiconductorModuleContext:
 
     # NI-DCPower
 
-    def get_all_nidcpower_instrument_names(self) -> "_Tuple[_StringTuple, _StringTuple]":
-        """
-        Returns the channel IDs and instrument names associated with each NI-DCPower instrument
-        channel in the Semiconductor Module context. You can use instrument names and channel IDs to
-        open driver sessions. The Get NI-DCPower Instrument Names method returns an instrument name
-        and channel ID for each channel available in each NI-DCPower instrument. The returned
-        instrument_names and channel_strings values always return the same number of elements.
-        Instrument names repeat if the instrument has multiple channels.
-
-        Warnings:
-            This method has been deprecated and may be removed in a future release of nitsm. If
-            channel groups aren't already enabled in the pin map, enable them by clicking "Convert
-            DCPower Instruments" in the pin map editor and use get_all_nidcpower_resource_strings
-            instead.
-
-        Returns:
-            instrument_names: Returns a tuple of the NI-DCPower instrument names associated with the
-                channel IDs returned in channel_strings. Instrument names repeat if the instrument
-                has multiple channels.
-            channel_strings: Returns a tuple of the NI-DCPower channel IDs in the Semiconductor
-                Module context.
-        """
-
-        warnings.warn(
-            "get_all_nidcpower_instrument_names has been deprecated and may be removed in a future "
-            "release of nitsm. Please update the pin map to use channel groups for NI DCPower then "
-            "replace all call sites of this method with get_all_nidcpower_resource_strings.",
-            category=DeprecationWarning,
-        )
-        return self._context.GetNIDCPowerInstrumentNames([])
-
     def get_all_nidcpower_resource_strings(self) -> "_StringTuple":
         """
         Returns the resource strings associated with each channel group in the Semiconductor Module
@@ -577,37 +540,6 @@ class SemiconductorModuleContext:
         """
 
         return self._context.GetNIDCPowerResourceStrings()
-
-    def set_nidcpower_session_with_channel_string(
-        self, instrument_name: str, channel_string: str, session: "nidcpower.Session"
-    ):
-        """
-        Associates an instrument session with an NI-DCPower instrument_name and channel_string.
-
-        Warnings:
-            This method has been deprecated and may be removed in a future release of nitsm. If
-            channel groups aren't already enabled in the pin map, enable them by clicking "Convert
-            DCPower Instruments" in the pin map editor and use set_nidcpower_session instead.
-
-        Args:
-            instrument_name: The instrument name in the pin map file for the corresponding session.
-            channel_string: The instrument channel for the corresponding session.
-            session: The instrument session for the corresponding instrument_name and
-                channel_string.
-        """
-
-        warnings.warn(
-            "set_nidcpower_session_with_channel_string has been deprecated and may be removed in a "
-            "future release of nitsm. Please update the pin map to use channel groups for NI "
-            "DCPower then replace all call sites of this method with set_nidcpower_session.",
-            category=DeprecationWarning,
-        )
-        session_id = id(session)
-        SemiconductorModuleContext._sessions[session_id] = session
-        # Instrument alarms are not yet supported in Python
-        return self._context.SetNIDCPowerSession_3(
-            instrument_name, channel_string, session_id, [], 0
-        )
 
     def set_nidcpower_session(self, resource_string: str, session: "nidcpower.Session"):
         """
