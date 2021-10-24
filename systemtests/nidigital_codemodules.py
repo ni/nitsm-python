@@ -12,6 +12,8 @@ def open_sessions(tsm_context: SemiconductorModuleContext):
     for instrument_name in instrument_names:
         session = nidigital.Session(instrument_name, options=OPTIONS)
         session.load_pin_map(tsm_context.pin_map_file_path)
+        for pattern_file_path in tsm_context.nidigital_project_pattern_file_paths:
+            session.load_pattern(pattern_file_path)
         tsm_context.set_nidigital_session(instrument_name, session)
 
 
@@ -64,9 +66,10 @@ def measure_pattern(
 
     for session, site_list in zip(sessions, site_lists):
         # call some methods on the session to ensure no errors
-        session.configure_active_load_levels(0.0015, -0.024, 2.0)
-        session.configure_voltage_levels(0.1, 3.3, 0.5, 2.5, 5.5)
+        session.pins[pins].configure_active_load_levels(0.0015, -0.024, 2.0)
+        session.pins[pins].configure_voltage_levels(0.1, 3.3, 0.5, 2.5, 5.5)
         session.commit()
+        session.sites[site_list].burst_pattern("start_label")
         session.abort()
 
         # check instrument site we received is in the set of instrument sites we expected
