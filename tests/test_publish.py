@@ -219,3 +219,45 @@ class TestMultiplePins2d:
         assert len(published_data) == len(expected_results)
         for published_data_point, expected_result in zip(published_data, expected_results):
             assert published_data_point.boolean_value == expected_result
+
+
+@pytest.mark.pin_map("publish.pinmap")
+class TestPerSiteMultiSite:
+    def test_publish_per_site_float_1d(self, standalone_tsm_context, published_data_reader):
+        site_count = len(standalone_tsm_context.site_numbers)
+        standalone_tsm_context.publish_per_site([1150.0] * site_count)
+        published_data = published_data_reader.get_and_clear_published_data()
+        for published_data_point in published_data:
+            assert published_data_point.double_value == 1150.0
+
+    def test_publish_per_site_bool_1d(self, standalone_tsm_context, published_data_reader):
+        test_data = [False, True, False]
+        standalone_tsm_context.publish_per_site(test_data)
+        published_data = published_data_reader.get_and_clear_published_data()
+        for published_data_point, expected_result in zip(published_data, test_data):
+            assert published_data_point.boolean_value == expected_result
+
+    def test_publish_per_site_string_1d(self, standalone_tsm_context, published_data_reader):
+        test_data = ["holy", "hand", "grenade"]
+        standalone_tsm_context.publish_per_site(test_data)
+        published_data = published_data_reader.get_and_clear_published_data()
+        for published_data_point, expected_result in zip(published_data, test_data):
+            assert published_data_point.string_value == expected_result
+
+
+@pytest.mark.pin_map("publish_single_site.pinmap")
+class TestPerSiteSingleSite:
+    def test_publish_per_site_float_scalar(self, standalone_tsm_context, published_data_reader):
+        standalone_tsm_context.publish_per_site(1150.0)
+        published_data = published_data_reader.get_and_clear_published_data()[0]
+        assert published_data.double_value == 1150.0
+
+    def test_publish_per_site_bool_scalar(self, standalone_tsm_context, published_data_reader):
+        standalone_tsm_context.publish_per_site(True)
+        published_data = published_data_reader.get_and_clear_published_data()[0]
+        assert published_data.boolean_value
+
+    def test_publish_per_site_string_scalar(self, standalone_tsm_context, published_data_reader):
+        standalone_tsm_context.publish_per_site("Tis but a scratch.")
+        published_data = published_data_reader.get_and_clear_published_data()[0]
+        assert published_data.string_value == "Tis but a scratch."

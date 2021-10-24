@@ -1,3 +1,4 @@
+import enum
 import os.path
 import pytest
 import win32com.client
@@ -33,6 +34,12 @@ def standalone_tsm_context(standalone_tsm_context_com_object):
     return nitsm.codemoduleapi.SemiconductorModuleContext(standalone_tsm_context_com_object)
 
 
+class PublishedDataType(enum.Enum):
+    Double = 0
+    Boolean = 1
+    String = 2
+
+
 class PublishedData:
     def __init__(self, published_data_com_obj):
         self._published_data = win32com.client.CastTo(
@@ -43,32 +50,32 @@ class PublishedData:
         )
 
     @property
-    def boolean_value(self):
+    def boolean_value(self) -> bool:
         return self._published_data.BooleanValue
 
     @property
-    def double_value(self):
+    def double_value(self) -> float:
         return self._published_data.DoubleValue
 
     @property
-    def pin(self):
+    def pin(self) -> str:
         return self._published_data.Pin
 
     @property
-    def published_data_id(self):
+    def published_data_id(self) -> str:
         return self._published_data.PublishedDataId
 
     @property
-    def site_number(self):
+    def site_number(self) -> int:
         return self._published_data.SiteNumber
 
     @property
-    def string_value(self):
+    def string_value(self) -> str:
         return self._published_data.StringValue
 
     @property
-    def type(self):
-        return self._published_data.Type
+    def type(self) -> PublishedDataType:
+        return PublishedDataType(self._published_data.Type)
 
 
 class PublishedDataReader:

@@ -12,10 +12,7 @@ import nitsm.enums
 __all__ = ["SemiconductorModuleContext"]
 
 if typing.TYPE_CHECKING:
-    from typing import Any as _Any
-    from typing import Tuple as _Tuple
-    from typing import Union as _Union
-    from typing import Sequence as _Sequence
+    from typing import Any as _Any, Tuple as _Tuple, Union as _Union, Sequence as _Sequence
     import nidigital
     import nidcpower
     import nidaqmx
@@ -64,6 +61,10 @@ if typing.TYPE_CHECKING:
     _CustomSingleSessionQuery = _Tuple[_PinQueryContext, _Any, str, str]
     _CustomMultipleSessionQuery = _Tuple[
         _PinQueryContext, _Tuple[_Any, ...], _StringTuple, _StringTuple
+    ]
+
+    _PublishPerSiteMeasurementsArg = _Union[
+        float, _Sequence[float], bool, _Sequence[bool], str, _Sequence[str]
     ]
 
 
@@ -1390,3 +1391,39 @@ class SemiconductorModuleContext:
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
         )
         return pin_query_context, session_data, channel_group_ids, channel_lists
+
+    def publish_per_site(
+        self, measurements: "_PublishPerSiteMeasurementsArg", published_data_id="", pin=""
+    ) -> None:
+        """
+        Publishes measurements from multiple sites for the Semiconductor Multi Test step to consume.
+        Use this method when you want to publish data for multiple sites in the same order in which
+        the sites are defined in the Semiconductor Module context and you want to include the pin
+        name as well as the published_data_id.
+
+        Args:
+            measurements: The measurement data for all sites in the Semiconductor Module context.
+                The number of elements passed to this parameter must be equal to the size of the
+                site_numbers property. You must return results in the same order as the sites in the
+                Semiconductor Module context. Use the site_numbers property to obtain the list of
+                site numbers.
+            published_data_id: The unique ID for distinguishing the measurement when you publish
+                multiple measurements within the same code module.
+            pin: The name of the pin associated with the data. This parameter must match a value you
+                specify in the Pin column on the Tests tab of the Semiconductor Multi Test step. If
+                you pass a blank pin, you don't have to specify a pin name in the Tests tab.
+        """
+
+        if isinstance(measurements, float):
+            self._context.PublishPerSite_4(pin, published_data_id, measurements)
+        elif isinstance(measurements, bool):
+            self._context.PublishPerSite_5(pin, published_data_id, measurements)
+        elif isinstance(measurements, str):
+            self._context.PublishPerSite_6(pin, published_data_id, measurements)
+        elif isinstance(measurements[0], float):
+            self._context.PublishPerSite(pin, published_data_id, measurements)
+        elif isinstance(measurements[0], bool):
+            self._context.PublishPerSite_2(pin, published_data_id, measurements)
+        else:  # default to Sequence[str]
+            self._context.PublishPerSite_3(pin, published_data_id, measurements)
+        return None
