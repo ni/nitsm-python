@@ -224,25 +224,28 @@ class TestMultiplePins2d:
 @pytest.mark.pin_map("publish.pinmap")
 class TestPerSiteMultiSite:
     def test_publish_per_site_float_1d(self, standalone_tsm_context, published_data_reader):
-        site_count = len(standalone_tsm_context.site_numbers)
-        standalone_tsm_context.publish_per_site([1150.0] * site_count)
+        test_data = [1150.0, 1952.5, -4.0]
+        standalone_tsm_context.publish_per_site(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
         for published_data_point in published_data:
-            assert published_data_point.double_value == 1150.0
+            site_index = standalone_tsm_context.site_numbers.index(published_data_point.site_number)
+            assert published_data_point.double_value == test_data[site_index]
 
     def test_publish_per_site_bool_1d(self, standalone_tsm_context, published_data_reader):
         test_data = [False, True, False]
         standalone_tsm_context.publish_per_site(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
-        for published_data_point, expected_result in zip(published_data, test_data):
-            assert published_data_point.boolean_value == expected_result
+        for published_data_point in published_data:
+            site_index = standalone_tsm_context.site_numbers.index(published_data_point.site_number)
+            assert published_data_point.boolean_value == test_data[site_index]
 
     def test_publish_per_site_string_1d(self, standalone_tsm_context, published_data_reader):
         test_data = ["holy", "hand", "grenade"]
         standalone_tsm_context.publish_per_site(test_data)
         published_data = published_data_reader.get_and_clear_published_data()
-        for published_data_point, expected_result in zip(published_data, test_data):
-            assert published_data_point.string_value == expected_result
+        for published_data_point in published_data:
+            site_index = standalone_tsm_context.site_numbers.index(published_data_point.site_number)
+            assert published_data_point.string_value == test_data[site_index]
 
 
 @pytest.mark.pin_map("publish_single_site.pinmap")
