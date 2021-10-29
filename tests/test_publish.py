@@ -225,42 +225,54 @@ class TestMultiplePins2d:
 class TestPerSiteMultiSite:
     def test_publish_per_site_float_1d(self, standalone_tsm_context, published_data_reader):
         test_data = [1150.0, 1952.5, -4.0]
-        standalone_tsm_context.publish_per_site(test_data)
+        standalone_tsm_context.publish_per_site(test_data, "id", "DUTPin1")
         published_data = published_data_reader.get_and_clear_published_data()
         for published_data_point in published_data:
             site_index = standalone_tsm_context.site_numbers.index(published_data_point.site_number)
             assert published_data_point.double_value == test_data[site_index]
+            assert published_data_point.published_data_id == "id"
+            assert published_data_point.pin == "DUTPin1"
 
     def test_publish_per_site_bool_1d(self, standalone_tsm_context, published_data_reader):
         test_data = [False, True, False]
-        standalone_tsm_context.publish_per_site(test_data)
+        standalone_tsm_context.publish_per_site(test_data, "id", "DUTPin2")
         published_data = published_data_reader.get_and_clear_published_data()
         for published_data_point in published_data:
             site_index = standalone_tsm_context.site_numbers.index(published_data_point.site_number)
             assert published_data_point.boolean_value == test_data[site_index]
+            assert published_data_point.published_data_id == "id"
+            assert published_data_point.pin == "DUTPin2"
 
     def test_publish_per_site_string_1d(self, standalone_tsm_context, published_data_reader):
         test_data = ["holy", "hand", "grenade"]
-        standalone_tsm_context.publish_per_site(test_data)
+        standalone_tsm_context.publish_per_site(test_data, "id", "DUTPin3")
         published_data = published_data_reader.get_and_clear_published_data()
         for published_data_point in published_data:
             site_index = standalone_tsm_context.site_numbers.index(published_data_point.site_number)
             assert published_data_point.string_value == test_data[site_index]
+            assert published_data_point.published_data_id == "id"
+            assert published_data_point.pin == "DUTPin3"
 
 
 @pytest.mark.pin_map("publish_single_site.pinmap")
 class TestPerSiteSingleSite:
     def test_publish_per_site_float_scalar(self, standalone_tsm_context, published_data_reader):
-        standalone_tsm_context.publish_per_site(1150.0)
+        standalone_tsm_context.publish_per_site(1150.0, "id", "DUTPin1")
         published_data = published_data_reader.get_and_clear_published_data()[0]
         assert published_data.double_value == 1150.0
+        assert published_data.published_data_id == "id"
+        assert published_data.pin == "DUTPin1"
 
     def test_publish_per_site_bool_scalar(self, standalone_tsm_context, published_data_reader):
-        standalone_tsm_context.publish_per_site(True)
+        standalone_tsm_context.publish_per_site(True, "id", "DUTPin2")
         published_data = published_data_reader.get_and_clear_published_data()[0]
         assert published_data.boolean_value
+        assert published_data.published_data_id == "id"
+        assert published_data.pin == "DUTPin2"
 
     def test_publish_per_site_string_scalar(self, standalone_tsm_context, published_data_reader):
-        standalone_tsm_context.publish_per_site("Tis but a scratch.")
+        standalone_tsm_context.publish_per_site("Tis but a scratch.", "id", "DUTPin3")
         published_data = published_data_reader.get_and_clear_published_data()[0]
         assert published_data.string_value == "Tis but a scratch."
+        assert published_data.published_data_id == "id"
+        assert published_data.pin == "DUTPin3"
