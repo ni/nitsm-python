@@ -18,7 +18,7 @@ Before beginning development, it is recommended to install the following depende
 * [TestStand 20.0+](https://www.ni.com/en-us/support/downloads/software-products/download.teststand.html)
 * [TestStand Semiconductor Module 20.0+](https://www.ni.com/en-us/support/downloads/software-products/download.teststand-semiconductor-module.html)
 * NI instrument drivers:
-  - [NI-DCPower](https://www.ni.com/en-us/support/downloads/drivers/download.ni-dcpower.html)
+  - [NI-DCPower 20.6+](https://www.ni.com/en-us/support/downloads/drivers/download.ni-dcpower.html)
   - [NI-DMM](https://www.ni.com/en-us/support/downloads/drivers/download.ni-dmm.html)
   - [NI-SCOPE](https://www.ni.com/en-us/support/downloads/drivers/download.ni-scope.html)
   - [NI-Digital](https://www.ni.com/en-us/support/downloads/drivers/download.ni-digital-pattern-driver.html)
