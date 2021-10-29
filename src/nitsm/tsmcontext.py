@@ -1398,8 +1398,7 @@ class SemiconductorModuleContext:
         """
         Publishes measurements from multiple sites for the Semiconductor Multi Test step to consume.
         Use this method when you want to publish data for multiple sites in the same order in which
-        the sites are defined in the Semiconductor Module context and you want to include the pin
-        name as well as the published_data_id.
+        the sites are defined in the Semiconductor Module context.
 
         Args:
             measurements: The measurement data for all sites in the Semiconductor Module context.
