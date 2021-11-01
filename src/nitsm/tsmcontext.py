@@ -1422,16 +1422,16 @@ class SemiconductorModuleContext:
                 you pass a blank pin, you don't have to specify a pin name in the Tests tab.
         """
 
-        if isinstance(measurements, (float, int)):
-            self._context.PublishPerSite_4(pin, published_data_id, measurements)
-        elif isinstance(measurements, bool):
+        if isinstance(measurements, bool):
             self._context.PublishPerSite_5(pin, published_data_id, measurements)
+        elif isinstance(measurements, (float, int)):
+            self._context.PublishPerSite_4(pin, published_data_id, measurements)
         elif isinstance(measurements, str):
             self._context.PublishPerSite_6(pin, published_data_id, measurements)
-        elif isinstance(measurements[0], (float, int)):
-            self._context.PublishPerSite(pin, published_data_id, measurements)
         elif isinstance(measurements[0], bool):
             self._context.PublishPerSite_2(pin, published_data_id, measurements)
+        elif isinstance(measurements[0], (float, int)):
+            self._context.PublishPerSite(pin, published_data_id, measurements)
         else:  # default to Sequence[str]
             self._context.PublishPerSite_3(pin, published_data_id, measurements)
         return None
