@@ -12,6 +12,12 @@ def open_sessions(tsm_context: SemiconductorModuleContext):
     for instrument_name in instrument_names:
         session = nidigital.Session(instrument_name, options=OPTIONS)
         session.load_pin_map(tsm_context.pin_map_file_path)
+        session.load_specifications_levels_and_timing(
+            tsm_context.nidigital_project_specifications_file_paths,
+            tsm_context.nidigital_project_levels_file_paths,
+            tsm_context.nidigital_project_timing_file_paths,
+        )
+        session.apply_levels_and_timing("nidigital", "nidigital")
         for pattern_file_path in tsm_context.nidigital_project_pattern_file_paths:
             session.load_pattern(pattern_file_path)
         tsm_context.set_nidigital_session(instrument_name, session)
@@ -63,6 +69,7 @@ def measure_pattern(
     pin_query, sessions, site_lists = tsm_context.pins_to_nidigital_sessions_for_pattern(pins)
     expected_instrument_site_lists = set(zip(expected_instrument_names, expected_site_lists))
     valid_site_lists = []
+    re_pattern = re.compile(r"\s*site(\d+)")
 
     for session, site_list in zip(sessions, site_lists):
         # call some methods on the session to ensure no errors
@@ -75,15 +82,13 @@ def measure_pattern(
         # check instrument site we received is in the set of instrument sites we expected
         actual_instrument_site_list = (session.io_resource_descriptor, site_list)
         actual_in_expected = actual_instrument_site_list in expected_instrument_site_lists
-        re_pattern = re.compile("\s*site(\d+)")
         site_numbers = (int(re_pattern.match(site)[1]) for site in site_list.split(","))
         valid_site_lists.append({site: actual_in_expected for site in site_numbers})
         expected_instrument_site_lists -= {actual_instrument_site_list}
 
     pin_query.publish_pattern_results(valid_site_lists, "ValidSiteLists")
-    total_results = sum(map(len, valid_site_lists))
-    num_missing_site_lists = [len(expected_instrument_site_lists)] * total_results
-    pin_query.publish(num_missing_site_lists, "NumMissingSiteLists")
+    num_missing_site_lists = [len(expected_instrument_site_lists)] * len(tsm_context.site_numbers)
+    tsm_context.publish_per_site(num_missing_site_lists, "NumMissingSiteLists")
 
 
 @nitsm.codemoduleapi.code_module
