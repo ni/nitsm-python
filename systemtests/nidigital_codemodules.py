@@ -73,11 +73,7 @@ def measure_pattern(
 
     for session, site_list in zip(sessions, site_lists):
         # call some methods on the session to ensure no errors
-        session.pins[pins].configure_active_load_levels(0.0015, -0.024, 2.0)
-        session.pins[pins].configure_voltage_levels(0.1, 3.3, 0.5, 2.5, 5.5)
-        session.commit()
         session.sites[site_list].burst_pattern("start_label")
-        session.abort()
 
         # check instrument site we received is in the set of instrument sites we expected
         actual_instrument_site_list = (session.io_resource_descriptor, site_list)
