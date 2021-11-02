@@ -22,14 +22,23 @@ if typing.TYPE_CHECKING:
     import niswitch
 
     _PinQueryContext = nitsm.pinquerycontexts.PinQueryContext
+    _DigitalPatternPinQueryContext = nitsm.pinquerycontexts.DigitalPatternPinQueryContext
     _InstrTypeIdArg = _Union[nitsm.enums.InstrumentTypeIdConstants, str]
     _CapabilityArg = _Union[nitsm.enums.Capability, str]
     _PinsArg = _Union[str, _Sequence[str]]  # argument that accepts 1 or more pins
     _StringTuple = _Tuple[str, ...]
 
-    _NIDigitalSingleSessionQuery = _Tuple[_PinQueryContext, nidigital.Session, str]
-    _NIDigitalMultipleSessionQuery = _Tuple[
+    _NIDigitalSingleSessionPpmuQuery = _Tuple[_PinQueryContext, nidigital.Session, str]
+    _NIDigitalMultipleSessionPpmuQuery = _Tuple[
         _PinQueryContext,
+        _Tuple[nidigital.Session, ...],
+        _StringTuple,
+    ]
+    _NIDigitalSingleSessionPatternQuery = _Tuple[
+        _DigitalPatternPinQueryContext, nidigital.Session, str
+    ]
+    _NIDigitalMultipleSessionPatternQuery = _Tuple[
+        _DigitalPatternPinQueryContext,
         _Tuple[nidigital.Session, ...],
         _StringTuple,
     ]
@@ -318,7 +327,7 @@ class SemiconductorModuleContext:
 
     def pins_to_nidigital_session_for_ppmu(
         self, pins: "_PinsArg"
-    ) -> "_NIDigitalSingleSessionQuery":
+    ) -> "_NIDigitalSingleSessionPpmuQuery":
         """
         Returns the NI-Digital Pattern session and pin_set_string required to perform PPMU
         operations on pin(s). If more than one session is required to access the pin(s), the method
@@ -356,7 +365,7 @@ class SemiconductorModuleContext:
 
     def pins_to_nidigital_sessions_for_ppmu(
         self, pins: "_PinsArg"
-    ) -> "_NIDigitalMultipleSessionQuery":
+    ) -> "_NIDigitalMultipleSessionPpmuQuery":
         """
         Returns the NI-Digital Pattern sessions and pin_set_strings required to perform PPMU
         operations on pin(s).
@@ -395,7 +404,7 @@ class SemiconductorModuleContext:
 
     def pins_to_nidigital_session_for_pattern(
         self, pins: "_PinsArg"
-    ) -> "_NIDigitalSingleSessionQuery":
+    ) -> "_NIDigitalSingleSessionPatternQuery":
         """
         Returns the NI-Digital Pattern session and site_list required to perform pattern operations
         for patterns that use the pin(s). If more than one session is required to access the pin(s),
@@ -428,7 +437,7 @@ class SemiconductorModuleContext:
 
     def pins_to_nidigital_sessions_for_pattern(
         self, pins: "_PinsArg"
-    ) -> "_NIDigitalMultipleSessionQuery":
+    ) -> "_NIDigitalMultipleSessionPatternQuery":
         """
         Returns the NI-Digital Pattern sessions and site_lists required to perform pattern
         operations for patterns that use the pin(s).
@@ -1413,16 +1422,16 @@ class SemiconductorModuleContext:
                 you pass a blank pin, you don't have to specify a pin name in the Tests tab.
         """
 
-        if isinstance(measurements, float):
-            self._context.PublishPerSite_4(pin, published_data_id, measurements)
-        elif isinstance(measurements, bool):
+        if isinstance(measurements, bool):
             self._context.PublishPerSite_5(pin, published_data_id, measurements)
+        elif isinstance(measurements, (float, int)):
+            self._context.PublishPerSite_4(pin, published_data_id, measurements)
         elif isinstance(measurements, str):
             self._context.PublishPerSite_6(pin, published_data_id, measurements)
-        elif isinstance(measurements[0], float):
-            self._context.PublishPerSite(pin, published_data_id, measurements)
         elif isinstance(measurements[0], bool):
             self._context.PublishPerSite_2(pin, published_data_id, measurements)
+        elif isinstance(measurements[0], (float, int)):
+            self._context.PublishPerSite(pin, published_data_id, measurements)
         else:  # default to Sequence[str]
             self._context.PublishPerSite_3(pin, published_data_id, measurements)
         return None

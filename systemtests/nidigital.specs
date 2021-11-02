@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Specifications xmlns:f="http://www.ni.com/schemas/Semiconductor/Formula.xsd" schemaVersion="1.0" xmlns="http://www.ni.com/schemas/Semiconductor/Specifications.xsd">
+  <Section name="DC">
+    <f:Formula symbol="Vh">
+      <f:Definition>3.3 V</f:Definition>
+    </f:Formula>
+    <f:Formula symbol="Vl">
+      <f:Definition>0 V</f:Definition>
+    </f:Formula>
+  </Section>
+  <Section name="AC">
+    <f:Formula symbol="Period">
+      <f:Definition>20 ns</f:Definition>
+    </f:Formula>
+  </Section>
+</Specifications>

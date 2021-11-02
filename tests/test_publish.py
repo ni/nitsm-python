@@ -223,8 +223,12 @@ class TestMultiplePins2d:
 
 @pytest.mark.pin_map("publish.pinmap")
 class TestPerSiteMultiSite:
-    def test_publish_per_site_float_1d(self, standalone_tsm_context, published_data_reader):
-        test_data = [1150.0, 1952.5, -4.0]
+    @pytest.mark.parametrize(
+        "test_data", [[1150.0, 1952.5, -4.0], [11500, 19525, -4]], ids=["floats", "ints"]
+    )
+    def test_publish_per_site_numeric_1d(
+        self, standalone_tsm_context, published_data_reader, test_data
+    ):
         standalone_tsm_context.publish_per_site(test_data, "id", "DUTPin1")
         published_data = published_data_reader.get_and_clear_published_data()
         for published_data_point in published_data:
@@ -256,10 +260,13 @@ class TestPerSiteMultiSite:
 
 @pytest.mark.pin_map("publish_single_site.pinmap")
 class TestPerSiteSingleSite:
-    def test_publish_per_site_float_scalar(self, standalone_tsm_context, published_data_reader):
-        standalone_tsm_context.publish_per_site(1150.0, "id", "DUTPin1")
+    @pytest.mark.parametrize("test_data", [1150.0, 11500], ids=["float", "int"])
+    def test_publish_per_site_numeric_scalar(
+        self, standalone_tsm_context, published_data_reader, test_data
+    ):
+        standalone_tsm_context.publish_per_site(test_data, "id", "DUTPin1")
         published_data = published_data_reader.get_and_clear_published_data()[0]
-        assert published_data.double_value == 1150.0
+        assert published_data.double_value == test_data
         assert published_data.published_data_id == "id"
         assert published_data.pin == "DUTPin1"
 
