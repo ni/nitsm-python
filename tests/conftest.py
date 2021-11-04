@@ -10,9 +10,10 @@ try:
         "NI TestStand Semiconductor Module Standalone Semiconductor Module Context"
     )[0]
 except IndexError:
-    raise IndexError(
-        """The TSM Standalone Semiconductor Module Context component is not installed. 
-                        Contact one of the repository owners to determine how to obtain this non-public component."""
+    raise RuntimeError(
+        "The TSM Standalone Semiconductor Module Context component is not installed. "
+        "Contact one of the repository owners to determine how to obtain this "
+        "non-public component."
     )
 
 
