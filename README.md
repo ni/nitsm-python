@@ -22,7 +22,7 @@ nitsm requires [NI TestStand](https://www.ni.com/en-us/support/downloads/softwar
 
 To use nitsm in conjunction with [nimi-python](https://github.com/ni/nimi-python), you must also install the appropriate
 NI instrument driver for each device you plan to use:
-  - [NI-DCPower](https://www.ni.com/en-us/support/downloads/drivers/download.ni-dcpower.html)
+  - [NI-DCPower 20.6+](https://www.ni.com/en-us/support/downloads/drivers/download.ni-dcpower.html)
   - [NI-DMM](https://www.ni.com/en-us/support/downloads/drivers/download.ni-dmm.html)
   - [NI-SCOPE](https://www.ni.com/en-us/support/downloads/drivers/download.ni-scope.html)
   - [NI-Digital](https://www.ni.com/en-us/support/downloads/drivers/download.ni-digital-pattern-driver.html)

@@ -6,9 +6,16 @@ import win32com.client.selecttlb
 import pythoncom
 import nitsm.codemoduleapi
 
-_standalone_tsm_context_tlb = win32com.client.selecttlb.FindTlbsWithDescription(
-    "NI TestStand Semiconductor Module Standalone Semiconductor Module Context"
-)[0]
+try:
+    _standalone_tsm_context_tlb = win32com.client.selecttlb.FindTlbsWithDescription(
+        "NI TestStand Semiconductor Module Standalone Semiconductor Module Context"
+    )[0]
+except IndexError:
+    raise RuntimeError(
+        "The TSM Standalone Semiconductor Module Context component is not installed. "
+        "Contact one of the repository owners to determine how to obtain this "
+        "non-public component."
+    )
 
 
 @pytest.fixture
