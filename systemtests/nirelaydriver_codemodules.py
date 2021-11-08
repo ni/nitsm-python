@@ -29,7 +29,6 @@ def measure(
     expected_instrument_names,
     expected_relay_names,
 ):
-    import nitsm.debug; nitsm.debug.prompt_attach_debugger()
     sessions, relay_names = tsm_context.relays_to_relay_driver_niswitch_sessions(relays)
     expected_instrument_relays = set(zip(expected_instrument_names, expected_relay_names))
     valid_channels = []
