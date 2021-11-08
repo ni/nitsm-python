@@ -77,7 +77,7 @@ def measure(
 
 @nitsm.codemoduleapi.code_module
 def close_sessions(tsm_context: SemiconductorModuleContext, instrument_type_id):
-    sessions = tsm_context.get_all_custom_sessions(instrument_type_id)
+    sessions, *_ = tsm_context.get_all_custom_sessions(instrument_type_id)
     for session in sessions:
         assert isinstance(session, CustomSession)
         assert session.instrument_type_id == instrument_type_id
