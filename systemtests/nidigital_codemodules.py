@@ -1,3 +1,4 @@
+import itertools
 import re
 import nidigital
 import nitsm.codemoduleapi
@@ -85,6 +86,44 @@ def measure_pattern(
     pin_query.publish_pattern_results(valid_site_lists, "ValidSiteLists")
     num_missing_site_lists = [len(expected_instrument_site_lists)] * len(tsm_context.site_numbers)
     tsm_context.publish_per_site(num_missing_site_lists, "NumMissingSiteLists")
+
+
+@nitsm.codemoduleapi.code_module
+def check_project_paths(
+    tsm_context: SemiconductorModuleContext,
+    specifications_paths,
+    levels_paths,
+    timing_paths,
+    pattern_paths,
+    source_waveform_paths,
+    capture_waveform_paths,
+):
+    site_count = len(tsm_context.site_numbers)
+    valid_project_paths = [
+        tsm_context.nidigital_project_specifications_file_paths == tuple(specifications_paths)
+    ] * site_count
+    valid_levels_paths = [
+        tsm_context.nidigital_project_levels_file_paths == tuple(levels_paths)
+    ] * site_count
+    valid_timing_paths = [
+        tsm_context.nidigital_project_timing_file_paths == tuple(timing_paths)
+    ] * site_count
+    valid_pattern_paths = [
+        tsm_context.nidigital_project_pattern_file_paths == tuple(pattern_paths)
+    ] * site_count
+    valid_source_waveform_paths = [
+        tsm_context.nidigital_project_source_waveform_file_paths == tuple(source_waveform_paths)
+    ] * site_count
+    valid_capture_waveform_paths = [
+        tsm_context.nidigital_project_capture_waveform_file_paths == tuple(capture_waveform_paths)
+    ] * site_count
+
+    tsm_context.publish_per_site(valid_project_paths, "ValidSpecificationsPaths")
+    tsm_context.publish_per_site(valid_levels_paths, "ValidLevelsPaths")
+    tsm_context.publish_per_site(valid_timing_paths, "ValidTimingPaths")
+    tsm_context.publish_per_site(valid_pattern_paths, "ValidPatternPaths")
+    tsm_context.publish_per_site(valid_source_waveform_paths, "ValidSourceWaveformPaths")
+    tsm_context.publish_per_site(valid_capture_waveform_paths, "ValidCaptureWaveformPaths")
 
 
 @nitsm.codemoduleapi.code_module
