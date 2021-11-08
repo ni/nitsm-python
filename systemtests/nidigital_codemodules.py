@@ -1,4 +1,3 @@
-import itertools
 import re
 import nidigital
 import nitsm.codemoduleapi
