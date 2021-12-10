@@ -42,11 +42,11 @@ def measure(
         # check instrument channels we received is in the set of instrument channels we expected
         actual_instrument_relays = (session.io_resource_descriptor, relay_name)
         valid_channels.append(actual_instrument_relays in expected_instrument_relays)
-        expected_instrument_relays -= {actual_instrument_relays}
+        missing_instrument_relays = expected_instrument_relays - {actual_instrument_relays}
 
     site_count = len(tsm_context.site_numbers)
     tsm_context.publish_per_site([all(valid_channels)] * site_count, "AllChannelsAreValid")
-    num_missing_channels = [len(expected_instrument_relays)] * site_count
+    num_missing_channels = [len(missing_instrument_relays)] * site_count
     tsm_context.publish_per_site(num_missing_channels, "NumMissing")
 
 
