@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<PinMap schemaVersion="1.5" xmlns="http://www.ni.com/TestStand/SemiconductorModule/PinMap.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PinMap schemaVersion="1.4" xmlns="http://www.ni.com/TestStand/SemiconductorModule/PinMap.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<Instruments>
 		<NIRelayDriverModule name="RelayDriver1" numberOfControlLines="64" />
 		<NIRelayDriverModule name="RelayDriver2" numberOfControlLines="64" />
@@ -18,13 +18,6 @@
 			<RelayReference relay="SystemRelay1" />
 		</RelayGroup>
 	</RelayGroups>
-	<RelayConfigurations>
-		<RelayConfiguration name="RelayConfiguration1">
-			<RelayPosition relay="SiteRelay1" position="Closed" />
-			<RelayPosition relay="SiteRelay2" position="Closed" />
-			<RelayPosition relay="SystemRelay1" position="Open" />
-		</RelayConfiguration>
-	</RelayConfigurations>
 	<Sites>
 		<Site siteNumber="0" />
 		<Site siteNumber="1" />

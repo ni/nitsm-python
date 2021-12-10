@@ -45,7 +45,7 @@ def measure(
         expected_instrument_relays -= {actual_instrument_relays}
 
     site_count = len(tsm_context.site_numbers)
-    tsm_context.publish_per_site([all(valid_channels)] * site_count)
+    tsm_context.publish_per_site([all(valid_channels)] * site_count, "AllChannelsAreValid")
     num_missing_channels = [len(expected_instrument_relays)] * site_count
     tsm_context.publish_per_site(num_missing_channels, "NumMissing")
 
