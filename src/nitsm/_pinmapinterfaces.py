@@ -2,7 +2,7 @@
 # Created by makepy.py version 0.5.01
 # By python version 3.6.8 (tags/v3.6.8:3c6b436a57, Dec 24 2018, 00:16:47) [MSC v.1916 64 bit (AMD64)]
 # From type library 'NationalInstruments.TestStand.SemiconductorModule.PinMapInterfaces.tlb'
-# On Thu Jan 28 09:47:32 2021
+# On Tue Nov 16 10:28:31 2021
 'NI TestStand 2020 Semiconductor Module Pin Map Interfaces'
 makepy_version = '0.5.01'
 python_version = 0x30608f0
@@ -213,21 +213,26 @@ class ISemiconductorModuleContext(DispatchBaseClass):
 		return self._ApplyTypes_(1610743819, 1, (24, 0), ((8200, 1), (8, 1), (3, 1), (16387, 2), (16387, 2)), 'GetChannelGroupAndChannelIndex_2', None,pinsInLookup
 			, pin, siteNumber, channelGroupIndex, channelIndex)
 
-	def GetDAQmxAnalogOutputDataIndexesForMultipleTasksWithDifferentDataForEachSite(self, pinNames=defaultNamedNotOptArg, dataFirstDimensionLength=defaultNamedNotOptArg, numberOfChannelsPerTask=pythoncom.Missing):
-		return self._ApplyTypes_(1610744056, 1, (8195, 0), ((8200, 1), (3, 1), (24579, 2)), 'GetDAQmxAnalogOutputDataIndexesForMultipleTasksWithDifferentDataForEachSite', None,pinNames
-			, dataFirstDimensionLength, numberOfChannelsPerTask)
+	def GetDAQmxAnalogOutputDataIndexesForMultipleTasksWithDifferentDataForEachSite(self, pinNames=defaultNamedNotOptArg, samplesPerSiteArrayLength=defaultNamedNotOptArg, samplesPerPinArrayLength=defaultNamedNotOptArg, parameterName=defaultNamedNotOptArg
+			, perTaskChannelSiteIndexes=pythoncom.Missing, perTaskChannelPinIndexes=pythoncom.Missing, numberOfChannelsPerTask=pythoncom.Missing):
+		return self._ApplyTypes_(1610744056, 1, (24, 0), ((8200, 1), (3, 1), (3, 1), (8, 1), (24579, 2), (24579, 2), (24579, 2)), 'GetDAQmxAnalogOutputDataIndexesForMultipleTasksWithDifferentDataForEachSite', None,pinNames
+			, samplesPerSiteArrayLength, samplesPerPinArrayLength, parameterName, perTaskChannelSiteIndexes, perTaskChannelPinIndexes
+			, numberOfChannelsPerTask)
 
-	def GetDAQmxAnalogOutputDataIndexesForMultipleTasksWithSameDataForAllSites(self, pinNames=defaultNamedNotOptArg, dataFirstDimensionLength=defaultNamedNotOptArg, numberOfChannelsPerTask=pythoncom.Missing):
-		return self._ApplyTypes_(1610744055, 1, (8195, 0), ((8200, 1), (3, 1), (24579, 2)), 'GetDAQmxAnalogOutputDataIndexesForMultipleTasksWithSameDataForAllSites', None,pinNames
-			, dataFirstDimensionLength, numberOfChannelsPerTask)
+	def GetDAQmxAnalogOutputDataIndexesForMultipleTasksWithSameDataForAllSites(self, pinNames=defaultNamedNotOptArg, samplesPerPinArrayLength=defaultNamedNotOptArg, parameterName=defaultNamedNotOptArg, perTaskChannelPinIndexes=pythoncom.Missing
+			, numberOfChannelsPerTask=pythoncom.Missing):
+		return self._ApplyTypes_(1610744054, 1, (24, 0), ((8200, 1), (3, 1), (8, 1), (24579, 2), (24579, 2)), 'GetDAQmxAnalogOutputDataIndexesForMultipleTasksWithSameDataForAllSites', None,pinNames
+			, samplesPerPinArrayLength, parameterName, perTaskChannelPinIndexes, numberOfChannelsPerTask)
 
-	def GetDAQmxAnalogOutputDataIndexesForSingleTaskWithDifferentDataForEachSite(self, pinNames=defaultNamedNotOptArg, dataFirstDimensionLength=defaultNamedNotOptArg):
-		return self._ApplyTypes_(1610744054, 1, (8195, 0), ((8200, 1), (3, 1)), 'GetDAQmxAnalogOutputDataIndexesForSingleTaskWithDifferentDataForEachSite', None,pinNames
-			, dataFirstDimensionLength)
+	def GetDAQmxAnalogOutputDataIndexesForSingleTaskWithDifferentDataForEachSite(self, pinNames=defaultNamedNotOptArg, samplesPerSiteArrayLength=defaultNamedNotOptArg, samplesPerPinArrayLength=defaultNamedNotOptArg, parameterName=defaultNamedNotOptArg
+			, channelSiteIndexes=pythoncom.Missing, channelPinIndexes=pythoncom.Missing):
+		return self._ApplyTypes_(1610744055, 1, (24, 0), ((8200, 1), (3, 1), (3, 1), (8, 1), (24579, 2), (24579, 2)), 'GetDAQmxAnalogOutputDataIndexesForSingleTaskWithDifferentDataForEachSite', None,pinNames
+			, samplesPerSiteArrayLength, samplesPerPinArrayLength, parameterName, channelSiteIndexes, channelPinIndexes
+			)
 
-	def GetDAQmxAnalogOutputDataIndexesForSingleTaskWithSameDataForAllSites(self, pinNames=defaultNamedNotOptArg, dataFirstDimensionLength=defaultNamedNotOptArg):
-		return self._ApplyTypes_(1610744053, 1, (8195, 0), ((8200, 1), (3, 1)), 'GetDAQmxAnalogOutputDataIndexesForSingleTaskWithSameDataForAllSites', None,pinNames
-			, dataFirstDimensionLength)
+	def GetDAQmxAnalogOutputDataIndexesForSingleTaskWithSameDataForAllSites(self, pinNames=defaultNamedNotOptArg, samplesPerPinArrayLength=defaultNamedNotOptArg, parameterName=defaultNamedNotOptArg, channelPinIndexes=pythoncom.Missing):
+		return self._ApplyTypes_(1610744053, 1, (24, 0), ((8200, 1), (3, 1), (8, 1), (24579, 2)), 'GetDAQmxAnalogOutputDataIndexesForSingleTaskWithSameDataForAllSites', None,pinNames
+			, samplesPerPinArrayLength, parameterName, channelPinIndexes)
 
 	def GetDigitalPatternProjectCaptureWaveformFilePaths(self):
 		return self._ApplyTypes_(1610743975, 1, (8200, 0), (), 'GetDigitalPatternProjectCaptureWaveformFilePaths', None,)
@@ -1441,14 +1446,18 @@ ISemiconductorModuleContext_vtables_ = [
 	(( 'GetInstrumentNameAndChannelForPinOnSingleSite' , 'pinName' , 'instrumentName' , 'channelOrPort' , ), 1610744050, (1610744050, (), [ 
 			 (8, 1, None, None) , (16392, 2, None, None) , (16392, 2, None, None) , ], 1 , 1 , 4 , 0 , 1992 , (3, 0, None, None) , 0 , )),
 	(( 'PinMapUsesNIDCPowerChannelGroups' , 'pRetVal' , ), 1610744052, (1610744052, (), [ (16395, 10, None, None) , ], 1 , 2 , 4 , 0 , 2008 , (3, 0, None, None) , 0 , )),
-	(( 'GetDAQmxAnalogOutputDataIndexesForSingleTaskWithSameDataForAllSites' , 'pinNames' , 'dataFirstDimensionLength' , 'pRetVal' , ), 1610744053, (1610744053, (), [ 
-			 (8200, 1, None, None) , (3, 1, None, None) , (24579, 10, None, None) , ], 1 , 1 , 4 , 0 , 2016 , (3, 0, None, None) , 0 , )),
-	(( 'GetDAQmxAnalogOutputDataIndexesForSingleTaskWithDifferentDataForEachSite' , 'pinNames' , 'dataFirstDimensionLength' , 'pRetVal' , ), 1610744054, (1610744054, (), [ 
-			 (8200, 1, None, None) , (3, 1, None, None) , (24579, 10, None, None) , ], 1 , 1 , 4 , 0 , 2024 , (3, 0, None, None) , 0 , )),
-	(( 'GetDAQmxAnalogOutputDataIndexesForMultipleTasksWithSameDataForAllSites' , 'pinNames' , 'dataFirstDimensionLength' , 'numberOfChannelsPerTask' , 'pRetVal' , 
-			 ), 1610744055, (1610744055, (), [ (8200, 1, None, None) , (3, 1, None, None) , (24579, 2, None, None) , (24579, 10, None, None) , ], 1 , 1 , 4 , 0 , 2032 , (3, 0, None, None) , 0 , )),
-	(( 'GetDAQmxAnalogOutputDataIndexesForMultipleTasksWithDifferentDataForEachSite' , 'pinNames' , 'dataFirstDimensionLength' , 'numberOfChannelsPerTask' , 'pRetVal' , 
-			 ), 1610744056, (1610744056, (), [ (8200, 1, None, None) , (3, 1, None, None) , (24579, 2, None, None) , (24579, 10, None, None) , ], 1 , 1 , 4 , 0 , 2040 , (3, 0, None, None) , 0 , )),
+	(( 'GetDAQmxAnalogOutputDataIndexesForSingleTaskWithSameDataForAllSites' , 'pinNames' , 'samplesPerPinArrayLength' , 'parameterName' , 'channelPinIndexes' , 
+			 ), 1610744053, (1610744053, (), [ (8200, 1, None, None) , (3, 1, None, None) , (8, 1, None, None) , (24579, 2, None, None) , ], 1 , 1 , 4 , 0 , 2016 , (3, 0, None, None) , 0 , )),
+	(( 'GetDAQmxAnalogOutputDataIndexesForMultipleTasksWithSameDataForAllSites' , 'pinNames' , 'samplesPerPinArrayLength' , 'parameterName' , 'perTaskChannelPinIndexes' , 
+			 'numberOfChannelsPerTask' , ), 1610744054, (1610744054, (), [ (8200, 1, None, None) , (3, 1, None, None) , (8, 1, None, None) , 
+			 (24579, 2, None, None) , (24579, 2, None, None) , ], 1 , 1 , 4 , 0 , 2024 , (3, 0, None, None) , 0 , )),
+	(( 'GetDAQmxAnalogOutputDataIndexesForSingleTaskWithDifferentDataForEachSite' , 'pinNames' , 'samplesPerSiteArrayLength' , 'samplesPerPinArrayLength' , 'parameterName' , 
+			 'channelSiteIndexes' , 'channelPinIndexes' , ), 1610744055, (1610744055, (), [ (8200, 1, None, None) , (3, 1, None, None) , 
+			 (3, 1, None, None) , (8, 1, None, None) , (24579, 2, None, None) , (24579, 2, None, None) , ], 1 , 1 , 4 , 0 , 2032 , (3, 0, None, None) , 0 , )),
+	(( 'GetDAQmxAnalogOutputDataIndexesForMultipleTasksWithDifferentDataForEachSite' , 'pinNames' , 'samplesPerSiteArrayLength' , 'samplesPerPinArrayLength' , 'parameterName' , 
+			 'perTaskChannelSiteIndexes' , 'perTaskChannelPinIndexes' , 'numberOfChannelsPerTask' , ), 1610744056, (1610744056, (), [ (8200, 1, None, None) , 
+			 (3, 1, None, None) , (3, 1, None, None) , (8, 1, None, None) , (24579, 2, None, None) , (24579, 2, None, None) , 
+			 (24579, 2, None, None) , ], 1 , 1 , 4 , 0 , 2040 , (3, 0, None, None) , 0 , )),
 ]
 
 RecordMap = {
