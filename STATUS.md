@@ -8,12 +8,12 @@
 | NI-DAQmx        | SetNIDAQmxTask                                                          | set\_nidaqmx\_task                              | test\_nidaqmx                 |
 | NI-DAQmx        | GetNIDAQmxTask(s)                                                       | pins\_to\_nidaqmx\_task(s)                      | test\_nidaqmx                 |
 | NI-DAQmx        | GetAllNIDAQmxTasks                                                      | get\_all\_nidaqmx\_tasks                        | test\_nidaqmx                 |
-| NI-DCPower      | GetNIDCPowerInstrumentNames                                             | get\_all\_nidcpower\_instrument\_names          | test\_nidcpower\_legacy       |
-| NI-DCPower      | GetNIDCPowerResourceStrings                                             | get\_all\_nidcpower\_resource\_strings          | test\_nidcpower\_legacy       |
-| NI-DCPower      | GetNIDCPowerSession(s)                                                  | pins\_to\_nidcpower\_session(s)                 | test\_nidcpower\_legacy       |
+| NI-DCPower      | GetNIDCPowerInstrumentNames                                             | *omitted on purpose                             |                               |
+| NI-DCPower      | GetNIDCPowerResourceStrings                                             | get\_all\_nidcpower\_resource\_strings          | test\_nidcpower               |
+| NI-DCPower      | GetNIDCPowerSession(s)                                                  | pins\_to\_nidcpower\_session(s)                 | test\_nidcpower               |
 | NI-DCPower      | SetNIDCPowerSession (name/channel)                                      | *omitted on purpose                             |                               |
-| NI-DCPower      | SetNIDCPowerSession (resourceString)                                    | set\_nidcpower\_session                         | test\_nidcpower\_legacy       |
-| NI-DCPower      | GetAllNIDCPowerSessions                                                 | get\_all\_nidcpower\_sessions                   | test\_nidcpower\_legacy       |
+| NI-DCPower      | SetNIDCPowerSession (resourceString)                                    | set\_nidcpower\_session                         | test\_nidcpower               |
+| NI-DCPower      | GetAllNIDCPowerSessions                                                 | get\_all\_nidcpower\_sessions                   | test\_nidcpower               |
 | NI-Digital      | GetNIDigitalPatternInstrumentNames                                      | get\_all\_nidigital\_instrument\_names          | test\_nidigital               |
 | NI-Digital      | GetNIDigitalPatternSession(s)                                           | \*omitted on purpose                            |                               |
 | NI-Digital      | GetNIDigitalPatternSession(s)ForPattern                                 | get\_nidigital\_session\_for\_pattern           | test\_nidigital               |
@@ -82,7 +82,7 @@
 | SemiconductorModuleContext      | PublishToTestStandVariablePerSite              |                                                                                                    |                       |
 | PinQueryContext                 | ExtractPinData                                 |                                                                                                    |                       |
 | PinQueryContext                 | PerInstrumentToPerSiteData                     |                                                                                                    |                       |
-| PinQueryContext                 | GetSessionAndChannelIndex                      | get\_session\_and\_channel\_index                                                                  | test\_pinquerycontext |
+| PinQueryContext                 | GetSessionAndChannelIndex                      | get\_session\_and\_channel\_index                                                                  | unit test suffices    |
 | MultiplePinQueryContext         | PerInstrumentToPerSiteData                     |                                                                                                    |                       |
 | \_\_SingleSessionQueryContext   | Publish                                        | publish\*<br/>\*supports all variations of data types (float/bool) and number of pins and sessions | various               |
 | \_\_MultipleSessionQueryContext | Publish                                        | publish                                                                                            | various               |
