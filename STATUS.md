@@ -78,7 +78,7 @@
 ## Pin Query API
 | Class                           | .NET Method                                    | Python                                                                                             | Python System Tests   |
 | ------------------------------- | ---------------------------------------------- | -------------------------------------------------------------------------------------------------- | --------------------- |
-| SemiconductorModuleContext      | PublishPerSite                                 |                                                                                                    |                       |
+| SemiconductorModuleContext      | PublishPerSite                                 | publish\_per\_site                                                                                |                       |
 | SemiconductorModuleContext      | PublishToTestStandVariablePerSite              |                                                                                                    |                       |
 | PinQueryContext                 | ExtractPinData                                 |                                                                                                    |                       |
 | PinQueryContext                 | PerInstrumentToPerSiteData                     |                                                                                                    |                       |
