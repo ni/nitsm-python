@@ -5,6 +5,9 @@ extend-exclude = "^/src/nitsm/_pinmapinterfaces.py"
 
 [tool.ni-python-styleguide]
 extend_exclude = "src/nitsm/_pinmapinterfaces.py"
+# ignore codes not relevant to the Google docstring conventions (http://www.pydocstyle.org/en/stable/error_codes.html#default-conventions)
+# also ignore D415 which requires docstrings to start with a one line summary
+extend_ignore = "D203,D204,D205,D213,D215,D400,D401,D404,D406,D407,D408,D409,D413,D415"  # must also be passed via the command line until https://github.com/ni/python-styleguide/issues/76 is resolved
 
 [tool.pytest.ini_options]
 testpaths = [
