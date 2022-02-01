@@ -1,28 +1,38 @@
-import inspect
+"""Code Module API"""
+
 import functools
-from .tsmcontext import SemiconductorModuleContext
+import inspect
+
 from .enums import Capability, InstrumentTypeIdConstants
+from .tsmcontext import SemiconductorModuleContext
 
 __all__ = ["SemiconductorModuleContext", "Capability", "InstrumentTypeIdConstants", "code_module"]
 
 
 # noinspection PyPep8Naming
-class code_module:
-    def __init__(self, callable_):
-        """
-        Converts the Semiconductor Module context passed from TestStand into a native Python object.
-        The Semiconductor Module context must be the first argument to the function or method.
-        """
+class code_module:  # noqa: N801
+    """This function decorator wraps the ISemiconductorModuleContext
+    win32com.client.dynamic.CDispatch object passed from the Semiconductor Multi Test step into a
+    nitsm.codemoduleapi.SemiconductorModuleContext object prior to calling the decorated function.
+    """
 
-        self._callable = callable_
-        self._signature = inspect.signature(callable_)
-        functools.update_wrapper(self, callable_)
+    def __init__(self, func):
+        """Converts a function into a TSM code module.
+
+        The Semiconductor Multi Test step must pass the Step.SemiconductorModuleContext property to
+        the code module as the first positional argument.
+        """
+        self._func = func
+        self._signature = inspect.signature(func)
+        functools.update_wrapper(self, func)
 
     def __get__(self, instance, owner):
-        callable_ = self._callable.__get__(instance, owner)
-        return self.__class__(callable_)
+        """Binds the code module to an object or class."""
+        func = self._func.__get__(instance, owner)
+        return type(self)(func)
 
     def __call__(self, *args, **kwargs):
+        """Calls the code module."""
         bound_arguments = self._signature.bind(*args, **kwargs)
         arguments_iter = iter(bound_arguments.arguments.items())
 
@@ -40,16 +50,16 @@ class code_module:
                 )
             )
 
-        # attempt to wrap argument in a SemiconductorModuleContext class
+        # attempt to wrap argument in a SemiconductorModuleContext object
         argument_name, argument_value = argument
         if not isinstance(argument_value, SemiconductorModuleContext):
             try:
                 argument_value = SemiconductorModuleContext(argument_value)
             except Exception:
-                class_name = argument_value.__class__.__name__
+                class_name = type(argument_value).__name__
                 raise ValueError(
                     f"Failed to convert Semiconductor Module context from class '{class_name}'.",
                 )
             bound_arguments.arguments[argument_name] = argument_value
 
-        return self._callable(*bound_arguments.args, **bound_arguments.kwargs)
+        return self._func(*bound_arguments.args, **bound_arguments.kwargs)

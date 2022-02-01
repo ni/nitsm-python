@@ -1,12 +1,13 @@
+"""Code Module Debugging Utilities"""
+
 import os
 import tkinter.messagebox
 
 
 def prompt_attach_debugger() -> None:
-    """
-    Pauses the Python interpreter and displays the process ID (PID). The PID can be used by an IDE
-    such as PyCharm to attach to the process for debugging. This is useful for stepping into nitsm
-    code modules from TestStand.
+    """Pauses the Python interpreter and displays the process ID (PID). The PID can be used by an
+    IDE such as PyCharm to attach to the process for debugging. This is useful for stepping into
+    nitsm code modules from TestStand.
 
     Instructions for use with PyCharm:
         1. Call this function from the code module you want to debug. Placing it at the beginning
@@ -24,7 +25,6 @@ def prompt_attach_debugger() -> None:
             steps were performed correctly, PyCharm will break at the first breakpoint it reaches in
             the code.
     """
-
     tkinter.Tk().withdraw()  # hide root window
     tkinter.messagebox.showinfo(
         "Attach debugger", "Process name: niPythonHost.exe and Process ID: " + str(os.getpid())

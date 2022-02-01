@@ -1,14 +1,22 @@
+"""Enumerations"""
+
 import enum
 
 __all__ = ["Capability", "InstrumentTypeIdConstants"]
 
 
 class Capability(enum.Enum):
+    """Differentiates between pins in the same instrument with different capabilities, such as
+    NI-HSDIO Dynamic DIO channels and PFI lines.
+    """
+
     ALL = ""
     NI_HSDIO_DYNAMIC_DIO = "NIHSDIODynamicDIOCapable"
 
 
 class InstrumentTypeIdConstants(enum.Enum):
+    """The type IDs for non-custom instruments in the pin map file."""
+
     ANY = ""
     NI_DAQMX = "niDAQmx"
     NI_DCPOWER = "niDCPower"

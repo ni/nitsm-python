@@ -1,10 +1,9 @@
-"""
-Pin Query Contexts
-"""
+"""Pin Query Contexts"""
+
 import re
 import typing
 
-__all__ = ["PinQueryContext"]
+__all__ = ["PinQueryContext", "DigitalPatternPinQueryContext"]
 
 if typing.TYPE_CHECKING:
     import nitsm._pinmapinterfaces
@@ -21,11 +20,10 @@ if typing.TYPE_CHECKING:
 
 
 def _pad_jagged_sequence(seq):
-    """
-    Pads a 2D jagged sequence with the default value of the element type to make it rectangular.
+    """Pads a 2D jagged sequence with the default value of the element type to make it rectangular.
+
     The type of each sequence (tuple, list, etc) is maintained.
     """
-
     columns = max(map(len, seq))  # gets length of the longest row
     return type(seq)(
         (
@@ -36,13 +34,17 @@ def _pad_jagged_sequence(seq):
 
 
 class PinQueryContext:
+    """Provides the base class for a pin query context, which is an object a pin query method
+    returns to track the sessions and channels associated with the pins for one or more sites.
+    """
+
     def __init__(self, tsm_context, pins):
+        """Not for public use."""
         self._tsm_context: nitsm._pinmapinterfaces.ISemiconductorModuleContext = tsm_context
         self._pins: typing.Union[str, typing.Sequence[str]] = pins
 
     def get_session_and_channel_index(self, site_number: int, pin: str):
-        """
-        Returns the index of the session and channel that corresponds to a pin query. Use this
+        """Returns the index of the session and channel that corresponds to a pin query. Use this
         method to access an individual pin on a specific site when you take a measurement across
         multiple instruments. When you call a pin query method, such as
         pins_to_nidigital_sessions_for_ppmu, the method returns a tuple of sessions and a tuple of
@@ -61,13 +63,11 @@ class PinQueryContext:
             channel_index: Returns the index of the channel within the channel list for a
                 measurement taken on the pin and site number you specify.
         """
-
         pins = [self._pins] if isinstance(self._pins, str) else self._pins
         return self._tsm_context.GetChannelGroupAndChannelIndex_2(pins, pin, site_number, 0, 0)
 
     def publish(self, data: "_PublishDataArg", published_data_id=""):
-        """
-        Publishes the measurement data for one or more pins to the Semiconductor Multi Test step
+        """Publishes the measurement data for one or more pins to the Semiconductor Multi Test step
         for all sites in the PinQueryContext.
 
         Args:
@@ -83,7 +83,6 @@ class PinQueryContext:
                 match one of the values in the Published Data Id column on the Tests tab of the
                 Semiconductor Multi Test step.
         """
-
         if isinstance(data, bool):
             return self._publish_bool_scalar(data, published_data_id)
         elif isinstance(data, (float, int)):
@@ -138,7 +137,14 @@ class PinQueryContext:
 
 
 class DigitalPatternPinQueryContext(PinQueryContext):
+    """An object the pins_to_nidigital_session_for_pattern and
+    pins_to_nidigital_sessions_for_pattern methods return to track the sessions and channels
+    associated with the pins for one or more sites. Use this object to publish measurements to the
+    Semiconductor Multi Test step and to extract data from a set of measurements.
+    """
+
     def __init__(self, tsm_context, pins, site_lists):
+        """Not for public use."""
         # convert pins to a list of pins if it isn't already
         if isinstance(pins, str):
             pins = [pins]
@@ -154,26 +160,23 @@ class DigitalPatternPinQueryContext(PinQueryContext):
     def publish_pattern_results(
         self, instrument_site_pattern_results: "_PublishPatternArg", published_data_id=""
     ):
-        """
-        Publishes results from NI-Digital pattern burst to the Semiconductor Multi Test step for all
-        sites in the Semiconductor Module context. Leave the Pin column blank for the test on the
-        Semiconductor Multi Test step when publishing pattern results with this method.
+        """Publishes results from NI-Digital pattern burst to the Semiconductor Multi Test step for
+        all sites in the Semiconductor Module context. Leave the Pin column blank for the test on
+        the Semiconductor Multi Test step when publishing pattern results with this method.
 
         Args:
-            instrument_site_pattern_results:
-                The pattern result data from multiple pins connected to one or more NI-Digital
-                Pattern instruments. Provide a dictionary that maps sites to result data to publish
-                pattern results from a single NI-Digital Pattern instrument session. Provide a
-                sequence of dictionaries that map sites to result data to publish pattern results
-                from multiple NI-Digital Pattern instrument sessions. Each element in the sequence
-                contains pattern results for the sites of a single instrument session. Furthermore,
-                the size of the sequence must be the same size as the session data output from the
-                pin query method.
-            published_data_id:
-                The unique ID for identifying the results. This ID must match one of the values in
-                the Published Data Id column on the Tests tab of the Semiconductor Multi Test step.
+            instrument_site_pattern_results: The pattern result data from multiple pins connected to
+                one or more NI-Digital Pattern instruments. Provide a dictionary that maps sites to
+                result data to publish pattern results from a single NI-Digital Pattern instrument
+                session. Provide a sequence of dictionaries that map sites to result data to publish
+                pattern results from multiple NI-Digital Pattern instrument sessions. Each element
+                in the sequence contains pattern results for the sites of a single instrument
+                session. Furthermore, the size of the sequence must be the same size as the session
+                data output from the pin query method.
+            published_data_id: The unique ID for identifying the results. This ID must match one of
+                the values in the Published Data Id column on the Tests tab of the Semiconductor
+                Multi Test step.
         """
-
         # convert instrument_site_pattern_results to a list if it isn't already
         if isinstance(instrument_site_pattern_results, dict):
             instrument_site_pattern_results = [instrument_site_pattern_results]

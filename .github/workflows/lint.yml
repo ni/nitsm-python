@@ -32,5 +32,5 @@ jobs:
 
     - name: Lint with NI style guide
       run: |
-        python -m pip install ni-python-styleguide==0.1.2
-        python -m ni_python_styleguide lint
+        python -m pip install --upgrade ni-python-styleguide
+        python -m ni_python_styleguide lint --extend-ignore=D203,D204,D205,D213,D215,D400,D401,D404,D406,D407,D408,D409,D413,D415 src
