@@ -28,6 +28,7 @@ if typing.TYPE_CHECKING:
     _CapabilityArg = _Union[nitsm.enums.Capability, str]
     _PinsArg = _Union[str, _Sequence[str]]  # argument that accepts 1 or more pins
     _StringTuple = _Tuple[str, ...]
+    _AnyTuple = _Tuple[_Any, ...]
 
     _NIDigitalSingleSessionPpmuQuery = _Tuple[_PinQueryContext, nidigital.Session, str]
     _NIDigitalMultipleSessionPpmuQuery = _Tuple[
@@ -64,6 +65,8 @@ if typing.TYPE_CHECKING:
     _NIScopeMultipleSessionQuery = _Tuple[
         _PinQueryContext, _Tuple[niscope.Session, ...], _StringTuple
     ]
+
+    _SwitchQuery = _Tuple[_Tuple["SemiconductorModuleContext", ...], _AnyTuple, _StringTuple]
 
     _RelayDriverSingleSessionQuery = _Tuple[niswitch.Session, str]
     _RelayDriverMultipleSessionQuery = _Tuple[_Tuple[niswitch.Session, ...], _StringTuple]
@@ -905,6 +908,63 @@ class SemiconductorModuleContext:
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
         )
         return pin_query_context, sessions, channel_lists
+
+    # Switching
+
+    def get_all_switch_names(
+        self,
+        multiplexer_type_id: "_InstrTypeIdArg" = (
+            nitsm.enums.InstrumentTypeIdConstants.NI_GENERIC_MULTIPLEXER
+        ),
+    ) -> "_StringTuple":
+        """TODO"""
+        if isinstance(multiplexer_type_id, nitsm.enums.InstrumentTypeIdConstants):
+            multiplexer_type_id = multiplexer_type_id.value
+        return self._context.GetSwitchNames(multiplexer_type_id)
+
+    def set_switch_session(
+        self,
+        switch_name: str,
+        session_data: "_Any",
+        multiplexer_type_id: "_InstrTypeIdArg" = (
+            nitsm.enums.InstrumentTypeIdConstants.NI_GENERIC_MULTIPLEXER
+        ),
+    ) -> None:
+        """TODO"""
+        if isinstance(multiplexer_type_id, nitsm.enums.InstrumentTypeIdConstants):
+            multiplexer_type_id = multiplexer_type_id.value
+        session_id = id(session_data)
+        self._sessions[session_id] = session_data
+        return self._context.SetSwitchSession(multiplexer_type_id, switch_name, session_id)
+
+    def get_all_switch_sessions(
+        self,
+        multiplexer_type_id: "_InstrTypeIdArg" = (
+            nitsm.enums.InstrumentTypeIdConstants.NI_GENERIC_MULTIPLEXER
+        ),
+    ) -> "_AnyTuple":
+        """TODO"""
+        if isinstance(multiplexer_type_id, nitsm.enums.InstrumentTypeIdConstants):
+            multiplexer_type_id = multiplexer_type_id.value
+        session_ids = self._context.GetSwitchSessions(multiplexer_type_id)
+        return tuple(map(SemiconductorModuleContext._sessions.get, session_ids))
+
+    def pin_to_switch_sessions(
+        self,
+        pin: str,
+        multiplexer_type_id: "_InstrTypeIdArg" = (
+            nitsm.enums.InstrumentTypeIdConstants.NI_GENERIC_MULTIPLEXER
+        ),
+    ) -> "_SwitchQuery":
+        """TODO"""
+        if isinstance(multiplexer_type_id, nitsm.enums.InstrumentTypeIdConstants):
+            multiplexer_type_id = multiplexer_type_id.value
+        contexts, session_ids, switch_routes = self._context.GetSwitchSessions_2(
+            multiplexer_type_id, pin, [], [], []
+        )
+        contexts = tuple(map(SemiconductorModuleContext, contexts))
+        sessions = tuple(map(SemiconductorModuleContext._sessions.get, session_ids))
+        return contexts, sessions, switch_routes
 
     # Relay Driver
 
