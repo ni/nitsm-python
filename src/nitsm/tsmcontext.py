@@ -917,7 +917,17 @@ class SemiconductorModuleContext:
             nitsm.enums.InstrumentTypeIdConstants.NI_GENERIC_MULTIPLEXER
         ),
     ) -> "_StringTuple":
-        """TODO"""
+        """Returns the names of all switches of the type specified by the multiplexer_type_id in the
+        Semiconductor Module Context. You can use switch names to open driver sessions.
+
+        Args:
+            multiplexer_type_id: Specifies the type ID for the multiplexer in the pin map file. When
+                you add a multiplexer to the pin map file, you can define a type ID for the
+                multiplexer, such as the driver name. Multiplexers in the pin map that do not
+                specify a type ID have a default ID of
+                nitsm.enums.InstrumentTypeIdConstants.NI_GENERIC_MULTIPLEXER. Omit the argument for
+                this parameter to use the default type ID.
+        """
         if isinstance(multiplexer_type_id, nitsm.enums.InstrumentTypeIdConstants):
             multiplexer_type_id = multiplexer_type_id.value
         return self._context.GetSwitchNames(multiplexer_type_id)
@@ -930,7 +940,21 @@ class SemiconductorModuleContext:
             nitsm.enums.InstrumentTypeIdConstants.NI_GENERIC_MULTIPLEXER
         ),
     ) -> None:
-        """TODO"""
+        """Associates an open switch session with the switch_name for a multiplexer of type
+        multiplexer_type_id. Multiplexers in the pin map that do not specify a type ID have a
+        default ID of nitsm.enums.InstrumentTypeIdConstants.NI_GENERIC_MULTIPLEXER.
+
+        Args:
+            switch_name: The instrument name in the pin map file for the corresponding session_data.
+            session_data: The instrument session for the corresponding switch_name and
+                multiplexer_type_id.
+            multiplexer_type_id: Specifies the type ID for the multiplexer in the pin map file. When
+                you add a multiplexer to the pin map file, you can define a type ID for the
+                multiplexer, such as the driver name. Multiplexers in the pin map that do not
+                specify a type ID have a default ID of
+                nitsm.enums.InstrumentTypeIdConstants.NI_GENERIC_MULTIPLEXER. Omit the argument for
+                this parameter to use the default type ID.
+        """
         if isinstance(multiplexer_type_id, nitsm.enums.InstrumentTypeIdConstants):
             multiplexer_type_id = multiplexer_type_id.value
         session_id = id(session_data)
@@ -943,7 +967,17 @@ class SemiconductorModuleContext:
             nitsm.enums.InstrumentTypeIdConstants.NI_GENERIC_MULTIPLEXER
         ),
     ) -> "_AnyTuple":
-        """TODO"""
+        """Returns a tuple of all switch session data of the type specified by the
+        multiplexer_type_id in the Semiconductor Module Context.
+
+        Args:
+            multiplexer_type_id: Specifies the type ID for the multiplexer in the pin map file. When
+                you add a multiplexer to the pin map file, you can define a type ID for the
+                multiplexer, such as the driver name. Multiplexers in the pin map that do not
+                specify a type ID have a default ID of
+                nitsm.enums.InstrumentTypeIdConstants.NI_GENERIC_MULTIPLEXER. Omit the argument for
+                this parameter to use the default type ID.
+        """
         if isinstance(multiplexer_type_id, nitsm.enums.InstrumentTypeIdConstants):
             multiplexer_type_id = multiplexer_type_id.value
         session_ids = self._context.GetSwitchSessions(multiplexer_type_id)
@@ -956,7 +990,29 @@ class SemiconductorModuleContext:
             nitsm.enums.InstrumentTypeIdConstants.NI_GENERIC_MULTIPLEXER
         ),
     ) -> "_SwitchQuery":
-        """TODO"""
+        """Returns the switch sessions, switch routes, and new Semiconductor Module context objects
+        required to access the specified switched pin. Multiplexers in the pin map that do not
+        specify a type ID have a default ID of
+        nitsm.enums.InstrumentTypeIdConstants.NI_GENERIC_MULTIPLEXER. Omit the argument for this
+        parameter to use the default type ID.
+
+        Args:
+            pin: The name of the pin to translate to session data and switch routes.
+            multiplexer_type_id: Specifies the type ID for the multiplexer in the pin map file. When
+                you add a multiplexer to the pin map file, you can define a type ID for the
+                multiplexer, such as the driver name. Multiplexers in the pin map that do not
+                specify a type ID have a default ID of
+                nitsm.enums.InstrumentTypeIdConstants.NI_GENERIC_MULTIPLEXER. Omit the argument for
+                this parameter to use the default type ID.
+
+        Returns:
+            semiconductor_module_contexts: A tuple of Semiconductor Module context objects. Each
+                element in the tuple represents a site that must be executed serially. Use each
+                Semiconductor Module context object to query the pin map and publish data.
+            session_data: A tuple of the session data required to access the switch that connects an
+                instrument channel to the pin.
+            switch_routes: The routes required to connect an instrument channel to the pin.
+        """
         if isinstance(multiplexer_type_id, nitsm.enums.InstrumentTypeIdConstants):
             multiplexer_type_id = multiplexer_type_id.value
         contexts, session_ids, switch_routes = self._context.GetSwitchSessions_2(
