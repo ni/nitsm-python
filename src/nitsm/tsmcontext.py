@@ -1017,10 +1017,6 @@ class SemiconductorModuleContext:
         if isinstance(multiplexer_type_id, nitsm.enums.InstrumentTypeIdConstants):
             multiplexer_type_id = multiplexer_type_id.value
         # have to use DumbDispatch since ISemiconductorModuleContext returns as PyIUnknown
-        multiplexer_type_id_variant = win32com.client.VARIANT(
-            pythoncom.VT_BSTR, multiplexer_type_id
-        )
-        pin_variant = win32com.client.VARIANT(pythoncom.VT_BSTR, pin)
         tsm_contexts_variant = win32com.client.VARIANT(
             pythoncom.VT_BYREF | pythoncom.VT_ARRAY | pythoncom.VT_UNKNOWN, []
         )
