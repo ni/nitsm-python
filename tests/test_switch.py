@@ -55,4 +55,4 @@ class TestSwitch:
             assert isinstance(session, str)
             assert session in simulated_switch_sessions
             assert isinstance(switch_route, str)
-            assert switch_route == "DUTPin1"
+            assert switch_route == f"DUTPin1Site{tsm_context.site_numbers[0]}"

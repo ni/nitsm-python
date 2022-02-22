@@ -10,10 +10,12 @@
 	<PinGroups></PinGroups>
 	<Sites>
 		<Site siteNumber="0" />
+		<Site siteNumber="1" />
 	</Sites>
 	<Connections>
 		<MultiplexedConnection instrument="DigitalPattern1" channel="0">
-			<MultiplexedDUTPinRoute pin="DUTPin1" siteNumber="0" multiplexer="Multiplexer1" routeName="DUTPin1" />
+			<MultiplexedDUTPinRoute pin="DUTPin1" siteNumber="0" multiplexer="Multiplexer1" routeName="DUTPin1Site0" />
+			<MultiplexedDUTPinRoute pin="DUTPin1" siteNumber="1" multiplexer="Multiplexer1" routeName="DUTPin1Site1" />
 		</MultiplexedConnection>
 	</Connections>
 </PinMap>
