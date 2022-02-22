@@ -1017,26 +1017,28 @@ class SemiconductorModuleContext:
         if isinstance(multiplexer_type_id, nitsm.enums.InstrumentTypeIdConstants):
             multiplexer_type_id = multiplexer_type_id.value
         # have to use DumbDispatch since ISemiconductorModuleContext returns as PyIUnknown
-        multiplexer_type_id = win32com.client.VARIANT(pythoncom.VT_BSTR, multiplexer_type_id)
-        pin = win32com.client.VARIANT(pythoncom.VT_BSTR, pin)
-        tsm_contexts = win32com.client.VARIANT(
+        multiplexer_type_id_variant = win32com.client.VARIANT(
+            pythoncom.VT_BSTR, multiplexer_type_id
+        )
+        pin_variant = win32com.client.VARIANT(pythoncom.VT_BSTR, pin)
+        tsm_contexts_variant = win32com.client.VARIANT(
             pythoncom.VT_BYREF | pythoncom.VT_ARRAY | pythoncom.VT_UNKNOWN, []
         )
-        sessions = win32com.client.VARIANT(
+        sessions_variant = win32com.client.VARIANT(
             pythoncom.VT_BYREF | pythoncom.VT_ARRAY | pythoncom.VT_VARIANT, []
         )
-        switch_routes = win32com.client.VARIANT(
+        switch_routes_variant = win32com.client.VARIANT(
             pythoncom.VT_BYREF | pythoncom.VT_ARRAY | pythoncom.VT_BSTR, []
         )
-        dumb_obj = win32com.client.dynamic.DumbDispatch(self._context)
-        dumb_obj.GetSwitchSessions_2(
-            multiplexer_type_id, pin, tsm_contexts, sessions, switch_routes
+        dumb_object = win32com.client.dynamic.DumbDispatch(self._context)
+        dumb_object.GetSwitchSessions_2(
+            multiplexer_type_id, pin, tsm_contexts_variant, sessions_variant, switch_routes_variant
         )
         tsm_contexts = tuple(
-            SemiconductorModuleContext(tsm_context) for tsm_context in tsm_contexts.value
+            SemiconductorModuleContext(tsm_context) for tsm_context in tsm_contexts_variant.value
         )
-        sessions = tuple(map(SemiconductorModuleContext._sessions.get, sessions.value))
-        return tsm_contexts, sessions, switch_routes.value
+        sessions = tuple(map(SemiconductorModuleContext._sessions.get, sessions_variant.value))
+        return tsm_contexts, sessions, switch_routes_variant.value
 
     # Relay Driver
 
