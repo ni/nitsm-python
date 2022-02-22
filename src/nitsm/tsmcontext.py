@@ -7,6 +7,7 @@ import nitsm._pinmapinterfaces
 import nitsm.enums
 import nitsm.pinquerycontexts
 import pythoncom
+import win32com.client.dynamic
 
 __all__ = ["SemiconductorModuleContext"]
 
@@ -19,7 +20,6 @@ if typing.TYPE_CHECKING:
     import nifgen
     import niscope
     import niswitch
-    import win32com.client.dynamic
 
     _ISemiconductorModuleContext = win32com.client.dynamic.CDispatch
     _PinQueryContext = nitsm.pinquerycontexts.PinQueryContext
@@ -99,9 +99,10 @@ class SemiconductorModuleContext:
             tsm_com_obj: The win32com.client.dynamic.CDispatch object provided by TestStand.
         """
         self._context = nitsm._pinmapinterfaces.ISemiconductorModuleContext(tsm_com_obj)
-        self._context._oleobj_ = tsm_com_obj._oleobj_.QueryInterface(
-            self._context.CLSID, pythoncom.IID_IDispatch
-        )
+        if not isinstance(self._context._oleobj_, pythoncom.TypeIIDs[pythoncom.IID_IDispatch]):
+            self._context._oleobj_ = tsm_com_obj.QueryInterface(
+                self._context.CLSID, pythoncom.IID_IDispatch
+            )
 
     # General and Advanced
 
@@ -1015,12 +1016,27 @@ class SemiconductorModuleContext:
         """
         if isinstance(multiplexer_type_id, nitsm.enums.InstrumentTypeIdConstants):
             multiplexer_type_id = multiplexer_type_id.value
-        contexts, session_ids, switch_routes = self._context.GetSwitchSessions_2(
-            multiplexer_type_id, pin, [], [], []
+        # have to use DumbDispatch since ISemiconductorModuleContext returns as PyIUnknown
+        multiplexer_type_id = win32com.client.VARIANT(pythoncom.VT_BSTR, multiplexer_type_id)
+        pin = win32com.client.VARIANT(pythoncom.VT_BSTR, pin)
+        tsm_contexts = win32com.client.VARIANT(
+            pythoncom.VT_BYREF | pythoncom.VT_ARRAY | pythoncom.VT_UNKNOWN, []
         )
-        contexts = tuple(map(SemiconductorModuleContext, contexts))
-        sessions = tuple(map(SemiconductorModuleContext._sessions.get, session_ids))
-        return contexts, sessions, switch_routes
+        sessions = win32com.client.VARIANT(
+            pythoncom.VT_BYREF | pythoncom.VT_ARRAY | pythoncom.VT_VARIANT, []
+        )
+        switch_routes = win32com.client.VARIANT(
+            pythoncom.VT_BYREF | pythoncom.VT_ARRAY | pythoncom.VT_BSTR, []
+        )
+        dumb_obj = win32com.client.dynamic.DumbDispatch(self._context)
+        dumb_obj.GetSwitchSessions_2(
+            multiplexer_type_id, pin, tsm_contexts, sessions, switch_routes
+        )
+        tsm_contexts = tuple(
+            SemiconductorModuleContext(tsm_context) for tsm_context in tsm_contexts.value
+        )
+        sessions = tuple(map(SemiconductorModuleContext._sessions.get, sessions.value))
+        return tsm_contexts, sessions, switch_routes.value
 
     # Relay Driver
 
