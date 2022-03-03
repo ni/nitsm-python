@@ -7,7 +7,7 @@ import nitsm._pinmapinterfaces
 import nitsm.enums
 import nitsm.pinquerycontexts
 import pythoncom
-import win32com.client.dynamic
+import win32com.client
 
 __all__ = ["SemiconductorModuleContext"]
 
@@ -98,11 +98,9 @@ class SemiconductorModuleContext:
         Args:
             tsm_com_obj: The win32com.client.dynamic.CDispatch object provided by TestStand.
         """
-        self._context = nitsm._pinmapinterfaces.ISemiconductorModuleContext(tsm_com_obj)
-        if not isinstance(self._context._oleobj_, pythoncom.TypeIIDs[pythoncom.IID_IDispatch]):
-            self._context._oleobj_ = tsm_com_obj.QueryInterface(
-                self._context.CLSID, pythoncom.IID_IDispatch
-            )
+        clsid = nitsm._pinmapinterfaces.ISemiconductorModuleContext.CLSID
+        interface = tsm_com_obj._oleobj_.QueryInterface(clsid, pythoncom.IID_IDispatch)  # noqa
+        self._context = nitsm._pinmapinterfaces.ISemiconductorModuleContext(interface)
 
     # General and Advanced
 
@@ -1026,13 +1024,12 @@ class SemiconductorModuleContext:
         switch_routes_variant = win32com.client.VARIANT(
             pythoncom.VT_BYREF | pythoncom.VT_ARRAY | pythoncom.VT_BSTR, []
         )
-        dumb_object = win32com.client.dynamic.DumbDispatch(self._context)
-        dumb_object.GetSwitchSessions_2(
+        this_dumb_tsm_context = win32com.client.dynamic.DumbDispatch(self._context)
+        this_dumb_tsm_context.GetSwitchSessions_2(
             multiplexer_type_id, pin, tsm_contexts_variant, sessions_variant, switch_routes_variant
         )
-        tsm_contexts = tuple(
-            SemiconductorModuleContext(tsm_context) for tsm_context in tsm_contexts_variant.value
-        )
+        dumb_tsm_contexts = map(win32com.client.dynamic.DumbDispatch, tsm_contexts_variant.value)
+        tsm_contexts = tuple(map(SemiconductorModuleContext, dumb_tsm_contexts))
         sessions = tuple(map(SemiconductorModuleContext._sessions.get, sessions_variant.value))
         return tsm_contexts, sessions, switch_routes_variant.value
 
