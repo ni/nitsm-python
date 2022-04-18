@@ -1,13 +1,17 @@
-import pytest
+""" Getting Started with Semiconductor Module example!
+
+    Example NI TSM Test Program using simulated niDigital and niDcPower instruments
+"""
+
+import random
+from random import gauss
+
 import nidcpower
 import nidigital
 import nitsm.codemoduleapi
-from nitsm.codemoduleapi import SemiconductorModuleContext
+import pytest
 from nitsm.codemoduleapi import Capability, InstrumentTypeIdConstants
-import random
-from random import gauss
-import os
-import ctypes
+from nitsm.codemoduleapi import SemiconductorModuleContext
 
 DCPower_options = {"Simulate": True, "DriverSetup": {"Model": "4143", "BoardType": "PXIe"}}
 Digital_options = {"Simulate": True, "driver_setup": {"Model": "6570"}}
@@ -15,11 +19,13 @@ Digital_options = {"Simulate": True, "driver_setup": {"Model": "6570"}}
 
 @pytest.mark.sequence_file("Getting Started with Semiconductor Module.seq")
 def test_getting_started_with_semiconductor_module(system_test_runner):
+    """Test runner."""
     assert system_test_runner.run()
 
 
 @nitsm.codemoduleapi.code_module
 def open_dcpower_sessions(tsm_context: SemiconductorModuleContext):
+    """Open niDcPower instrument sessions."""
     resource_strings = tsm_context.get_all_nidcpower_resource_strings()
     for resource_string in resource_strings:
         session = nidcpower.Session(resource_string, options=DCPower_options)
@@ -28,6 +34,7 @@ def open_dcpower_sessions(tsm_context: SemiconductorModuleContext):
 
 @nitsm.codemoduleapi.code_module
 def open_digital_sessions(tsm_context: SemiconductorModuleContext):
+    """Open niDigital instrument sessions."""
     instrument_names = tsm_context.get_all_nidigital_instrument_names()
     for instrument_name in instrument_names:
         session = nidigital.Session(instrument_name, options=Digital_options)
@@ -36,6 +43,7 @@ def open_digital_sessions(tsm_context: SemiconductorModuleContext):
 
 @nitsm.codemoduleapi.code_module
 def open_all_instruments_sessions(tsm_context: SemiconductorModuleContext):
+    """Open all instrument sessions."""
     open_dcpower_sessions(tsm_context)
     open_digital_sessions(tsm_context)
 
@@ -45,7 +53,7 @@ def continuity(
     tsm_context: SemiconductorModuleContext,
     pins,
 ):
-
+    """Measure continuity on configured Pins (niDcPower, niDigital)."""
     dcpower_filtered_pins = tsm_context.filter_pins_by_instrument_type(
         pins, InstrumentTypeIdConstants.NI_DCPOWER, Capability.ALL
     )
@@ -117,7 +125,7 @@ def leakage(
     tsm_context: SemiconductorModuleContext,
     pins,
 ):
-
+    """Measure leakage on configured Pins (niDcPower, niDigital)."""
     dcpower_filtered_pins = tsm_context.filter_pins_by_instrument_type(
         pins, InstrumentTypeIdConstants.NI_DCPOWER, Capability.ALL
     )
@@ -145,7 +153,7 @@ def leakage(
     )
 
     measurements = []
-    DC_max_leakage_measurements = []
+    dc_max_leakage_measurements = []
     for session, pin_set_string in zip(sessions, pin_set_strings):
         assert isinstance(session, nidigital.Session)
         assert isinstance(pin_set_string, str)
@@ -164,9 +172,9 @@ def leakage(
                 (((1.05e-7 - 2.2e-8) * gauss(0, 0.19)) + (((1.05e-7 - 2.2e-8) / 2) + 2.2e-8)),
             )
 
-        DC_max_leakage_measurements.append(measurements)
+        dc_max_leakage_measurements.append(measurements)
 
-    pin_query.publish(DC_max_leakage_measurements, "DC.vcc_max")
+    pin_query.publish(dc_max_leakage_measurements, "DC.vcc_max")
 
     # Turn off Vcc to 0V and measure leakage current
     pin_query, sessions, channel_strings = tsm_context.pins_to_nidcpower_sessions(
@@ -188,7 +196,7 @@ def leakage(
         digital_filtered_pins
     )
     measurements = []
-    DC_ground_leakage_measurements = []
+    dc_ground_leakage_measurements = []
     for session, pin_set_string in zip(sessions, pin_set_strings):
         assert isinstance(session, nidigital.Session)
         assert isinstance(pin_set_string, str)
@@ -207,9 +215,9 @@ def leakage(
                 (((1.05e-7 - 2.2e-8) * gauss(0, 0.19)) + (((1.05e-7 - 2.2e-8) / 2) + 2.2e-8)),
             )
 
-        DC_ground_leakage_measurements.append(measurements)
+        dc_ground_leakage_measurements.append(measurements)
 
-    pin_query.publish(DC_ground_leakage_measurements, "DC.gnd")
+    pin_query.publish(dc_ground_leakage_measurements, "DC.gnd")
 
 
 @nitsm.codemoduleapi.code_module
@@ -217,8 +225,7 @@ def functional(
     tsm_context: SemiconductorModuleContext,
     pins,
 ):
-    # ctypes.windll.user32.MessageBoxA(None, “Process name: niPythonHost.exe and Process ID: “  str(os.getpid()), “Attach debugger”, 0)
-
+    """Test DUT functionality using Digital patterns."""
     filtered_pins = tsm_context.filter_pins_by_instrument_type(
         pins, InstrumentTypeIdConstants.NI_DIGITAL_PATTERN, Capability.ALL
     )
@@ -253,6 +260,7 @@ def functional(
 
 @nitsm.codemoduleapi.code_module
 def close_all_instruments_sessions(tsm_context: SemiconductorModuleContext):
+    """Close all instrument sessions."""
     sessions = tsm_context.get_all_nidcpower_sessions()
     for session in sessions:
         session.close()
