@@ -71,8 +71,10 @@ def continuity(
         # simulate continuity data for each channel
         per_dcpower_session_measurements = []
         for _ in channel_string.split(","):
-            per_dcpower_session_measurements += ((((0.75 - -0.75) * gauss(0, 0.17)) + (((0.75 - -0.75) / 2) + -0.75)),)
-        
+            per_dcpower_session_measurements += (
+                (((0.75 - -0.75) * gauss(0, 0.17)) + (((0.75 - -0.75) / 2) + -0.75)),
+            )
+
         dcpower_continuity_measurements.append(per_dcpower_session_measurements)
 
     pin_query.publish(dcpower_continuity_measurements)
@@ -93,14 +95,18 @@ def continuity(
         session.ppmu_output_function = nidigital.PPMUOutputFunction.VOLTAGE
         session.ppmu_voltage_level = 10e-3
         session.ppmu_source()
-        per_digital_session_measurements = session.ppmu_measure(nidigital.PPMUMeasurementType.VOLTAGE)
+        per_digital_session_measurements = session.ppmu_measure(
+            nidigital.PPMUMeasurementType.VOLTAGE
+        )
         session.abort
 
         # simulate continuity data
         per_digital_session_measurements = []
         for _ in pin_set_string.split(","):
-            per_digital_session_measurements += ((((0.75 - -0.75) * gauss(0, 0.17)) + (((0.75 - -0.75) / 2) + -0.75)),)
-        
+            per_digital_session_measurements += (
+                (((0.75 - -0.75) * gauss(0, 0.17)) + (((0.75 - -0.75) / 2) + -0.75)),
+            )
+
         digital_continuity_measurements.append(per_digital_session_measurements)
 
     pin_query.publish(digital_continuity_measurements)
@@ -150,7 +156,7 @@ def leakage(
         session.ppmu_source()
         session.ppmu_measure(nidigital.PPMUMeasurementType.VOLTAGE)
         session.abort
-        
+
         # simulate leakage current using a 50µA range
         measurements = []
         for _ in pin_set_string.split(","):
@@ -231,14 +237,14 @@ def functional(
         session.configure_voltage_levels(0.1, 3.3, 0.5, 2.5, 5.5)
         session.commit()
         session.abort()
-        
+
         # simulate site pass/fail data as dict with siteNumber as key
         pattern_status = {}
         for site in site_list.split(","):
-            #remove the text site and retain just the number
-            site = site.replace("site","")
+            # remove the text site and retain just the number
+            site = site.replace("site", "")
             simulated_data = random.random()
-            pattern_status[int(site)] = (simulated_data > 0.02)
+            pattern_status[int(site)] = simulated_data > 0.02
 
         pattern_results.append(pattern_status)
 
