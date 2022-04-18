@@ -43,8 +43,6 @@ project, run:
 ```
 ni-python-styleguide lint
 ```
-**Note:** Only version 1.2 of ni-python-styleguide is currently supported. This issue is tracked by 
-[#41](https://github.com/ni/nitsm-python/issues/41).
 
 ## Testing
 Executing nitsm-python tests in the [tests/](https://github.com/ni/nitsm-python/tree/main/tests) directory requires the
