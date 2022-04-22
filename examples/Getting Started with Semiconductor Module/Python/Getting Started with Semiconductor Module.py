@@ -1,43 +1,37 @@
 """ Getting Started with Semiconductor Module example!
 
-    Example NI TSM Test Program using simulated niDigital and niDcPower instruments
+    Example NI TSM Test Program using simulated NI-Digital and NI-DCPower instruments
 """
 
 import random
-from random import gauss
 
 import nidcpower
 import nidigital
 import nitsm.codemoduleapi
-import pytest
 from nitsm.codemoduleapi import Capability, InstrumentTypeIdConstants
 from nitsm.codemoduleapi import SemiconductorModuleContext
-
-DCPower_options = {"Simulate": True, "DriverSetup": {"Model": "4143", "BoardType": "PXIe"}}
-Digital_options = {"Simulate": True, "driver_setup": {"Model": "6570"}}
-
-
-@pytest.mark.sequence_file("Getting Started with Semiconductor Module.seq")
-def test_getting_started_with_semiconductor_module(system_test_runner):
-    """Test runner."""
-    assert system_test_runner.run()
 
 
 @nitsm.codemoduleapi.code_module
 def open_dcpower_sessions(tsm_context: SemiconductorModuleContext):
-    """Open niDcPower instrument sessions."""
+    """Open NI-DCPower instrument sessions."""
     resource_strings = tsm_context.get_all_nidcpower_resource_strings()
     for resource_string in resource_strings:
-        session = nidcpower.Session(resource_string, options=DCPower_options)
+        session = nidcpower.Session(
+            resource_string,
+            options={"Simulate": True, "DriverSetup": {"Model": "4143", "BoardType": "PXIe"}},
+        )
         tsm_context.set_nidcpower_session(resource_string, session)
 
 
 @nitsm.codemoduleapi.code_module
 def open_digital_sessions(tsm_context: SemiconductorModuleContext):
-    """Open niDigital instrument sessions."""
+    """Open NI-Digital instrument sessions."""
     instrument_names = tsm_context.get_all_nidigital_instrument_names()
     for instrument_name in instrument_names:
-        session = nidigital.Session(instrument_name, options=Digital_options)
+        session = nidigital.Session(
+            instrument_name, options={"Simulate": True, "driver_setup": {"Model": "6570"}}
+        )
         tsm_context.set_nidigital_session(instrument_name, session)
 
 
@@ -53,7 +47,7 @@ def continuity(
     tsm_context: SemiconductorModuleContext,
     pins,
 ):
-    """Measure continuity on configured Pins (niDcPower, niDigital)."""
+    """Measure continuity on configured Pins (NI-DCPower, NI-Digital)."""
     dcpower_filtered_pins = tsm_context.filter_pins_by_instrument_type(
         pins, InstrumentTypeIdConstants.NI_DCPOWER, Capability.ALL
     )
@@ -79,9 +73,7 @@ def continuity(
         # simulate continuity data for each channel
         per_dcpower_session_measurements = []
         for _ in channel_string.split(","):
-            per_dcpower_session_measurements += (
-                (((0.75 - -0.75) * gauss(0, 0.17)) + (((0.75 - -0.75) / 2) + -0.75)),
-            )
+            per_dcpower_session_measurements += simulate_parametric_measurement(0.75, -0.75, 0.17)
 
         dcpower_continuity_measurements.append(per_dcpower_session_measurements)
 
@@ -111,9 +103,7 @@ def continuity(
         # simulate continuity data
         per_digital_session_measurements = []
         for _ in pin_set_string.split(","):
-            per_digital_session_measurements += (
-                (((0.75 - -0.75) * gauss(0, 0.17)) + (((0.75 - -0.75) / 2) + -0.75)),
-            )
+            per_dcpower_session_measurements += simulate_parametric_measurement(0.75, -0.75, 0.17)
 
         digital_continuity_measurements.append(per_digital_session_measurements)
 
@@ -125,7 +115,7 @@ def leakage(
     tsm_context: SemiconductorModuleContext,
     pins,
 ):
-    """Measure leakage on configured Pins (niDcPower, niDigital)."""
+    """Measure leakage on configured Pins (NI-DCPower, NI-Digital)."""
     dcpower_filtered_pins = tsm_context.filter_pins_by_instrument_type(
         pins, InstrumentTypeIdConstants.NI_DCPOWER, Capability.ALL
     )
@@ -165,12 +155,10 @@ def leakage(
         session.ppmu_measure(nidigital.PPMUMeasurementType.VOLTAGE)
         session.abort
 
-        # simulate leakage current using a 50µA range
+        # simulate leakage current
         measurements = []
         for _ in pin_set_string.split(","):
-            measurements += (
-                (((1.05e-7 - 2.2e-8) * gauss(0, 0.19)) + (((1.05e-7 - 2.2e-8) / 2) + 2.2e-8)),
-            )
+            measurements += simulate_parametric_measurement(1.05e-7, 2.2e-8, 0.19)
 
         dc_max_leakage_measurements.append(measurements)
 
@@ -208,12 +196,10 @@ def leakage(
         session.ppmu_measure(nidigital.PPMUMeasurementType.VOLTAGE)
         session.abort
 
-        # simulate leakage current using a 50µA range
+        # simulate leakage current
         measurements = []
         for _ in pin_set_string.split(","):
-            measurements += (
-                (((1.05e-7 - 2.2e-8) * gauss(0, 0.19)) + (((1.05e-7 - 2.2e-8) / 2) + 2.2e-8)),
-            )
+            measurements += simulate_parametric_measurement(1.05e-7, 2.2e-8, 0.19)
 
         dc_ground_leakage_measurements.append(measurements)
 
@@ -245,7 +231,7 @@ def functional(
         session.commit()
         session.abort()
 
-        # simulate site pass/fail data as dict with siteNumber as key
+        # simulate site pass/fail data as dict with int siteNumber as key
         pattern_status = {}
         for site in site_list.split(","):
             # remove the text site and retain just the number
@@ -268,3 +254,13 @@ def close_all_instruments_sessions(tsm_context: SemiconductorModuleContext):
     sessions = tsm_context.get_all_nidigital_sessions()
     for session in sessions:
         session.close()
+
+
+def simulate_parametric_measurement(upper_limit: float, lower_limit: float, std_dev: float):
+    """Generate simulated parametric measurement.
+
+    A random gaussian value between the limits is returned.
+    """
+    return ((upper_limit - lower_limit) * random.gauss(0, std_dev)) + (
+        ((upper_limit - lower_limit) / 2) + lower_limit
+    )
