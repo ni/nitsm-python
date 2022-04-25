@@ -917,7 +917,7 @@ class SemiconductorModuleContext:
         ),
     ) -> "_StringTuple":
         """Returns the names of all switches of the type specified by the multiplexer_type_id in the
-        Semiconductor Module Context. You can use switch names to open driver sessions.
+        Semiconductor Module context. You can use switch names to open driver sessions.
 
         Args:
             multiplexer_type_id: Specifies the type ID for the multiplexer in the pin map file. When
@@ -940,8 +940,7 @@ class SemiconductorModuleContext:
         ),
     ) -> None:
         """Associates an open switch session with the switch_name for a multiplexer of type
-        multiplexer_type_id. Multiplexers in the pin map that do not specify a type ID have a
-        default ID of nitsm.enums.InstrumentTypeIdConstants.NI_GENERIC_MULTIPLEXER.
+        multiplexer_type_id.
 
         Args:
             switch_name: The instrument name in the pin map file for the corresponding session_data.
@@ -967,7 +966,7 @@ class SemiconductorModuleContext:
         ),
     ) -> "_AnyTuple":
         """Returns a tuple of all switch session data of the type specified by the
-        multiplexer_type_id in the Semiconductor Module Context.
+        multiplexer_type_id in the Semiconductor Module context.
 
         Args:
             multiplexer_type_id: Specifies the type ID for the multiplexer in the pin map file. When
@@ -990,10 +989,7 @@ class SemiconductorModuleContext:
         ),
     ) -> "_SwitchQuery":
         """Returns the switch sessions, switch routes, and new Semiconductor Module context objects
-        required to access the specified switched pin. Multiplexers in the pin map that do not
-        specify a type ID have a default ID of
-        nitsm.enums.InstrumentTypeIdConstants.NI_GENERIC_MULTIPLEXER. Omit the argument for this
-        parameter to use the default type ID.
+        required to access the specified switched pin.
 
         Args:
             pin: The name of the pin to translate to session data and switch routes.
