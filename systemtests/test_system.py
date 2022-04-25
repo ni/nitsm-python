@@ -45,3 +45,8 @@ def test_custom_instruments(system_test_runner):
 @pytest.mark.sequence_file("site_and_global_data.seq")
 def test_site_and_global_data(system_test_runner):
     assert system_test_runner.run()
+
+
+@pytest.mark.sequence_file("switch.seq")
+def test_switch(system_test_runner):
+    assert system_test_runner.run()

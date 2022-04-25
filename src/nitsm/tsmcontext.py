@@ -1,5 +1,5 @@
 """TSM Context Wrapper"""
-
+import ctypes.wintypes
 import time
 import typing
 
@@ -92,14 +92,14 @@ class SemiconductorModuleContext:
 
     _sessions = {}
 
-    def __init__(self, tsm_com_obj: "_ISemiconductorModuleContext"):
+    def __init__(self, tsm_dispatch: "_ISemiconductorModuleContext"):
         """Wraps an instance of ISemiconductorModuleContext.
 
         Args:
-            tsm_com_obj: The win32com.client.dynamic.CDispatch object provided by TestStand.
+            tsm_dispatch: The win32com.client.dynamic.CDispatch object provided by TestStand.
         """
         clsid = nitsm._pinmapinterfaces.ISemiconductorModuleContext.CLSID
-        interface = tsm_com_obj._oleobj_.QueryInterface(clsid, pythoncom.IID_IDispatch)  # noqa
+        interface = tsm_dispatch._oleobj_.QueryInterface(clsid, pythoncom.IID_IDispatch)
         self._context = nitsm._pinmapinterfaces.ISemiconductorModuleContext(interface)
 
     # General and Advanced
@@ -1014,24 +1014,36 @@ class SemiconductorModuleContext:
         """
         if isinstance(multiplexer_type_id, nitsm.enums.InstrumentTypeIdConstants):
             multiplexer_type_id = multiplexer_type_id.value
-        # have to use DumbDispatch since ISemiconductorModuleContext returns as PyIUnknown
-        tsm_contexts_variant = win32com.client.VARIANT(
-            pythoncom.VT_BYREF | pythoncom.VT_ARRAY | pythoncom.VT_UNKNOWN, []
+        # We have to use DumbDispatch here because pywin32 fails to recognize
+        # ISemiconductorModuleContext as deriving from IDispatch; most likely because it isn't
+        # natively supported. So, we fetch it as IUnknown instead.
+        vt_by_ref_array = pythoncom.VT_BYREF | pythoncom.VT_ARRAY
+        site_contexts = win32com.client.VARIANT(vt_by_ref_array | pythoncom.VT_UNKNOWN, [])
+        sessions = win32com.client.VARIANT(vt_by_ref_array | pythoncom.VT_VARIANT, [])
+        switch_routes = win32com.client.VARIANT(vt_by_ref_array | pythoncom.VT_BSTR, [])
+        dumb_context = win32com.client.dynamic.DumbDispatch(self._context)
+        dumb_context.GetSwitchSessions_2(
+            multiplexer_type_id, pin, site_contexts, sessions, switch_routes
         )
-        sessions_variant = win32com.client.VARIANT(
-            pythoncom.VT_BYREF | pythoncom.VT_ARRAY | pythoncom.VT_VARIANT, []
-        )
-        switch_routes_variant = win32com.client.VARIANT(
-            pythoncom.VT_BYREF | pythoncom.VT_ARRAY | pythoncom.VT_BSTR, []
-        )
-        this_dumb_tsm_context = win32com.client.dynamic.DumbDispatch(self._context)
-        this_dumb_tsm_context.GetSwitchSessions_2(
-            multiplexer_type_id, pin, tsm_contexts_variant, sessions_variant, switch_routes_variant
-        )
-        dumb_tsm_contexts = map(win32com.client.dynamic.DumbDispatch, tsm_contexts_variant.value)
-        tsm_contexts = tuple(map(SemiconductorModuleContext, dumb_tsm_contexts))
-        sessions = tuple(map(SemiconductorModuleContext._sessions.get, sessions_variant.value))
-        return tsm_contexts, sessions, switch_routes_variant.value
+        # As of pywin32 303, there is a bug where SAFEARRAYs of IUnknown pointers leak references.
+        # See here: https://github.com/mhammond/pywin32/issues/1864
+        # As a work-around, we decrement the reference count until the only one left is held by
+        # Python. It will be released when the object is garbage collected.
+        add_ref = ctypes.WINFUNCTYPE(ctypes.wintypes.ULONG)(1, "AddRef")
+        release = ctypes.WINFUNCTYPE(ctypes.wintypes.ULONG)(2, "Release")
+        for site_context in site_contexts.value:
+            # address of IUnknown has to be parsed from the repr
+            # https://github.com/mhammond/pywin32/blob/main/com/win32com/src/PyIUnknown.cpp
+            address = ctypes.c_void_p(int(repr(site_context).split()[-1][:-1], 16))
+            # first add a reference in case the bug has been fixed; prevents count from reaching 0
+            add_ref(address)
+            # then release the reference until only one remains
+            while release(address) > 1:
+                pass
+        site_contexts = map(win32com.client.dynamic.DumbDispatch, site_contexts.value)
+        site_contexts = tuple(map(SemiconductorModuleContext, site_contexts))
+        sessions = tuple(map(SemiconductorModuleContext._sessions.get, sessions.value))
+        return site_contexts, sessions, switch_routes.value
 
     # Relay Driver
 
