@@ -1331,7 +1331,7 @@ class SemiconductorModuleContext:
         """
         return self._context.GetSpecValue(namespaced_symbol)
 
-    def get_specifications_values(self, namespaced_symbols: "_Sequence[str]") -> "_Tuple[str]":
+    def get_specifications_values(self, namespaced_symbols: "_Sequence[str]") -> "_StringTuple":
         """Returns the values calculated for the namespaced_symbols in the Semiconductor Module
         context specifications file. Raises an exception when the associated specifications file or
         any symbol cannot be found.
