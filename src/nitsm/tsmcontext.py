@@ -1,5 +1,5 @@
 """TSM Context Wrapper"""
-
+import ctypes.wintypes
 import time
 import typing
 
@@ -7,6 +7,7 @@ import nitsm._pinmapinterfaces
 import nitsm.enums
 import nitsm.pinquerycontexts
 import pythoncom
+import win32com.client
 
 __all__ = ["SemiconductorModuleContext"]
 
@@ -18,7 +19,6 @@ if typing.TYPE_CHECKING:
     import nifgen
     import niscope
     import niswitch
-    import win32com.client.dynamic
 
     _Any = typing.Any
     _Tuple = typing.Tuple
@@ -96,16 +96,15 @@ class SemiconductorModuleContext:
 
     _sessions = {}
 
-    def __init__(self, tsm_com_obj: "_ISemiconductorModuleContext"):
+    def __init__(self, tsm_dispatch: "_ISemiconductorModuleContext"):
         """Wraps an instance of ISemiconductorModuleContext.
 
         Args:
-            tsm_com_obj: The win32com.client.dynamic.CDispatch object provided by TestStand.
+            tsm_dispatch: The win32com.client.dynamic.CDispatch object provided by TestStand.
         """
-        self._context = nitsm._pinmapinterfaces.ISemiconductorModuleContext(tsm_com_obj)
-        self._context._oleobj_ = tsm_com_obj._oleobj_.QueryInterface(
-            self._context.CLSID, pythoncom.IID_IDispatch
-        )
+        clsid = nitsm._pinmapinterfaces.ISemiconductorModuleContext.CLSID
+        interface = tsm_dispatch._oleobj_.QueryInterface(clsid, pythoncom.IID_IDispatch)
+        self._context = nitsm._pinmapinterfaces.ISemiconductorModuleContext(interface)
 
     # General and Advanced
 
@@ -922,7 +921,7 @@ class SemiconductorModuleContext:
         ),
     ) -> "_StringTuple":
         """Returns the names of all switches of the type specified by the multiplexer_type_id in the
-        Semiconductor Module Context. You can use switch names to open driver sessions.
+        Semiconductor Module context. You can use switch names to open driver sessions.
 
         Args:
             multiplexer_type_id: Specifies the type ID for the multiplexer in the pin map file. When
@@ -945,8 +944,7 @@ class SemiconductorModuleContext:
         ),
     ) -> None:
         """Associates an open switch session with the switch_name for a multiplexer of type
-        multiplexer_type_id. Multiplexers in the pin map that do not specify a type ID have a
-        default ID of nitsm.enums.InstrumentTypeIdConstants.NI_GENERIC_MULTIPLEXER.
+        multiplexer_type_id.
 
         Args:
             switch_name: The instrument name in the pin map file for the corresponding session_data.
@@ -972,7 +970,7 @@ class SemiconductorModuleContext:
         ),
     ) -> "_AnyTuple":
         """Returns a tuple of all switch session data of the type specified by the
-        multiplexer_type_id in the Semiconductor Module Context.
+        multiplexer_type_id in the Semiconductor Module context.
 
         Args:
             multiplexer_type_id: Specifies the type ID for the multiplexer in the pin map file. When
@@ -995,10 +993,7 @@ class SemiconductorModuleContext:
         ),
     ) -> "_SwitchQuery":
         """Returns the switch sessions, switch routes, and new Semiconductor Module context objects
-        required to access the specified switched pin. Multiplexers in the pin map that do not
-        specify a type ID have a default ID of
-        nitsm.enums.InstrumentTypeIdConstants.NI_GENERIC_MULTIPLEXER. Omit the argument for this
-        parameter to use the default type ID.
+        required to access the specified switched pin.
 
         Args:
             pin: The name of the pin to translate to session data and switch routes.
@@ -1019,12 +1014,36 @@ class SemiconductorModuleContext:
         """
         if isinstance(multiplexer_type_id, nitsm.enums.InstrumentTypeIdConstants):
             multiplexer_type_id = multiplexer_type_id.value
-        contexts, session_ids, switch_routes = self._context.GetSwitchSessions_2(
-            multiplexer_type_id, pin, [], [], []
+        # We have to use DumbDispatch here because pywin32 fails to recognize
+        # ISemiconductorModuleContext as deriving from IDispatch; most likely because it isn't
+        # natively supported. So, we fetch it as IUnknown instead.
+        vt_by_ref_array = pythoncom.VT_BYREF | pythoncom.VT_ARRAY
+        site_contexts = win32com.client.VARIANT(vt_by_ref_array | pythoncom.VT_UNKNOWN, [])
+        sessions = win32com.client.VARIANT(vt_by_ref_array | pythoncom.VT_VARIANT, [])
+        switch_routes = win32com.client.VARIANT(vt_by_ref_array | pythoncom.VT_BSTR, [])
+        dumb_context = win32com.client.dynamic.DumbDispatch(self._context)
+        dumb_context.GetSwitchSessions_2(
+            multiplexer_type_id, pin, site_contexts, sessions, switch_routes
         )
-        contexts = tuple(map(SemiconductorModuleContext, contexts))
-        sessions = tuple(map(SemiconductorModuleContext._sessions.get, session_ids))
-        return contexts, sessions, switch_routes
+        # As of pywin32 303, there is a bug where SAFEARRAYs of IUnknown pointers leak references.
+        # See here: https://github.com/mhammond/pywin32/issues/1864
+        # As a work-around, we decrement the reference count until the only one left is held by
+        # Python. It will be released when the object is garbage collected.
+        add_ref = ctypes.WINFUNCTYPE(ctypes.wintypes.ULONG)(1, "AddRef")
+        release = ctypes.WINFUNCTYPE(ctypes.wintypes.ULONG)(2, "Release")
+        for site_context in site_contexts.value:
+            # address of IUnknown has to be parsed from the repr
+            # https://github.com/mhammond/pywin32/blob/main/com/win32com/src/PyIUnknown.cpp
+            address = ctypes.c_void_p(int(repr(site_context).split()[-1][:-1], 16))
+            # first add a reference in case the bug has been fixed; prevents count from reaching 0
+            add_ref(address)
+            # then release the reference until only one remains
+            while release(address) > 1:
+                pass
+        site_contexts = map(win32com.client.dynamic.DumbDispatch, site_contexts.value)
+        site_contexts = tuple(map(SemiconductorModuleContext, site_contexts))
+        sessions = tuple(map(SemiconductorModuleContext._sessions.get, sessions.value))
+        return site_contexts, sessions, switch_routes.value
 
     # Relay Driver
 
