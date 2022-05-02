@@ -25,9 +25,27 @@ jobs:
       py -3 -m pip install --upgrade tox
     displayName: 'Install or upgrade tox'
 
+  - task: PowerShell@2
+    displayName: 'Switch to old TestStand/TSM'
+    inputs:
+      targetType: filePath
+      filePath: 'C:\ProgramData\Salt Project\salt\srv\salt\tsm\Activate_TSVersion.ps1'
+      arguments: '-VersionToActivate old'
+
   - script: |
-      tox
-    displayName: 'Run python unit tests'
+      tox -- older
+    displayName: 'Run python unit tests with older version of TestStand/TSM'
+
+  - task: PowerShell@2
+    displayName: 'Switch to new TestStand/TSM'
+    inputs:
+      targetType: filePath
+      filePath: 'C:\ProgramData\Salt Project\salt\srv\salt\tsm\Activate_TSVersion.ps1'
+      arguments: '-VersionToActivate new'
+
+  - script: |
+      tox -- newer
+    displayName: 'Run python unit tests with newer version of TestStand/TSM'
 
   - task: PublishTestResults@2
     condition: succeededOrFailed()
