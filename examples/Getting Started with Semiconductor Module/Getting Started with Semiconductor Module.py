@@ -1,23 +1,28 @@
 """ Getting Started with Semiconductor Module example.
 
-    Example NI TSM Test Program using simulated NI-Digital and NI-DCPower instruments
+    Example NI TSM Test Program using simulated NI-Digital and NI-DCPower instruments.
 """
 
 import random
 
 import nidcpower
 import nidigital
-from nitsm.codemoduleapi import (
-    SemiconductorModuleContext,
-    code_module,
-    Capability,
-    InstrumentTypeIdConstants,
-)
+import nitsm.codemoduleapi as tsm
 
 
-@code_module
-def open_dcpower_sessions(tsm_context: SemiconductorModuleContext):
-    """Open NI-DCPower instrument sessions."""
+@tsm.code_module
+def add_instrument_sessions(tsm_context: tsm.SemiconductorModuleContext):
+    """Open sessions for NI-Digital and NI-DCPower instruments."""
+    # 1. Get the list of instruments from the pin map.
+    # 2. Set the instrument driver session for each instrument (simulated here).
+
+    instrument_names = tsm_context.get_all_nidigital_instrument_names()
+    for instrument_name in instrument_names:
+        session = nidigital.Session(
+            instrument_name, options={"Simulate": True, "driver_setup": {"Model": "6570"}}
+        )
+        tsm_context.set_nidigital_session(instrument_name, session)
+
     resource_strings = tsm_context.get_all_nidcpower_resource_strings()
     for resource_string in resource_strings:
         session = nidcpower.Session(
@@ -27,83 +32,71 @@ def open_dcpower_sessions(tsm_context: SemiconductorModuleContext):
         tsm_context.set_nidcpower_session(resource_string, session)
 
 
-@code_module
-def open_digital_sessions(tsm_context: SemiconductorModuleContext):
-    """Open NI-Digital instrument sessions."""
-    instrument_names = tsm_context.get_all_nidigital_instrument_names()
-    for instrument_name in instrument_names:
-        session = nidigital.Session(
-            instrument_name, options={"Simulate": True, "driver_setup": {"Model": "6570"}}
-        )
-        tsm_context.set_nidigital_session(instrument_name, session)
+@tsm.code_module
+def close_instrument_sessions(tsm_context: tsm.SemiconductorModuleContext):
+    """Close NI-Digital and NI-DCPower instrument sessions."""
+    # 1. Get the list of instrument driver sessions.
+    # 2. Close each session and cleanup resources (simulated here).
+    sessions = tsm_context.get_all_nidcpower_sessions()
+    for session in sessions:
+        session.close()
+
+    sessions = tsm_context.get_all_nidigital_sessions()
+    for session in sessions:
+        session.close()
 
 
-@code_module
-def open_all_instruments_sessions(tsm_context: SemiconductorModuleContext):
-    """Open all instrument sessions."""
-    open_dcpower_sessions(tsm_context)
-    open_digital_sessions(tsm_context)
-
-
-@code_module
+@tsm.code_module
 def continuity(
-    tsm_context: SemiconductorModuleContext,
+    tsm_context: tsm.SemiconductorModuleContext,
     pins,
 ):
     """Measure continuity on configured Pins (NI-DCPower, NI-Digital).
 
     This example uses simulated data and driver calls so it can run on a system without the
-    NI-Digital Pattern or NI-DCPower drivers installed. Refer to the Accelerometer example
+    NI-Digital Pattern or NI-DCPower instruments installed. Refer to the Accelerometer example
     for an example of a continuity test using the these drivers.
     """
     dcpower_filtered_pins = tsm_context.filter_pins_by_instrument_type(
-        pins, InstrumentTypeIdConstants.NI_DCPOWER, Capability.ALL
+        pins, tsm.InstrumentTypeIdConstants.NI_DCPOWER, tsm.Capability.ALL
     )
     pin_query, sessions, channel_strings = tsm_context.pins_to_nidcpower_sessions(
         dcpower_filtered_pins
     )
-    per_dcpower_session_measurements = []
     dcpower_continuity_measurements = []
     for session, channel_string in zip(sessions, channel_strings):
         # simulate continuity data for each channel
-        per_dcpower_session_measurements = []
-        for _ in channel_string.split(","):
-            per_dcpower_session_measurements += simulate_parametric_measurement(0.75, -0.75, 0.17)
-        dcpower_continuity_measurements.append(per_dcpower_session_measurements)
+        dcpower_continuity_measurements.append(simulate_continuity_data(channel_string))
 
     pin_query.publish(dcpower_continuity_measurements)
 
     digital_filtered_pins = tsm_context.filter_pins_by_instrument_type(
-        pins, InstrumentTypeIdConstants.NI_DIGITAL_PATTERN, Capability.ALL
+        pins, tsm.InstrumentTypeIdConstants.NI_DIGITAL_PATTERN, tsm.Capability.ALL
     )
     pin_query, sessions, pin_set_strings = tsm_context.pins_to_nidigital_sessions_for_ppmu(
         digital_filtered_pins
     )
-    per_digital_session_measurements = []
     digital_continuity_measurements = []
     for session, pin_set_string in zip(sessions, pin_set_strings):
         # simulate continuity data for each channel
-        per_digital_session_measurements = []
-        for _ in pin_set_string.split(","):
-            per_dcpower_session_measurements += simulate_parametric_measurement(0.75, -0.75, 0.17)
-        digital_continuity_measurements.append(per_digital_session_measurements)
+        digital_continuity_measurements.append(simulate_continuity_data(pin_set_string))
 
     pin_query.publish(digital_continuity_measurements)
 
 
-@code_module
+@tsm.code_module
 def leakage(
-    tsm_context: SemiconductorModuleContext,
+    tsm_context: tsm.SemiconductorModuleContext,
     pins,
 ):
     """Measure leakage on configured Pins (NI-DCPower, NI-Digital).
 
     This example uses simulated data and driver calls so it can run on a system without the
-    NI-Digital Pattern or NI-DCPower drivers installed. Refer to the Accelerometer example
+    NI-Digital Pattern or NI-DCPower instruments installed. Refer to the Accelerometer example
     for an example of a leakage test using the these drivers.
     """
     dcpower_filtered_pins = tsm_context.filter_pins_by_instrument_type(
-        pins, InstrumentTypeIdConstants.NI_DCPOWER, Capability.ALL
+        pins, tsm.InstrumentTypeIdConstants.NI_DCPOWER, tsm.Capability.ALL
     )
     (
         dcpower_pin_query,
@@ -112,7 +105,7 @@ def leakage(
     ) = tsm_context.pins_to_nidcpower_sessions(dcpower_filtered_pins)
 
     digital_filtered_pins = tsm_context.filter_pins_by_instrument_type(
-        pins, InstrumentTypeIdConstants.NI_DIGITAL_PATTERN, Capability.ALL
+        pins, tsm.InstrumentTypeIdConstants.NI_DIGITAL_PATTERN, tsm.Capability.ALL
     )
     (
         digital_pin_query,
@@ -129,10 +122,7 @@ def leakage(
     dc_max_leakage_measurements = []
     for session, pin_set_string in zip(digital_sessions, digital_pin_set_strings):
         # simulate leakage current
-        measurements = []
-        for _ in pin_set_string.split(","):
-            measurements += simulate_parametric_measurement(1.05e-7, 2.2e-8, 0.19)
-        dc_max_leakage_measurements.append(measurements)
+        dc_max_leakage_measurements.append(simulate_leakage_data(pin_set_string))
 
     digital_pin_query.publish(dc_max_leakage_measurements, "DC.vcc_max")
 
@@ -145,33 +135,24 @@ def leakage(
     dc_ground_leakage_measurements = []
     for session, pin_set_string in zip(digital_sessions, digital_pin_set_strings):
         # simulate leakage current
-        measurements = []
-        for _ in pin_set_string.split(","):
-            measurements += simulate_parametric_measurement(1.05e-7, 2.2e-8, 0.19)
-        dc_ground_leakage_measurements.append(measurements)
+        dc_ground_leakage_measurements.append(simulate_leakage_data(pin_set_string))
 
     digital_pin_query.publish(dc_ground_leakage_measurements, "DC.gnd")
 
 
-def simulate_set_power_supply_voltage(
-    session: nidcpower.Session, channel_string: str, set_voltage: float
-):
-    """Simulate configuring a voltage on an NI-DCPower instrument."""
-
-
-@code_module
+@tsm.code_module
 def functional(
-    tsm_context: SemiconductorModuleContext,
+    tsm_context: tsm.SemiconductorModuleContext,
     pins,
 ):
     """Test DUT functionality using Digital patterns.
 
     This example uses simulated data and driver calls so it can run on a system without the
-    NI-Digital Pattern driver installed. Refer to the Accelerometer example for an example
+    NI-Digital Pattern instruments installed. Refer to the Accelerometer example for an example
     of a functional test using the driver.
     """
     filtered_pins = tsm_context.filter_pins_by_instrument_type(
-        pins, InstrumentTypeIdConstants.NI_DIGITAL_PATTERN, Capability.ALL
+        pins, tsm.InstrumentTypeIdConstants.NI_DIGITAL_PATTERN, tsm.Capability.ALL
     )
     pin_query, sessions, site_lists = tsm_context.pins_to_nidigital_sessions_for_pattern(
         filtered_pins
@@ -180,30 +161,16 @@ def functional(
     # Publish pattern result is a list of dict where each element corresponds to a session
     pattern_results = []
     for session, site_list in zip(sessions, site_lists):
-        # simulate site pass/fail data as dict with int siteNumber as key
-        pattern_status = {}
-        for site in site_list.split(","):
-            # remove the text site and retain just the number
-            site = site.replace("site", "")
-            simulated_data = random.random()
-            # Simulates a functional test that bursts a pattern and gets each site failed status.
-            pattern_status[int(site)] = simulated_data > 0.02
-
-        pattern_results.append(pattern_status)
+        pattern_results.append(simulate_functional_data(site_list))
 
     pin_query.publish_pattern_results(pattern_results)
 
 
-@code_module
-def close_all_instruments_sessions(tsm_context: SemiconductorModuleContext):
-    """Close all instrument sessions."""
-    sessions = tsm_context.get_all_nidcpower_sessions()
-    for session in sessions:
-        session.close()
-
-    sessions = tsm_context.get_all_nidigital_sessions()
-    for session in sessions:
-        session.close()
+def simulate_set_power_supply_voltage(
+    session: nidcpower.Session, channel_string: str, set_voltage: float
+):
+    """Simulate configuring a voltage on an NI-DCPower instrument."""
+    pass
 
 
 def simulate_parametric_measurement(upper_limit: float, lower_limit: float, std_dev: float):
@@ -213,3 +180,30 @@ def simulate_parametric_measurement(upper_limit: float, lower_limit: float, std_
     """
     range = upper_limit - lower_limit
     return (range * random.gauss(0, std_dev)) + ((range / 2) + lower_limit)
+
+
+def simulate_continuity_data(channel_string: str):
+    """Simulate a continuity test. Generates a random data set."""
+    data = []
+    for _ in channel_string.split(","):
+        data.append(simulate_parametric_measurement(0.75, -0.75, 0.17))
+    return data
+
+
+def simulate_leakage_data(channel_list: str):
+    """Simulate a leakage test. Generates a random data set."""
+    data = []
+    for _ in channel_list.split(","):
+        data.append(simulate_parametric_measurement(0.75, -0.75, 0.17))
+    return data
+
+
+def simulate_functional_data(site_list: str):
+    """Simulate a functional test that bursts a pattern and gets each site failed status."""
+    # simulate site pass/fail data as dict with int siteNumber as key
+    data = {}
+    for site in site_list.split(","):
+        # remove the text "site" and retain just the number
+        site = site.replace("site", "")
+        data[int(site)] = random.random() > 0.02
+    return data
