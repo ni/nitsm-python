@@ -29,7 +29,7 @@ jobs:
     displayName: 'Switch to old TestStand/TSM'
     inputs:
       targetType: filePath
-      filePath: 'C:\ProgramData\Salt Project\salt\srv\salt\tsm\Activate_TSVersion.ps1'
+      filePath: 'C:\Activate_TSVersion.ps1'
       arguments: '-VersionToActivate old'
 
   - script: |
@@ -40,7 +40,7 @@ jobs:
     displayName: 'Switch to new TestStand/TSM'
     inputs:
       targetType: filePath
-      filePath: 'C:\ProgramData\Salt Project\salt\srv\salt\tsm\Activate_TSVersion.ps1'
+      filePath: 'C:\Activate_TSVersion.ps1'
       arguments: '-VersionToActivate new'
 
   - script: |
