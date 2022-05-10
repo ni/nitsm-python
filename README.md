@@ -3,7 +3,7 @@
 Write code modules with the TestStand Semiconductor Module in python.
 
 ## Note to End Users
-This project is not intended for use in a production environment. Our primary focus is to provide a pythonic approach to
+This project is intended for use in automated device validation. Our primary focus is to provide a pythonic approach to
 automated testing with TestStand and TSM. More emphasis has been placed on simplicity and usability than execution time.
 
 ## Python Version Support

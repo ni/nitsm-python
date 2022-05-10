@@ -12,7 +12,6 @@ import win32com.client
 __all__ = ["SemiconductorModuleContext"]
 
 if typing.TYPE_CHECKING:
-    from typing import Any as _Any, Tuple as _Tuple, Union as _Union, Sequence as _Sequence
     import nidigital
     import nidcpower
     import nidaqmx
@@ -20,6 +19,11 @@ if typing.TYPE_CHECKING:
     import nifgen
     import niscope
     import niswitch
+
+    _Any = typing.Any
+    _Tuple = typing.Tuple
+    _Union = typing.Union
+    _Sequence = typing.Sequence
 
     _ISemiconductorModuleContext = win32com.client.dynamic.CDispatch
     _PinQueryContext = nitsm.pinquerycontexts.PinQueryContext
@@ -1429,3 +1433,19 @@ class SemiconductorModuleContext:
         else:  # default to Sequence[str]
             self._context.PublishPerSite_3(pin, published_data_id, measurements)
         return None
+
+    # Specifications
+
+    def get_specifications_value(self, namespaced_symbol: str) -> str:
+        """Returns the value calculated for the namespaced_symbol in the Semiconductor Module
+        context specifications file. Raises an exception when the associated specifications file or
+        symbol cannot be found.
+        """
+        return self._context.GetSpecValue(namespaced_symbol)
+
+    def get_specifications_values(self, namespaced_symbols: "_Sequence[str]") -> "_StringTuple":
+        """Returns the values calculated for the namespaced_symbols in the Semiconductor Module
+        context specifications file. Raises an exception when the associated specifications file or
+        any symbol cannot be found.
+        """
+        return self._context.GetSpecValues(namespaced_symbols)
