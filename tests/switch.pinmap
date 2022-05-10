@@ -2,7 +2,7 @@
 <PinMap schemaVersion="1.5" xmlns="http://www.ni.com/TestStand/SemiconductorModule/PinMap.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<Instruments>
 		<NIDigitalPatternInstrument name="DigitalPattern1" numberOfChannels="32" group="Digital" />
-		<Multiplexer name="Multiplexer1" multiplexerTypeId="" />
+		<Multiplexer name="Multiplexer1" multiplexerTypeId="NIGenericMultiplexer" />
 	</Instruments>
 	<Pins>
 		<DUTPin name="DUTPin1" />
