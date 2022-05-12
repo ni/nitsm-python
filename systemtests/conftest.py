@@ -17,6 +17,7 @@ def get_env_variable_from_registry(variable_name):
     return winreg.QueryValueEx(key, variable_name)[0]
 
 _teststand_public_path = get_env_variable_from_registry("TestStandPublic64")
+
 class SystemTestRunner:
     # subprocess.run with check=True will throw an exception if the return code is non-zero
     # with stdout set to subprocess.PIPE, exit code and stdout will be included in the exception
