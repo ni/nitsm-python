@@ -3,9 +3,8 @@ import os.path
 import sys
 import shutil
 import subprocess
+import winreg
 import pytest
-
-_teststand_public_path = os.environ["TestStandPublic64"]
 
 _python_version = ".".join(map(str, sys.version_info[:2]))
 try:
@@ -18,6 +17,14 @@ class SystemTestRunner:
     # subprocess.run with check=True will throw an exception if the return code is non-zero
     # with stdout set to subprocess.PIPE, exit code and stdout will be included in the exception
     _SUBPROCESS_RUN_OPTIONS = {"stdout": subprocess.PIPE, "timeout": 180, "check": True}
+
+    def get_env_variable_from_registry(variable_name):
+        key = winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, r"System\CurrentControlSet\Control\Session Manager\Environment")
+        return winreg.QueryValueEx(key, variable_name)[0]
+
+    # we need to get the TestStand variables from the registry since the pipeline process 
+    # does not refresh its environment after running the TestStand version selector
+    _teststand_public_path = get_env_variable_from_registry("TestStandPublic64")
 
     _csharp_oi_path = os.path.join(
         _teststand_public_path,
@@ -77,7 +84,6 @@ class SystemTestRunner:
             **self._SUBPROCESS_RUN_OPTIONS,
         )
         return True
-
 
 @pytest.fixture(scope="session", autouse=True)
 def teststand_login_override():
