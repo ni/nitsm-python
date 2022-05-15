@@ -10,3 +10,4 @@ tox
 pytest
 pytest-cov
 black
+ni-python-styleguide

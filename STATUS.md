@@ -70,10 +70,10 @@
 | Custom          | SetCustomSession                                                        | set\_custom\_session                            | test\_custom\_instruments |
 | Custom          | GetCustomSession(s)                                                     | pins\_to\_custom\_session(s)                    | test\_custom\_instruments |
 | Custom          | GetAllCustomSessions                                                    | get\_all\_custom\_sessions                      | test\_custom\_instruments |
-| Multiplexer     | GetSwitchNames                                                          |                                                 |                           |
-| Multiplexer     | SetSwitchSession                                                        |                                                 |                           |
-| Multiplexer     | GetSwitchSession(s)                                                     |                                                 |                           |
-| Multiplexer     | GetAllSwitchSessions                                                    |                                                 |                           |
+| Multiplexer     | GetSwitchNames                                                          | get\_all\_switch\_names                         | test\_switch              |
+| Multiplexer     | SetSwitchSession                                                        | set\_switch\_session                            | test\_switch              |
+| Multiplexer     | GetSwitchSession(s)                                                     | pin\_to\_switch\_sessions                       | test\_switch              |
+| Multiplexer     | GetAllSwitchSessions                                                    | get\_all\_switch\_sessions                      | test\_switch              |
 
 ## Pin Query API
 | Class                           | .NET Method                                    | Python                                                                                             | Python System Tests |
