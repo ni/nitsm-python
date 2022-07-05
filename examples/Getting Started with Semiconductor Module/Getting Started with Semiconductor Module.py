@@ -113,7 +113,7 @@ def leakage(
         digital_pin_set_strings,
     ) = tsm_context.pins_to_nidigital_sessions_for_ppmu(digital_filtered_pins)
 
-    dc_vcc_max = tsm_context.get_specifications_value("DC.vcc_max")
+    dc_vcc_max = float(tsm_context.get_specifications_value("DC.vcc_max"))
 
     # Turn on power supply and force specified max value.
     for session, channel_string in zip(dcpower_sessions, dcpower_channel_strings):
@@ -126,7 +126,7 @@ def leakage(
 
     digital_pin_query.publish(dc_max_leakage_measurements, "DC.vcc_max")
 
-    dc_gnd = tsm_context.get_specifications_value("DC.gnd")
+    dc_gnd = float(tsm_context.get_specifications_value("DC.gnd"))
 
     # Turn off Vcc to 0V and measure leakage current
     for session, channel_string in zip(dcpower_sessions, dcpower_channel_strings):
