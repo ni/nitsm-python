@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Specifications xmlns="http://www.ni.com/schemas/Semiconductor/Specifications.xsd" xmlns:f="http://www.ni.com/schemas/Semiconductor/Formula.xsd" schemaVersion="1.0">
+  <Section name="DC">
+    <f:Formula symbol="gnd">
+      <f:Definition>0.0</f:Definition>
+    </f:Formula>
+    <f:Formula symbol="vcc_max">
+      <f:Definition>5.0</f:Definition>
+    </f:Formula>
+    <f:Formula symbol="vcc_typ">
+      <f:Definition>3.3</f:Definition>
+    </f:Formula>
+  </Section>
+</Specifications>

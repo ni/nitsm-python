@@ -1,0 +1,7 @@
+<SemiconductorModuleTests>
+	<SequenceName>	<StepName>	<TestName>	<TestNumber>	<Pin>	<LowLimitExpression>	<HighLimitExpression>	<ComparisonType>	<ScalingFactor>	<Units>	<EvaluationType>	<FailBin>	<PublishedDataId>
+	MainSequence	Continuity All Pins	Cont	100	AllPins	-750	750	GELE	m	V	Numeric Limit	4				
+	MainSequence	Leakage	Leak 0V	200	DigitalPins	22	105	GELE	n	A	Numeric Limit	6	DC.gnd	
+	MainSequence	Leakage	Leak 5V	210	DigitalPins	22	105	GELE	n	A	Numeric Limit	6	DC.vcc_max	
+	MainSequence	Functional	Func	300				LOG			Pass/Fail	5				
+</SemiconductorModuleTests>
