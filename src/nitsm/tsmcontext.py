@@ -1,5 +1,5 @@
 """TSM Context Wrapper"""
-
+import ctypes.wintypes
 import time
 import typing
 
@@ -7,6 +7,7 @@ import nitsm._pinmapinterfaces
 import nitsm.enums
 import nitsm.pinquerycontexts
 import pythoncom
+import win32com.client
 
 __all__ = ["SemiconductorModuleContext"]
 
@@ -18,7 +19,6 @@ if typing.TYPE_CHECKING:
     import nifgen
     import niscope
     import niswitch
-    import win32com.client.dynamic
 
     _Any = typing.Any
     _Tuple = typing.Tuple
@@ -32,6 +32,7 @@ if typing.TYPE_CHECKING:
     _CapabilityArg = _Union[nitsm.enums.Capability, str]
     _PinsArg = _Union[str, _Sequence[str]]  # argument that accepts 1 or more pins
     _StringTuple = _Tuple[str, ...]
+    _AnyTuple = _Tuple[_Any, ...]
 
     _NIDigitalSingleSessionPpmuQuery = _Tuple[_PinQueryContext, nidigital.Session, str]
     _NIDigitalMultipleSessionPpmuQuery = _Tuple[
@@ -69,6 +70,8 @@ if typing.TYPE_CHECKING:
         _PinQueryContext, _Tuple[niscope.Session, ...], _StringTuple
     ]
 
+    _SwitchQuery = _Tuple[_Tuple["SemiconductorModuleContext", ...], _AnyTuple, _StringTuple]
+
     _RelayDriverSingleSessionQuery = _Tuple[niswitch.Session, str]
     _RelayDriverMultipleSessionQuery = _Tuple[_Tuple[niswitch.Session, ...], _StringTuple]
 
@@ -93,16 +96,15 @@ class SemiconductorModuleContext:
 
     _sessions = {}
 
-    def __init__(self, tsm_com_obj: "_ISemiconductorModuleContext"):
+    def __init__(self, tsm_dispatch: "_ISemiconductorModuleContext"):
         """Wraps an instance of ISemiconductorModuleContext.
 
         Args:
-            tsm_com_obj: The win32com.client.dynamic.CDispatch object provided by TestStand.
+            tsm_dispatch: The win32com.client.dynamic.CDispatch object provided by TestStand.
         """
-        self._context = nitsm._pinmapinterfaces.ISemiconductorModuleContext(tsm_com_obj)
-        self._context._oleobj_ = tsm_com_obj._oleobj_.QueryInterface(
-            self._context.CLSID, pythoncom.IID_IDispatch
-        )
+        clsid = nitsm._pinmapinterfaces.ISemiconductorModuleContext.CLSID
+        interface = tsm_dispatch._oleobj_.QueryInterface(clsid, pythoncom.IID_IDispatch)
+        self._context = nitsm._pinmapinterfaces.ISemiconductorModuleContext(interface)
 
     # General and Advanced
 
@@ -909,6 +911,116 @@ class SemiconductorModuleContext:
             SemiconductorModuleContext._sessions[session_id] for session_id in session_ids
         )
         return pin_query_context, sessions, channel_lists
+
+    # Switching
+
+    def get_all_switch_names(self, multiplexer_type_id: "_InstrTypeIdArg") -> "_StringTuple":
+        """Returns the names of all switches of the type specified by the multiplexer_type_id in the
+        Semiconductor Module context. You can use switch names to open driver sessions.
+
+        Args:
+            multiplexer_type_id: Specifies the type ID for the multiplexer in the pin map file. When
+                you add a multiplexer to the pin map file, you can define a type ID for the
+                multiplexer, such as the driver name. Multiplexers in the pin map that do not
+                specify a type ID have a default ID of
+                nitsm.enums.InstrumentTypeIdConstants.NI_GENERIC_MULTIPLEXER.
+        """
+        if isinstance(multiplexer_type_id, nitsm.enums.InstrumentTypeIdConstants):
+            multiplexer_type_id = multiplexer_type_id.value
+        return self._context.GetSwitchNames(multiplexer_type_id)
+
+    def set_switch_session(
+        self, switch_name: str, session_data: "_Any", multiplexer_type_id: "_InstrTypeIdArg"
+    ) -> None:
+        """Associates an open switch session with the switch_name for a multiplexer of type
+        multiplexer_type_id.
+
+        Args:
+            switch_name: The instrument name in the pin map file for the corresponding session_data.
+            session_data: The instrument session for the corresponding switch_name and
+                multiplexer_type_id.
+            multiplexer_type_id: Specifies the type ID for the multiplexer in the pin map file. When
+                you add a multiplexer to the pin map file, you can define a type ID for the
+                multiplexer, such as the driver name. Multiplexers in the pin map that do not
+                specify a type ID have a default ID of
+                nitsm.enums.InstrumentTypeIdConstants.NI_GENERIC_MULTIPLEXER.
+        """
+        if isinstance(multiplexer_type_id, nitsm.enums.InstrumentTypeIdConstants):
+            multiplexer_type_id = multiplexer_type_id.value
+        session_id = id(session_data)
+        self._sessions[session_id] = session_data
+        return self._context.SetSwitchSession(multiplexer_type_id, switch_name, session_id)
+
+    def get_all_switch_sessions(self, multiplexer_type_id: "_InstrTypeIdArg") -> "_AnyTuple":
+        """Returns a tuple of all switch session data of the type specified by the
+        multiplexer_type_id in the Semiconductor Module context.
+
+        Args:
+            multiplexer_type_id: Specifies the type ID for the multiplexer in the pin map file. When
+                you add a multiplexer to the pin map file, you can define a type ID for the
+                multiplexer, such as the driver name. Multiplexers in the pin map that do not
+                specify a type ID have a default ID of
+                nitsm.enums.InstrumentTypeIdConstants.NI_GENERIC_MULTIPLEXER.
+        """
+        if isinstance(multiplexer_type_id, nitsm.enums.InstrumentTypeIdConstants):
+            multiplexer_type_id = multiplexer_type_id.value
+        session_ids = self._context.GetSwitchSessions(multiplexer_type_id)
+        return tuple(map(SemiconductorModuleContext._sessions.get, session_ids))
+
+    def pin_to_switch_sessions(
+        self, pin: str, multiplexer_type_id: "_InstrTypeIdArg"
+    ) -> "_SwitchQuery":
+        """Returns the switch sessions, switch routes, and new Semiconductor Module context objects
+        required to access the specified switched pin.
+
+        Args:
+            pin: The name of the pin to translate to session data and switch routes.
+            multiplexer_type_id: Specifies the type ID for the multiplexer in the pin map file. When
+                you add a multiplexer to the pin map file, you can define a type ID for the
+                multiplexer, such as the driver name. Multiplexers in the pin map that do not
+                specify a type ID have a default ID of
+                nitsm.enums.InstrumentTypeIdConstants.NI_GENERIC_MULTIPLEXER.
+
+        Returns:
+            semiconductor_module_contexts: A tuple of Semiconductor Module context objects. Each
+                element in the tuple represents a site that must be executed serially. Use each
+                Semiconductor Module context object to query the pin map and publish data.
+            session_data: A tuple of the session data required to access the switch that connects an
+                instrument channel to the pin.
+            switch_routes: The routes required to connect an instrument channel to the pin.
+        """
+        if isinstance(multiplexer_type_id, nitsm.enums.InstrumentTypeIdConstants):
+            multiplexer_type_id = multiplexer_type_id.value
+        # We have to use DumbDispatch here because pywin32 fails to recognize
+        # ISemiconductorModuleContext as deriving from IDispatch; most likely because it isn't
+        # natively supported. So, we fetch it as IUnknown instead.
+        vt_by_ref_array = pythoncom.VT_BYREF | pythoncom.VT_ARRAY
+        site_contexts = win32com.client.VARIANT(vt_by_ref_array | pythoncom.VT_UNKNOWN, [])
+        sessions = win32com.client.VARIANT(vt_by_ref_array | pythoncom.VT_VARIANT, [])
+        switch_routes = win32com.client.VARIANT(vt_by_ref_array | pythoncom.VT_BSTR, [])
+        dumb_context = win32com.client.dynamic.DumbDispatch(self._context)
+        dumb_context.GetSwitchSessions_2(
+            multiplexer_type_id, pin, site_contexts, sessions, switch_routes
+        )
+        # As of pywin32 303, there is a bug where SAFEARRAYs of IUnknown pointers leak references.
+        # See here: https://github.com/mhammond/pywin32/issues/1864
+        # As a work-around, we decrement the reference count until the only one left is held by
+        # Python. It will be released when the object is garbage collected.
+        add_ref = ctypes.WINFUNCTYPE(ctypes.wintypes.ULONG)(1, "AddRef")
+        release = ctypes.WINFUNCTYPE(ctypes.wintypes.ULONG)(2, "Release")
+        for site_context in site_contexts.value:
+            # address of IUnknown has to be parsed from the repr
+            # https://github.com/mhammond/pywin32/blob/main/com/win32com/src/PyIUnknown.cpp
+            address = ctypes.c_void_p(int(repr(site_context).split()[-1][:-1], 16))
+            # first add a reference in case the bug has been fixed; prevents count from reaching 0
+            add_ref(address)
+            # then release the reference until only one remains
+            while release(address) > 1:
+                pass
+        site_contexts = map(win32com.client.dynamic.DumbDispatch, site_contexts.value)
+        site_contexts = tuple(map(SemiconductorModuleContext, site_contexts))
+        sessions = tuple(map(SemiconductorModuleContext._sessions.get, sessions.value))
+        return site_contexts, sessions, switch_routes.value
 
     # Relay Driver
 
