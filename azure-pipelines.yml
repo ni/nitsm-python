@@ -15,14 +15,13 @@ jobs:
   pool:
     name: nitsm-python-test
 
-  # py -3 indicates the latest python version installed on the system
   steps:
   - script: |
-      py -3 -m pip install --upgrade pip
+      python -m pip install --upgrade pip
     displayName: 'Upgrade pip'
 
   - script: |
-      py -3 -m pip install --upgrade tox
+      python -m pip install --upgrade tox
     displayName: 'Install or upgrade tox'
 
   - task: PowerShell@2
