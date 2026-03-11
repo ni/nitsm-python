@@ -37,9 +37,9 @@ def measure_ppmu(
     for session, pin_set_string in zip(sessions, pin_set_strings):
         # call some methods on the session to ensure no errors
         session.pins[pin_set_string].ppmu_aperture_time = 4e-6
-        session.pins[
-            pin_set_string
-        ].ppmu_aperture_time_units = nidigital.PPMUApertureTimeUnits.SECONDS
+        session.pins[pin_set_string].ppmu_aperture_time_units = (
+            nidigital.PPMUApertureTimeUnits.SECONDS
+        )
         session.pins[pin_set_string].ppmu_output_function = nidigital.PPMUOutputFunction.CURRENT
         session.pins[pin_set_string].ppmu_current_level_range = 2e-6
         session.pins[pin_set_string].ppmu_current_level = 2e-6

@@ -5,7 +5,7 @@ from nitsm.pinquerycontexts import PinQueryContext
 
 @pytest.fixture
 def simulated_custom_instrument_sessions(standalone_tsm_context):
-    (instrument_names, channel_group_ids, _) = standalone_tsm_context.get_custom_instrument_names(
+    instrument_names, channel_group_ids, _ = standalone_tsm_context.get_custom_instrument_names(
         TestCustomInstruments.pin_map_instrument_type_id
     )
     sessions = tuple(range(len(instrument_names)))
