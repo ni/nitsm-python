@@ -53,8 +53,7 @@ jobs:
       testRunTitle: 'Publish test results'
     displayName: 'Display test results'
 
-  - task: PublishCodeCoverageResults@1
+  - task: PublishCodeCoverageResults@2
     inputs:
-      codeCoverageTool: Cobertura
       summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
     displayName: 'Display code coverage results'
