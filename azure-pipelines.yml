@@ -32,7 +32,7 @@ jobs:
       arguments: '-VersionToActivate old'
 
   - script: |
-      tox -- older
+      python -m tox -- older
     displayName: 'Run python unit tests with older version of TestStand/TSM'
 
   - task: PowerShell@2
@@ -43,7 +43,7 @@ jobs:
       arguments: '-VersionToActivate new'
 
   - script: |
-      tox -- newer
+      python -m tox -- newer
     displayName: 'Run python unit tests with newer version of TestStand/TSM'
 
   - task: PublishTestResults@2
