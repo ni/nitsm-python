@@ -79,7 +79,7 @@ environments for running pytest in [tests/](https://github.com/ni/nitsm-python/t
 `clean` and `report` for cleaning and creating report files respectively. To specify a subset of tox environments, run
 tox with the `-e` flag followed by a comma separated list of environments:
 ```
-tox -e clean,py310-tests,py310-systemtests,report
+tox -e clean,py311-tests,py311-systemtests,report
 ```
 
 ## Building

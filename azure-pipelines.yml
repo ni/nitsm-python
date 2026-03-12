@@ -46,6 +46,21 @@ jobs:
   - checkout: self
     clean: true
 
+  - task: PowerShell@2
+    displayName: 'Ensure NI services are running'
+    inputs:
+      targetType: inline
+      script: |
+        Get-Service | Where-Object {
+          $_.DisplayName -match "National Instruments|^ni" -and
+          $_.Status -ne 'Running' -and
+          $_.StartType -ne 'Disabled'
+        } | ForEach-Object {
+          Write-Host "Starting $($_.Name) ($($_.DisplayName))..."
+          Start-Service -Name $_.Name -ErrorAction SilentlyContinue
+        }
+        Start-Sleep -Seconds 5
+
   - script: |
       python -m pip install --upgrade pip
     displayName: 'Upgrade pip'
