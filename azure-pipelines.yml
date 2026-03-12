@@ -47,6 +47,24 @@ jobs:
     clean: true
 
   - task: PowerShell@2
+    displayName: 'Restart NI services'
+    inputs:
+      targetType: inline
+      script: |
+        # Restart all National Instruments services that may have been stopped
+        $niServices = Get-Service | Where-Object { $_.DisplayName -match "National Instruments|^ni" }
+        foreach ($svc in $niServices) {
+          if ($svc.Status -ne 'Running' -and $svc.StartType -ne 'Disabled') {
+            Write-Host "Starting $($svc.Name) ($($svc.DisplayName))..."
+            Start-Service -Name $svc.Name -ErrorAction SilentlyContinue
+          }
+        }
+        Start-Sleep -Seconds 5
+        Write-Host "NI services status:"
+        Get-Service | Where-Object { $_.DisplayName -match "National Instruments|^ni" } |
+          Format-Table Name, Status, DisplayName -AutoSize | Out-String | Write-Host
+
+  - task: PowerShell@2
     displayName: 'Install Python 3.10 and 3.11 via pyenv'
     inputs:
       targetType: inline
