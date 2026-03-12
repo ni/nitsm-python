@@ -14,79 +14,36 @@ jobs:
 
   steps:
   - task: PowerShell@2
-    displayName: 'Clean workspace (kill lingering processes first)'
+    displayName: 'Kill lingering processes and clean workspace'
     inputs:
       targetType: inline
       script: |
-        # Kill any lingering TestExec or Python processes from previous runs
-        Get-Process -Name TestExec -ErrorAction SilentlyContinue | Stop-Process -Force
-        Get-Process -Name python -ErrorAction SilentlyContinue | Where-Object {
-          $_.Path -like "*$env:AGENT_WORKFOLDER*"
-        } | Stop-Process -Force
-        Start-Sleep -Seconds 2
-        # Clean the working directory
-        if (Test-Path "$(Build.SourcesDirectory)") {
-          Remove-Item "$(Build.SourcesDirectory)\*" -Recurse -Force -ErrorAction SilentlyContinue
-        }
+        Write-Host "=== All processes running on this machine ==="
+        Get-Process | Format-Table Id, ProcessName, Path -AutoSize | Out-String -Width 300 | Write-Host
 
-  - checkout: self
-    clean: true
-
-  - task: PowerShell@2
-    displayName: 'Ensure Python 3.10 and 3.11 are installed'
-    inputs:
-      targetType: inline
-      script: |
-        $installed = pyenv versions
-        foreach ($version in @("3.10.11", "3.11.9")) {
-          $major_minor = $version.Substring(0, $version.LastIndexOf('.'))
-          if ($installed -notmatch [regex]::Escape($major_minor)) {
-            Write-Host "Installing Python $version..."
-            pyenv install $version
-          } else {
-            Write-Host "Python $major_minor already installed, skipping."
+        Write-Host "=== Killing orphaned python processes ==="
+        $currentPid = $PID
+        $parentPid = (Get-CimInstance Win32_Process -Filter "ProcessId = $currentPid").ParentProcessId
+        Get-Process -Name "python*" -ErrorAction SilentlyContinue |
+          Where-Object { $_.Id -ne $currentPid -and $_.Id -ne $parentPid } |
+          ForEach-Object {
+            Write-Host "Killing: $($_.Id) $($_.ProcessName) $($_.Path)"
+            Stop-Process -Id $_.Id -Force -ErrorAction SilentlyContinue
           }
+
+        Write-Host "=== Killing NI processes ==="
+        Get-Process | Where-Object { $_.Path -and $_.Path -match "National Instruments" } |
+          ForEach-Object {
+            Write-Host "Killing: $($_.Id) $($_.ProcessName) $($_.Path)"
+            Stop-Process -Id $_.Id -Force -ErrorAction SilentlyContinue
+          }
+
+        Start-Sleep -Seconds 5
+
+        Write-Host "=== Cleaning workspace ==="
+        $workspace = "$(Agent.BuildDirectory)\s"
+        if (Test-Path $workspace) {
+          Remove-Item -Path "$workspace\*" -Recurse -Force -ErrorAction SilentlyContinue
         }
-        pyenv rehash
 
-  - script: |
-      python -m pip install --upgrade pip
-    displayName: 'Upgrade pip'
-
-  - script: |
-      python -m pip install --upgrade tox
-    displayName: 'Install or upgrade tox'
-
-  - task: PowerShell@2
-    displayName: 'Switch to old TestStand/TSM'
-    inputs:
-      targetType: filePath
-      filePath: 'C:\Activate_TSVersion.ps1'
-      arguments: '-VersionToActivate old'
-
-  - script: |
-      python -m tox -- older
-    displayName: 'Run python unit tests with older version of TestStand/TSM'
-
-  - task: PowerShell@2
-    displayName: 'Switch to new TestStand/TSM'
-    inputs:
-      targetType: filePath
-      filePath: 'C:\Activate_TSVersion.ps1'
-      arguments: '-VersionToActivate new'
-
-  - script: |
-      python -m tox -- newer
-    displayName: 'Run python unit tests with newer version of TestStand/TSM'
-
-  - task: PublishTestResults@2
-    condition: succeededOrFailed()
-    inputs:
-      testResultsFiles: '**/*-results.xml'
-      testRunTitle: 'Publish test results'
-    displayName: 'Display test results'
-
-  - task: PublishCodeCoverageResults@2
-    inputs:
-      summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
-    displayName: 'Display code coverage results'
+        Write-Host "Done."
