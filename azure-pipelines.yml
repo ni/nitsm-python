@@ -92,21 +92,36 @@ jobs:
     displayName: 'TEMP DEBUG: Check Python registry entries'
     inputs:
       targetType: inline
+      errorActionPreference: continue
       script: |
+        $ErrorActionPreference = 'Continue'
+
         Write-Host "=== HKLM Python registry (64-bit view) ==="
-        reg query "HKLM\SOFTWARE\Python\PythonCore" /s 2>&1 | Out-String | Write-Host
+        $out = reg query "HKLM\SOFTWARE\Python\PythonCore" /s 2>&1
+        if ($LASTEXITCODE -ne 0) { Write-Host "(none found)" } else { $out | Out-String | Write-Host }
+
         Write-Host "`n=== HKLM Python registry (32-bit view) ==="
-        reg query "HKLM\SOFTWARE\WOW6432Node\Python\PythonCore" /s 2>&1 | Out-String | Write-Host
+        $out = reg query "HKLM\SOFTWARE\WOW6432Node\Python\PythonCore" /s 2>&1
+        if ($LASTEXITCODE -ne 0) { Write-Host "(none found)" } else { $out | Out-String | Write-Host }
+
         Write-Host "`n=== HKCU Python registry ==="
-        reg query "HKCU\SOFTWARE\Python\PythonCore" /s 2>&1 | Out-String | Write-Host
+        $out = reg query "HKCU\SOFTWARE\Python\PythonCore" /s 2>&1
+        if ($LASTEXITCODE -ne 0) { Write-Host "(none found)" } else { $out | Out-String | Write-Host }
+
         Write-Host "`n=== pyenv shims & global ==="
         & C:\pyenv\.pyenv\pyenv-win\bin\pyenv.bat versions
-        Write-Host "`n=== PATH (first 5 Python-related entries) ==="
+
+        Write-Host "`n=== PATH (Python-related entries) ==="
         $env:PATH -split ';' | Where-Object { $_ -match 'python|pyenv' } | Select-Object -First 10 | ForEach-Object { Write-Host $_ }
+
         Write-Host "`n=== python --version ==="
         python --version 2>&1 | Write-Host
+
         Write-Host "`n=== py launcher list ==="
-        py --list 2>&1 | Out-String | Write-Host
+        $out = py --list 2>&1
+        $out | Out-String | Write-Host
+
+        Write-Host "`n=== TEMP DEBUG complete ==="
   # ── END TEMPORARY DEBUG ──
 
   - task: PowerShell@2
