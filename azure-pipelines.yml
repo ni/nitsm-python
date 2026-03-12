@@ -117,12 +117,15 @@ jobs:
 
   - task: PublishTestResults@2
     condition: succeededOrFailed()
+    continueOnError: true
     inputs:
       testResultsFormat: 'JUnit'
       testResultsFiles: '*-results.xml'
       mergeTestResults: true
 
-  - task: PublishCodeCoverageResults@2
+  - task: PublishCodeCoverageResults@1
     condition: succeededOrFailed()
+    continueOnError: true
     inputs:
+      codeCoverageTool: 'Cobertura'
       summaryFileLocation: coverage.xml
