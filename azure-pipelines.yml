@@ -13,6 +13,8 @@ jobs:
     name: nitsm-python-test
 
   steps:
+  - checkout: none
+
   - task: PowerShell@2
     displayName: 'Kill lingering processes and clean workspace'
     inputs:
