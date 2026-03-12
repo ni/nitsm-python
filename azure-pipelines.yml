@@ -30,7 +30,7 @@ jobs:
           Stop-Process -Id $_.Id -Force -ErrorAction SilentlyContinue
         }
 
-        # Kill Python processes whose path is inside the agent workspace
+        # Kill only Python processes whose path is inside the agent workspace
         $workspace = "$(Agent.BuildDirectory)"
         $currentPid = $PID
         Get-Process -Name "python*" -ErrorAction SilentlyContinue |
@@ -46,104 +46,44 @@ jobs:
   - checkout: self
     clean: true
 
-  - task: PowerShell@2
-    displayName: 'Restart NI services'
-    inputs:
-      targetType: inline
-      script: |
-        # Restart all National Instruments services that may have been stopped
-        $niServices = Get-Service | Where-Object { $_.DisplayName -match "National Instruments|^ni" }
-        foreach ($svc in $niServices) {
-          if ($svc.Status -ne 'Running' -and $svc.StartType -ne 'Disabled') {
-            Write-Host "Starting $($svc.Name) ($($svc.DisplayName))..."
-            Start-Service -Name $svc.Name -ErrorAction SilentlyContinue
-          }
-        }
-        Start-Sleep -Seconds 5
-        Write-Host "NI services status:"
-        Get-Service | Where-Object { $_.DisplayName -match "National Instruments|^ni" } |
-          Format-Table Name, Status, DisplayName -AutoSize | Out-String | Write-Host
+  - script: |
+      python -m pip install --upgrade pip
+    displayName: 'Upgrade pip'
+
+  - script: |
+      python -m pip install --upgrade tox
+    displayName: 'Install or upgrade tox'
 
   - task: PowerShell@2
-    displayName: 'Install Python 3.10 and 3.11 via pyenv'
+    displayName: 'Switch to old TestStand/TSM'
     inputs:
-      targetType: inline
-      script: |
-        $env:PYENV = "C:\pyenv\.pyenv\pyenv-win"
-        $env:PATH = "$env:PYENV\bin;$env:PYENV\shims;$env:PATH"
+      targetType: filePath
+      filePath: 'C:\Activate_TSVersion.ps1'
+      arguments: '-VersionToActivate old'
 
-        $versions = @("3.10.11", "3.11.9")
-        foreach ($ver in $versions) {
-          $installed = pyenv versions --bare 2>&1 | Select-String -SimpleMatch $ver
-          if (-not $installed) {
-            Write-Host "Installing Python $ver..."
-            pyenv install $ver
-          } else {
-            Write-Host "Python $ver already installed."
-          }
-        }
-        pyenv versions
+  - script: |
+      python -m tox -- older
+    displayName: 'Run python unit tests with older version of TestStand/TSM'
 
   - task: PowerShell@2
-    displayName: 'Upgrade pip for all Python versions'
+    displayName: 'Switch to new TestStand/TSM'
     inputs:
-      targetType: inline
-      script: |
-        $pyenvVersions = "C:\pyenv\.pyenv\pyenv-win\versions"
-        Get-ChildItem $pyenvVersions -Directory | ForEach-Object {
-          $pythonExe = Join-Path $_.FullName "python.exe"
-          if (Test-Path $pythonExe) {
-            Write-Host "Upgrading pip for $($_.Name)..."
-            & $pythonExe -m pip install --upgrade pip 2>&1 | Select-Object -Last 1
-          }
-        }
+      targetType: filePath
+      filePath: 'C:\Activate_TSVersion.ps1'
+      arguments: '-VersionToActivate new'
 
-  - task: PowerShell@2
-    displayName: 'Install tox'
-    inputs:
-      targetType: inline
-      script: |
-        $pyenvVersions = "C:\pyenv\.pyenv\pyenv-win\versions"
-        # Install tox using the newest Python available
-        $newest = Get-ChildItem $pyenvVersions -Directory | Sort-Object Name -Descending | Select-Object -First 1
-        $pythonExe = Join-Path $newest.FullName "python.exe"
-        Write-Host "Installing tox using $($newest.Name)..."
-        & $pythonExe -m pip install tox
-        Write-Host "tox installed."
-
-  - task: PowerShell@2
-    displayName: 'Switch to old TSM and run tox'
-    inputs:
-      targetType: inline
-      script: |
-        & C:\Activate_TSVersion.ps1 old
-        $pyenvVersions = "C:\pyenv\.pyenv\pyenv-win\versions"
-        $newest = Get-ChildItem $pyenvVersions -Directory | Sort-Object Name -Descending | Select-Object -First 1
-        $pythonExe = Join-Path $newest.FullName "python.exe"
-        & $pythonExe -m tox -- old
-
-  - task: PowerShell@2
-    displayName: 'Switch to new TSM and run tox'
-    inputs:
-      targetType: inline
-      script: |
-        & C:\Activate_TSVersion.ps1 new
-        $pyenvVersions = "C:\pyenv\.pyenv\pyenv-win\versions"
-        $newest = Get-ChildItem $pyenvVersions -Directory | Sort-Object Name -Descending | Select-Object -First 1
-        $pythonExe = Join-Path $newest.FullName "python.exe"
-        & $pythonExe -m tox -- new
+  - script: |
+      python -m tox -- newer
+    displayName: 'Run python unit tests with newer version of TestStand/TSM'
 
   - task: PublishTestResults@2
     condition: succeededOrFailed()
-    continueOnError: true
     inputs:
-      testResultsFormat: 'JUnit'
-      testResultsFiles: '*-results.xml'
-      mergeTestResults: true
+      testResultsFiles: '**/*-results.xml'
+      testRunTitle: 'Publish test results'
+    displayName: 'Display test results'
 
-  - task: PublishCodeCoverageResults@1
-    condition: succeededOrFailed()
-    continueOnError: true
+  - task: PublishCodeCoverageResults@2
     inputs:
-      codeCoverageTool: 'Cobertura'
-      summaryFileLocation: coverage.xml
+      summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
+    displayName: 'Display code coverage results'
