@@ -7,8 +7,7 @@ This project is intended for use in automated device validation. Our primary foc
 automated testing with TestStand and TSM. More emphasis has been placed on simplicity and usability than execution time.
 
 ## Python Version Support
-nitsm supports Python versions 3.6, 3.7, 3.8, 3.10, and 3.11. Newer versions of Python might work, but it is not guaranteed. Python
-2.7 is not supported.
+nitsm supports Python versions 3.6, 3.7, 3.8, 3.10, and 3.11. Python 2.7 is not supported.
 
 ## Installation
 ```

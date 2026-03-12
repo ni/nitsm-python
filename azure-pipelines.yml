@@ -13,39 +13,116 @@ jobs:
     name: nitsm-python-test
 
   steps:
-  - checkout: none
-
   - task: PowerShell@2
-    displayName: 'Kill lingering processes and clean workspace'
+    displayName: 'Kill orphaned TestExec and workspace Python processes'
     inputs:
       targetType: inline
       script: |
-        Write-Host "=== All processes running on this machine ==="
-        Get-Process | Format-Table Id, ProcessName, Path -AutoSize | Out-String -Width 300 | Write-Host
-
-        Write-Host "=== Killing orphaned python processes ==="
-        $currentPid = $PID
-        $parentPid = (Get-CimInstance Win32_Process -Filter "ProcessId = $currentPid").ParentProcessId
-        Get-Process -Name "python*" -ErrorAction SilentlyContinue |
-          Where-Object { $_.Id -ne $currentPid -and $_.Id -ne $parentPid } |
-          ForEach-Object {
-            Write-Host "Killing: $($_.Id) $($_.ProcessName) $($_.Path)"
-            Stop-Process -Id $_.Id -Force -ErrorAction SilentlyContinue
-          }
-
-        Write-Host "=== Killing NI processes ==="
-        Get-Process | Where-Object { $_.Path -and $_.Path -match "National Instruments" } |
-          ForEach-Object {
-            Write-Host "Killing: $($_.Id) $($_.ProcessName) $($_.Path)"
-            Stop-Process -Id $_.Id -Force -ErrorAction SilentlyContinue
-          }
-
-        Start-Sleep -Seconds 5
-
-        Write-Host "=== Cleaning workspace ==="
-        $workspace = "$(Agent.BuildDirectory)\s"
-        if (Test-Path $workspace) {
-          Remove-Item -Path "$workspace\*" -Recurse -Force -ErrorAction SilentlyContinue
+        # Kill orphaned TestExec processes from previous canceled runs
+        Get-Process -Name "TestExec*" -ErrorAction SilentlyContinue | ForEach-Object {
+          Write-Host "Killing TestExec: PID $($_.Id) $($_.Path)"
+          Stop-Process -Id $_.Id -Force -ErrorAction SilentlyContinue
         }
 
-        Write-Host "Done."
+        # Kill orphaned TSAutoMgr processes
+        Get-Process -Name "TSAutoMgr*" -ErrorAction SilentlyContinue | ForEach-Object {
+          Write-Host "Killing TSAutoMgr: PID $($_.Id) $($_.Path)"
+          Stop-Process -Id $_.Id -Force -ErrorAction SilentlyContinue
+        }
+
+        # Kill Python processes whose path is inside the agent workspace
+        $workspace = "$(Agent.BuildDirectory)"
+        $currentPid = $PID
+        Get-Process -Name "python*" -ErrorAction SilentlyContinue |
+          Where-Object { $_.Id -ne $currentPid -and $_.Path -and $_.Path -like "$workspace*" } |
+          ForEach-Object {
+            Write-Host "Killing workspace Python: PID $($_.Id) $($_.Path)"
+            Stop-Process -Id $_.Id -Force -ErrorAction SilentlyContinue
+          }
+
+        Start-Sleep -Seconds 3
+        Write-Host "Cleanup complete."
+
+  - checkout: self
+    clean: true
+
+  - task: PowerShell@2
+    displayName: 'Install Python 3.10 and 3.11 via pyenv'
+    inputs:
+      targetType: inline
+      script: |
+        $env:PYENV = "C:\pyenv\.pyenv\pyenv-win"
+        $env:PATH = "$env:PYENV\bin;$env:PYENV\shims;$env:PATH"
+
+        $versions = @("3.10.11", "3.11.9")
+        foreach ($ver in $versions) {
+          $installed = pyenv versions --bare 2>&1 | Select-String -SimpleMatch $ver
+          if (-not $installed) {
+            Write-Host "Installing Python $ver..."
+            pyenv install $ver
+          } else {
+            Write-Host "Python $ver already installed."
+          }
+        }
+        pyenv versions
+
+  - task: PowerShell@2
+    displayName: 'Upgrade pip for all Python versions'
+    inputs:
+      targetType: inline
+      script: |
+        $pyenvVersions = "C:\pyenv\.pyenv\pyenv-win\versions"
+        Get-ChildItem $pyenvVersions -Directory | ForEach-Object {
+          $pythonExe = Join-Path $_.FullName "python.exe"
+          if (Test-Path $pythonExe) {
+            Write-Host "Upgrading pip for $($_.Name)..."
+            & $pythonExe -m pip install --upgrade pip 2>&1 | Select-Object -Last 1
+          }
+        }
+
+  - task: PowerShell@2
+    displayName: 'Install tox'
+    inputs:
+      targetType: inline
+      script: |
+        $pyenvVersions = "C:\pyenv\.pyenv\pyenv-win\versions"
+        # Install tox using the newest Python available
+        $newest = Get-ChildItem $pyenvVersions -Directory | Sort-Object Name -Descending | Select-Object -First 1
+        $pythonExe = Join-Path $newest.FullName "python.exe"
+        Write-Host "Installing tox using $($newest.Name)..."
+        & $pythonExe -m pip install tox
+        Write-Host "tox installed."
+
+  - task: PowerShell@2
+    displayName: 'Switch to old TSM and run tox'
+    inputs:
+      targetType: inline
+      script: |
+        & C:\Activate_TSVersion.ps1 old
+        $pyenvVersions = "C:\pyenv\.pyenv\pyenv-win\versions"
+        $newest = Get-ChildItem $pyenvVersions -Directory | Sort-Object Name -Descending | Select-Object -First 1
+        $pythonExe = Join-Path $newest.FullName "python.exe"
+        & $pythonExe -m tox -- old
+
+  - task: PowerShell@2
+    displayName: 'Switch to new TSM and run tox'
+    inputs:
+      targetType: inline
+      script: |
+        & C:\Activate_TSVersion.ps1 new
+        $pyenvVersions = "C:\pyenv\.pyenv\pyenv-win\versions"
+        $newest = Get-ChildItem $pyenvVersions -Directory | Sort-Object Name -Descending | Select-Object -First 1
+        $pythonExe = Join-Path $newest.FullName "python.exe"
+        & $pythonExe -m tox -- new
+
+  - task: PublishTestResults@2
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '*-results.xml'
+      mergeTestResults: true
+
+  - task: PublishCodeCoverageResults@2
+    condition: succeededOrFailed()
+    inputs:
+      summaryFileLocation: coverage.xml
