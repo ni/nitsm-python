@@ -16,6 +16,23 @@ jobs:
     name: nitsm-python-test
 
   steps:
+  - task: PowerShell@2
+    displayName: 'Ensure Python 3.10 and 3.11 are installed'
+    inputs:
+      targetType: inline
+      script: |
+        $installed = pyenv versions
+        foreach ($version in @("3.10.11", "3.11.9")) {
+          $major_minor = $version.Substring(0, $version.LastIndexOf('.'))
+          if ($installed -notmatch [regex]::Escape($major_minor)) {
+            Write-Host "Installing Python $version..."
+            pyenv install $version
+          } else {
+            Write-Host "Python $major_minor already installed, skipping."
+          }
+        }
+        pyenv rehash
+
   - script: |
       python -m pip install --upgrade pip
     displayName: 'Upgrade pip'
