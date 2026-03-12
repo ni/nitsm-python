@@ -47,18 +47,46 @@ jobs:
     clean: true
 
   - task: PowerShell@2
-    displayName: 'Permanently add pyenv to system PATH (run once then remove)'
+    displayName: 'Discover Python interpreter paths'
     inputs:
       targetType: inline
       script: |
-        $shimPath = "C:\pyenv\.pyenv\pyenv-win\shims"
-        $binPath = "C:\pyenv\.pyenv\pyenv-win\bin"
-        $currentPath = [Environment]::GetEnvironmentVariable("Path", "Machine")
-        if ($currentPath -notlike "*pyenv*") {
-          [Environment]::SetEnvironmentVariable("Path", "$shimPath;$binPath;$currentPath", "Machine")
-          Write-Host "Added pyenv to system PATH permanently. Agent service restart or reboot needed to take effect."
+        Write-Host "=== pyenv versions ==="
+        & C:\pyenv\.pyenv\pyenv-win\bin\pyenv.bat versions 2>&1 | Write-Host
+
+        Write-Host "`n=== pyenv versions directory ==="
+        if (Test-Path "C:\pyenv\.pyenv\pyenv-win\versions") {
+          Get-ChildItem "C:\pyenv\.pyenv\pyenv-win\versions" -Directory | ForEach-Object {
+            $exe = Join-Path $_.FullName "python.exe"
+            $exists = Test-Path $exe
+            Write-Host "$($_.Name): python.exe exists = $exists  ($exe)"
+          }
         } else {
-          Write-Host "pyenv already in system PATH. No changes needed."
+          Write-Host "pyenv versions directory not found"
+        }
+
+        Write-Host "`n=== All python executables on PATH ==="
+        where.exe python 2>&1 | Write-Host
+        where.exe python3 2>&1 | Write-Host
+
+        Write-Host "`n=== Tox-style interpreter names ==="
+        foreach ($name in @("python3.6", "python3.7", "python3.8", "python3.10", "python3.11")) {
+          $found = Get-Command $name -ErrorAction SilentlyContinue
+          if ($found) {
+            Write-Host "${name}: $($found.Source)"
+          } else {
+            Write-Host "${name}: NOT FOUND"
+          }
+        }
+
+        Write-Host "`n=== Python directories in common locations ==="
+        foreach ($dir in @("C:\Python36", "C:\Python37", "C:\Python38", "C:\Python310", "C:\Python311",
+                           "C:\Program Files\Python36", "C:\Program Files\Python38",
+                           "$env:LOCALAPPDATA\Programs\Python")) {
+          if (Test-Path $dir) {
+            Write-Host "EXISTS: $dir"
+            Get-ChildItem $dir -Filter "python*.exe" -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "  $($_.FullName)" }
+          }
         }
 
   - task: PowerShell@2
