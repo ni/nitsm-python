@@ -87,6 +87,28 @@ jobs:
       python -m pip install --upgrade tox
     displayName: 'Install or upgrade tox'
 
+  # ── TEMPORARY DEBUG: Remove after diagnosing system test failures ──
+  - task: PowerShell@2
+    displayName: 'TEMP DEBUG: Check Python registry entries'
+    inputs:
+      targetType: inline
+      script: |
+        Write-Host "=== HKLM Python registry (64-bit view) ==="
+        reg query "HKLM\SOFTWARE\Python\PythonCore" /s 2>&1 | Out-String | Write-Host
+        Write-Host "`n=== HKLM Python registry (32-bit view) ==="
+        reg query "HKLM\SOFTWARE\WOW6432Node\Python\PythonCore" /s 2>&1 | Out-String | Write-Host
+        Write-Host "`n=== HKCU Python registry ==="
+        reg query "HKCU\SOFTWARE\Python\PythonCore" /s 2>&1 | Out-String | Write-Host
+        Write-Host "`n=== pyenv shims & global ==="
+        & C:\pyenv\.pyenv\pyenv-win\bin\pyenv.bat versions
+        Write-Host "`n=== PATH (first 5 Python-related entries) ==="
+        $env:PATH -split ';' | Where-Object { $_ -match 'python|pyenv' } | Select-Object -First 10 | ForEach-Object { Write-Host $_ }
+        Write-Host "`n=== python --version ==="
+        python --version 2>&1 | Write-Host
+        Write-Host "`n=== py launcher list ==="
+        py --list 2>&1 | Out-String | Write-Host
+  # ── END TEMPORARY DEBUG ──
+
   - task: PowerShell@2
     displayName: 'Switch to old TestStand/TSM'
     inputs:
