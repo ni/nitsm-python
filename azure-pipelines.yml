@@ -51,6 +51,7 @@ jobs:
     inputs:
       targetType: inline
       script: |
+        # Start any stopped NI services
         Get-Service | Where-Object {
           $_.DisplayName -match "National Instruments|^ni" -and
           $_.Status -ne 'Running' -and
@@ -60,6 +61,14 @@ jobs:
           Start-Service -Name $_.Name -ErrorAction SilentlyContinue
         }
         Start-Sleep -Seconds 5
+
+        # Log status of ALL NI-related services for diagnostics
+        Write-Host "`n=== All NI service status ==="
+        Get-Service | Where-Object {
+          $_.DisplayName -match "National Instruments|^ni|NI |^lkads|^mDNS"
+        } | Sort-Object Status, DisplayName |
+          Format-Table Name, Status, StartType, DisplayName -AutoSize |
+          Out-String -Width 200 | Write-Host
 
   - script: |
       python -m pip install --upgrade pip
