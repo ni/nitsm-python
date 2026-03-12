@@ -9,13 +9,29 @@ pr:
 
 jobs:
 - job: CI
-  workspace:
-    clean: all
-    
   pool:
     name: nitsm-python-test
 
   steps:
+  - task: PowerShell@2
+    displayName: 'Clean workspace (kill lingering processes first)'
+    inputs:
+      targetType: inline
+      script: |
+        # Kill any lingering TestExec or Python processes from previous runs
+        Get-Process -Name TestExec -ErrorAction SilentlyContinue | Stop-Process -Force
+        Get-Process -Name python -ErrorAction SilentlyContinue | Where-Object {
+          $_.Path -like "*$env:AGENT_WORKFOLDER*"
+        } | Stop-Process -Force
+        Start-Sleep -Seconds 2
+        # Clean the working directory
+        if (Test-Path "$(Build.SourcesDirectory)") {
+          Remove-Item "$(Build.SourcesDirectory)\*" -Recurse -Force -ErrorAction SilentlyContinue
+        }
+
+  - checkout: self
+    clean: true
+
   - task: PowerShell@2
     displayName: 'Ensure Python 3.10 and 3.11 are installed'
     inputs:
