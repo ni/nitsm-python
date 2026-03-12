@@ -87,6 +87,35 @@ jobs:
       python -m pip install --upgrade tox
     displayName: 'Install or upgrade tox'
 
+  # ── TEMPORARY FIX: Register pyenv Python versions in Windows registry for TestStand ──
+  # TestStand's Python Adapter discovers interpreters via PEP 514 registry keys.
+  # pyenv-win does NOT create these keys, so TestStand can't find any Python versions.
+  # This step creates HKCU\SOFTWARE\Python\PythonCore\X.Y\InstallPath for each version.
+  # TODO: Remove once Python is installed via official installers or a permanent solution is in place.
+  - task: PowerShell@2
+    displayName: 'TEMP FIX: Register pyenv Pythons in registry for TestStand'
+    inputs:
+      targetType: inline
+      script: |
+        $pyenvVersionsDir = "C:\pyenv\.pyenv\pyenv-win\versions"
+        Get-ChildItem $pyenvVersionsDir -Directory | ForEach-Object {
+          $fullVersion = $_.Name          # e.g. "3.11.9"
+          $parts = $fullVersion.Split('.')
+          $majorMinor = "$($parts[0]).$($parts[1])"  # e.g. "3.11"
+          $installPath = $_.FullName + "\"            # trailing backslash required
+          $exePath = Join-Path $_.FullName "python.exe"
+
+          if (Test-Path $exePath) {
+            $regPath = "HKCU:\SOFTWARE\Python\PythonCore\$majorMinor\InstallPath"
+            New-Item -Path $regPath -Force | Out-Null
+            Set-ItemProperty -Path $regPath -Name "(Default)" -Value $installPath
+            Set-ItemProperty -Path $regPath -Name "ExecutablePath" -Value $exePath
+            Write-Host "Registered Python $majorMinor -> $installPath"
+          }
+        }
+        Write-Host "Registry registration complete."
+  # ── END TEMPORARY FIX ──
+
   # ── TEMPORARY DEBUG: Remove after diagnosing system test failures ──
   - task: PowerShell@2
     displayName: 'TEMP DEBUG: Check Python registry entries'
@@ -117,9 +146,11 @@ jobs:
         Write-Host "`n=== python --version ==="
         python --version 2>&1 | Write-Host
 
-        Write-Host "`n=== py launcher list ==="
-        $out = py --list 2>&1
-        $out | Out-String | Write-Host
+        Write-Host "`n=== pyenv installed versions ==="
+        Get-ChildItem "C:\pyenv\.pyenv\pyenv-win\versions" -Directory | ForEach-Object {
+          $exe = Join-Path $_.FullName "python.exe"
+          if (Test-Path $exe) { Write-Host "$($_.Name): $exe" }
+        }
 
         Write-Host "`n=== TEMP DEBUG complete ==="
   # ── END TEMPORARY DEBUG ──
