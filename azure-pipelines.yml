@@ -47,6 +47,21 @@ jobs:
     clean: true
 
   - task: PowerShell@2
+    displayName: 'Permanently add pyenv to system PATH (run once then remove)'
+    inputs:
+      targetType: inline
+      script: |
+        $shimPath = "C:\pyenv\.pyenv\pyenv-win\shims"
+        $binPath = "C:\pyenv\.pyenv\pyenv-win\bin"
+        $currentPath = [Environment]::GetEnvironmentVariable("Path", "Machine")
+        if ($currentPath -notlike "*pyenv*") {
+          [Environment]::SetEnvironmentVariable("Path", "$shimPath;$binPath;$currentPath", "Machine")
+          Write-Host "Added pyenv to system PATH permanently. Agent service restart or reboot needed to take effect."
+        } else {
+          Write-Host "pyenv already in system PATH. No changes needed."
+        }
+
+  - task: PowerShell@2
     displayName: 'Ensure NI services are running'
     inputs:
       targetType: inline
