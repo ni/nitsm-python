@@ -21,7 +21,7 @@ jobs:
     displayName: 'Upgrade pip'
 
   - script: |
-      python -m pip install --upgrade tox
+      python -m pip install --upgrade "tox<4" "virtualenv<20.22"
     displayName: 'Install or upgrade tox'
 
   - task: PowerShell@2
