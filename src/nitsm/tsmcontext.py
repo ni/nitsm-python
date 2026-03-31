@@ -1,4 +1,5 @@
 """TSM Context Wrapper"""
+
 import ctypes.wintypes
 import time
 import typing
