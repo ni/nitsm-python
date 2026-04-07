@@ -209,6 +209,24 @@ class SemiconductorModuleContext:
         return self._context.SiteNumbers
 
     # Site and Global Data
+    def get_semiconductor_module_context_with_sites(
+        self, site_numbers: "_Sequence[int]"
+    ) -> "SemiconductorModuleContext":
+        """Returns a Semiconductor Module context object which holds information and resources
+        specific to the site_numbers mentioned.
+
+        Args:
+            site_numbers: A sequence of site numbers for which the resources should be used.
+
+        Returns:
+            SemiconductorModuleContext object with resources specific to the site_numbers.
+        """
+        tsm_dispatch = self._context.GetSemiconductorModuleContextWithSites(site_numbers)
+        semiconductor_module_context_with_sites = SemiconductorModuleContext.__new__(
+            SemiconductorModuleContext
+        )
+        semiconductor_module_context_with_sites._context = tsm_dispatch
+        return semiconductor_module_context_with_sites
 
     def set_site_data(self, data_id: str, data: "_Sequence[_Any]") -> None:
         """Associates a data item with each site. You can associate data with all sites or with the

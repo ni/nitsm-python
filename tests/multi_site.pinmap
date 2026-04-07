@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<PinMap schemaVersion="1.2" xmlns="http://www.ni.com/TestStand/SemiconductorModule/PinMap.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Instruments>
+		<NIDigitalPatternInstrument name="DigitalPattern1" numberOfChannels="32" />
+		<NIDigitalPatternInstrument name="DigitalPattern2" numberOfChannels="32" />
+	</Instruments>
+	<Pins>
+		<DUTPin name="DUTPin1" />
+		<SystemPin name="SystemPin1" />
+		<SystemPin name="SystemPin2" />
+	</Pins>
+	<PinGroups></PinGroups>
+	<Sites>
+		<Site siteNumber="0" />
+		<Site siteNumber="1" />
+		<Site siteNumber="2" />
+		<Site siteNumber="3" />
+	</Sites>
+	<Connections>
+		<Connection pin="DUTPin1" siteNumber="0" instrument="DigitalPattern1" channel="0" />
+		<Connection pin="DUTPin1" siteNumber="1" instrument="DigitalPattern1" channel="1" />
+		<Connection pin="DUTPin1" siteNumber="2" instrument="DigitalPattern2" channel="0" />
+		<Connection pin="DUTPin1" siteNumber="3" instrument="DigitalPattern2" channel="1" />
+		<SystemConnection pin="SystemPin1" instrument="DigitalPattern1" channel="2" />
+		<SystemConnection pin="SystemPin2" instrument="DigitalPattern2" channel="2" />
+	</Connections>
+</PinMap>
